@@ -20,3 +20,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.beanstream.responses;
+
+/**
+ *
+ * @author bowens
+ */
+public class PaymentResponse {
+    public String id;
+
+    public String approved;
+
+    public String message_id;
+
+    public String message;
+
+    public String auth_code;
+
+    public String created;
+
+    public String order_number;
+
+    public String type;
+
+    public String payment_method;
+
+    public CardResponse card;
+
+    public Link[] links;
+}

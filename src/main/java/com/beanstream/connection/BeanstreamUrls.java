@@ -20,3 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.beanstream.connection;
+
+/**
+ *
+ * @author bowens
+ */
+public class BeanstreamUrls {
+    public static final String BaseUrl = "https://{p}.beanstream.com/api";
+    public static final String BasePaymentsUrl = BaseUrl + "/{v}/payments";
+    public static final String BaseProfilesUrl = BaseUrl + "/{v}/profiles";
+    public static final String PreAuthCompletionsUrl = BasePaymentsUrl + "/{id}/completions";
+    public static final String ReturnsUrl = BasePaymentsUrl + "/{id}/returns";
+    public static final String VoidsUrl =  BasePaymentsUrl + "/{id}/void";
+    public static final String ContinuationsUrl = BasePaymentsUrl + "/{md}/continue";
+    public static final String ProfileUri = "/{id}";
+    public static final String CardsUri = ProfileUri+"/cards";
+}

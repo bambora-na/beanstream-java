@@ -1,3 +1,5 @@
+package com.beanstream;
+
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Beanstream Internet Commerce Corp, Digital River, Inc.
@@ -20,3 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+/**
+ *
+ * @author bowens
+ */
+public class Beanstream {
+    
+}

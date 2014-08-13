@@ -20,3 +20,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.beanstream.requests;
+
+import com.beanstream.domain.Card;
+
+/**
+ *
+ * @author bowens
+ */
+public class CardPaymentRequest extends PaymentRequest {
+    
+    public String payment_method = "card";
+    public Card card;
+}

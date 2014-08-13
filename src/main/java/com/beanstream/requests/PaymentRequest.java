@@ -20,3 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.beanstream.requests;
+
+/**
+ *
+ * @author bowens
+ */
+public abstract class PaymentRequest {
+    public String merchant_id;
+    public String order_number;
+    public String amount;
+    public String language;
+    public String customer_ip;
+    public String term_url;
+    public String comments;
+    //public BillingAddress billing;
+    //public ShippingAddress shipping;
+    //public Custom custom;
+}

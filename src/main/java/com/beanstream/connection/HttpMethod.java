@@ -20,3 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.beanstream.connection;
+
+/**
+ *
+ * @author bowens
+ */
+public enum HttpMethod {
+    post, put, get, delete
+}

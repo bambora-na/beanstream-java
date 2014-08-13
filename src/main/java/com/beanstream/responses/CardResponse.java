@@ -20,3 +20,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.beanstream.responses;
+
+/**
+ *
+ * @author bowens
+ */
+public class CardResponse {
+    public String card_type;
+    public int last_four;
+    public boolean cvd_match;
+    public boolean address_match;
+    public boolean postal_result;
+}

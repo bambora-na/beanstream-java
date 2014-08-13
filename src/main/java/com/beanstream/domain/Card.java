@@ -20,3 +20,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.beanstream.domain;
+
+/**
+ *
+ * @author bowens
+ */
+public class Card {
+    public String name;
+    public String number;
+    public String expiry_month;
+    public String expiry_year;
+    public String cvd;
+    public boolean complete = true; // false for pre-authorizations
+}

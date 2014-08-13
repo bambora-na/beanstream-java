@@ -20,3 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.beanstream.responses;
+
+/**
+ *
+ * @author bowens
+ */
+public class Link {
+    public String rel;
+    public String href;
+    public String method;
+}
