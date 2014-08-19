@@ -29,7 +29,7 @@ package com.beanstream.responses;
 public class CardResponse {
     public String card_type;
     public int last_four;
-    public boolean cvd_match;
-    public boolean address_match;
-    public boolean postal_result;
+    public String cvd_match;
+    public String address_match;
+    public String postal_result;
 }

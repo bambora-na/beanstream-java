@@ -1,5 +1,7 @@
 package com.beanstream;
 
+import com.beanstream.api.PaymentsAPI;
+
 /* The MIT License (MIT)
  *
  * Copyright (c) 2014 Beanstream Internet Commerce Corp, Digital River, Inc.
@@ -29,4 +31,24 @@ package com.beanstream;
  */
 public class Beanstream {
     
+    private Configuration config;
+
+    public Beanstream() {
+    }
+
+    public Beanstream(Configuration config) {
+        this.config = config;
+    }
+
+    public Configuration getConfiguration() {
+        return config;
+    }
+
+    public void setConfiguration(Configuration config) {
+        this.config = config;
+    }
+    
+    public PaymentsAPI payments() {
+        return new PaymentsAPI(config);
+    }
 }

@@ -27,9 +27,11 @@ import com.beanstream.connection.BeanstreamUrls;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
 import com.beanstream.exceptions.BeanstreamApiException;
+import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.PaymentRequest;
 import com.beanstream.responses.PaymentResponse;
 import com.google.gson.Gson;
+import java.text.MessageFormat;
 
 /**
  *
@@ -47,12 +49,25 @@ public class PaymentsAPI {
         this.config = config;
     }
     
-    public PaymentResponse MakePayment(PaymentRequest paymentRequest) throws BeanstreamApiException {
+    /*public PaymentResponse makePayment(PaymentRequest paymentRequest) throws BeanstreamApiException {
         paymentRequest.merchant_id = ""+config.getMerchantId();
         
         HttpsConnector connector = new HttpsConnector(config.getMerchantId(), config.getApiPasscode());
         
-        String url = BeanstreamUrls.BasePaymentsUrl.replaceAll(null, null);
+        String url = "https://www.beanstream.com/api/v1/payments";
+        String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
+        Gson gson = new Gson();
+        return gson.fromJson(response, PaymentResponse.class);
+    }*/
+    
+    public PaymentResponse makePayment(CardPaymentRequest paymentRequest) throws BeanstreamApiException {
+        paymentRequest.setMerchant_id( ""+config.getMerchantId() );
+        paymentRequest.getCard().setComplete( true ); // false for pre-auth
+        
+        HttpsConnector connector = new HttpsConnector(config.getMerchantId(), config.getApiPasscode());
+        String url = MessageFormat.format(BeanstreamUrls.BasePaymentsUrl, config.getPlatform(), config.getVersion());
+        System.out.println("url: "+url);
+        //String url = "https://www.beanstream.com/api/v1/payments";
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
         Gson gson = new Gson();
         return gson.fromJson(response, PaymentResponse.class);

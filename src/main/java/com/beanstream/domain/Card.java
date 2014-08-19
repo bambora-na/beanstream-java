@@ -33,4 +33,60 @@ public class Card {
     public String expiry_year;
     public String cvd;
     public boolean complete = true; // false for pre-authorizations
+
+    public String getName() {
+        return name;
+    }
+
+    public Card setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public Card setNumber(String number) {
+        this.number = number;
+        return this;
+    }
+
+    public String getExpiry_month() {
+        return expiry_month;
+    }
+
+    public Card setExpiry_month(String expiry_month) {
+        this.expiry_month = expiry_month;
+        return this;
+    }
+
+    public String getExpiry_year() {
+        return expiry_year;
+    }
+
+    public Card setExpiry_year(String expiry_year) {
+        this.expiry_year = expiry_year;
+        return this;
+    }
+
+    public String getCvd() {
+        return cvd;
+    }
+
+    public Card setCvd(String cvd) {
+        this.cvd = cvd;
+        return this;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public Card setComplete(boolean complete) {
+        this.complete = complete;
+        return this;
+    }
+    
+    
 }

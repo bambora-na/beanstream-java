@@ -30,8 +30,16 @@ public class Configuration {
     private int merchantId;
     private String apiPasscode;
     private String profilesPasscode;
-    private String version;
+    private String version = "v1";
     private String platform = "www";
+
+    public Configuration() {
+    }
+
+    public Configuration(int merchantId, String apiPasscode) {
+        this.merchantId = merchantId;
+        this.apiPasscode = apiPasscode;
+    }
 
     public int getMerchantId() {
         return merchantId;

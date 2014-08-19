@@ -33,6 +33,7 @@ import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -68,13 +69,13 @@ public class HttpsConnector {
     
     public String ProcessTransaction(HttpMethod httpMethod, String url, Object data) throws BeanstreamApiException {
         
-        BufferedReader in = null;
         
         try {
             
             Gson gson = new Gson();
             String json = data != null ? gson.toJson(data) : null;
             
+            // this is a temporary println while SDK is in development
             Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
             System.out.println(gsonpp.toJson(data) );
             
@@ -90,7 +91,7 @@ public class HttpsConnector {
                     } else {
                         HttpEntity entity = response.getEntity();
                         String res = entity != null ? EntityUtils.toString(entity) : null;
-                        throw new ClientProtocolException("Unexpected response status: " + status);
+                        throw new ClientProtocolException("Status code: "+status, handleException(status, res) );
                     }
                 }
 
@@ -98,15 +99,15 @@ public class HttpsConnector {
             
             if (HttpMethod.post.equals(httpMethod) ) {
                 StringEntity entity = new StringEntity(json);
-                HttpPost http = new HttpPost();
+                HttpPost http = new HttpPost(url);
                 http.setEntity(entity);
-                return process(new HttpPost(url), responseHandler);
+                return process(http, responseHandler);
                 
             } else if (HttpMethod.put.equals(httpMethod) ) {
                 StringEntity entity = new StringEntity(json);
-                HttpPut http = new HttpPut();
+                HttpPut http = new HttpPut(url);
                 http.setEntity(entity);
-                return process(new HttpPost(url), responseHandler);
+                return process(http, responseHandler);
                 
             } else if (HttpMethod.get.equals(httpMethod) ) {
                 return process(new HttpGet(url), responseHandler);
@@ -117,19 +118,12 @@ public class HttpsConnector {
 
             return null;
             
-        } catch (IOException ex) {
+        } catch (UnsupportedEncodingException ex) {
             throw handleException(ex, null);
             
-        } finally {
-            
-            try {
-                if (in != null)
-                    in.close();
-            } catch (IOException ex) {
-                throw handleException(ex, null);
-            }
-            
-        }
+        } catch (IOException ex) {
+            throw handleException(ex, null);
+        } 
 	
     }
 
@@ -167,14 +161,24 @@ public class HttpsConnector {
     }
     
     private BeanstreamApiException handleException(Exception ex, HttpsURLConnection connection) {
-        try {
-            int responseCode = connection.getResponseCode();
-            System.out.println(responseCode+" "+connection.getContent().toString() );
-            
-        } catch (IOException ex1) {
-            Logger.getLogger(HttpsConnector.class.getName()).log(Level.SEVERE, null, ex1);
+        String message = "";
+        if (connection != null) {
+            try {
+                int responseCode = connection.getResponseCode();
+                System.out.println(responseCode+" "+connection.getContent().toString() );
+                //message = connection.
+            } catch (IOException ex1) {
+                Logger.getLogger(HttpsConnector.class.getName()).log(Level.SEVERE, "Error getting response code", ex1);
+            }
+        } else {
+            message = "Connection error";
         }
-        return new BeanstreamApiException(ex);
+        return new BeanstreamApiException(ex, message);
+    }
+    
+    private BeanstreamApiException handleException(int status, String message) {
+        
+        return new BeanstreamApiException(status, message);
     }
 			
 }

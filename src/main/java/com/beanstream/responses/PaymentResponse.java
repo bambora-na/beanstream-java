@@ -48,4 +48,8 @@ public class PaymentResponse {
     public CardResponse card;
 
     public Link[] links;
+    
+    public boolean isApproved() {
+        return "1".equals(approved);
+    }
 }

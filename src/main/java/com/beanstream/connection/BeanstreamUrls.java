@@ -27,13 +27,13 @@ package com.beanstream.connection;
  * @author bowens
  */
 public class BeanstreamUrls {
-    public static final String BaseUrl = "https://{p}.beanstream.com/api";
-    public static final String BasePaymentsUrl = BaseUrl + "/{v}/payments";
-    public static final String BaseProfilesUrl = BaseUrl + "/{v}/profiles";
-    public static final String PreAuthCompletionsUrl = BasePaymentsUrl + "/{id}/completions";
-    public static final String ReturnsUrl = BasePaymentsUrl + "/{id}/returns";
-    public static final String VoidsUrl =  BasePaymentsUrl + "/{id}/void";
-    public static final String ContinuationsUrl = BasePaymentsUrl + "/{md}/continue";
+    public static final String BaseUrl = "https://{0}.beanstream.com/api";
+    public static final String BasePaymentsUrl = BaseUrl + "/{1}/payments";
+    public static final String BaseProfilesUrl = BaseUrl + "/{1}/profiles";
+    public static final String PreAuthCompletionsUrl = BasePaymentsUrl + "/{2}/completions";
+    public static final String ReturnsUrl = BasePaymentsUrl + "/{2}/returns";
+    public static final String VoidsUrl =  BasePaymentsUrl + "/{2}/void";
+    public static final String ContinuationsUrl = BasePaymentsUrl + "/{2}/continue";
     public static final String ProfileUri = "/{id}";
     public static final String CardsUri = ProfileUri+"/cards";
 }

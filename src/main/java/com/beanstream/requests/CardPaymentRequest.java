@@ -31,5 +31,17 @@ import com.beanstream.domain.Card;
 public class CardPaymentRequest extends PaymentRequest {
     
     public String payment_method = "card";
-    public Card card;
+    private Card card;
+
+    public Card getCard() {
+        if (card == null)
+            card = new Card();
+        return card;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
+    }
+    
+    
 }

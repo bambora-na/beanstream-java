@@ -27,14 +27,80 @@ package com.beanstream.requests;
  * @author bowens
  */
 public abstract class PaymentRequest {
-    public String merchant_id;
-    public String order_number;
-    public String amount;
-    public String language;
-    public String customer_ip;
-    public String term_url;
-    public String comments;
+    private String merchant_id;
+    private String order_number;
+    private String amount;
+    private String language;
+    private String customer_ip;
+    private String term_url;
+    private String comments;
+
     //public BillingAddress billing;
     //public ShippingAddress shipping;
     //public Custom custom;
+    
+    public String getMerchant_id() {
+        return merchant_id;
+    }
+
+    public PaymentRequest setMerchant_id(String merchant_id) {
+        this.merchant_id = merchant_id;
+        return this;
+    }
+
+    public String getOrder_number() {
+        return order_number;
+    }
+
+    public PaymentRequest setOrder_number(String order_number) {
+        this.order_number = order_number;
+        return this;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public PaymentRequest setAmount(String amount) {
+        this.amount = amount;
+        return this;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public PaymentRequest setLanguage(String language) {
+        this.language = language;
+        return this;
+    }
+
+    public String getCustomer_ip() {
+        return customer_ip;
+    }
+
+    public PaymentRequest setCustomer_ip(String customer_ip) {
+        this.customer_ip = customer_ip;
+        return this;
+    }
+
+    public String getTerm_url() {
+        return term_url;
+    }
+
+    public PaymentRequest setTerm_url(String term_url) {
+        this.term_url = term_url;
+        return this;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public PaymentRequest setComments(String comments) {
+        this.comments = comments;
+        return this;
+    }
+    
+    
 }

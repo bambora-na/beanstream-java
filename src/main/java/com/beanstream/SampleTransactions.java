@@ -6,6 +6,7 @@ import com.beanstream.connection.HttpsConnector;
 import com.beanstream.domain.Card;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
+import com.beanstream.responses.PaymentResponse;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -41,34 +42,33 @@ import java.util.logging.Logger;
  */
 public class SampleTransactions {
     
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         SampleTransactions t = new SampleTransactions();
         t.httpConnector();
-    }*/
+    }
     
-    /*private void httpConnector() {
-        HttpsConnector connector = new HttpsConnector("300200578", "4BaD82D9197b4cc4b70a221911eE9f70");
-        try {
-            URL url = new URL("https://www.beanstream.com/api/v1/payments");
-            CardPaymentRequest req = new CardPaymentRequest();
-            req.amount = "100.00";
-            req.merchant_id = "300200578";
-            req.order_number = "1";
-            req.card = new Card();
-                req.card.name = "John Doe";
-                req.card.number = "5100000010001004";
-                req.card.expiry_month = "12";
-                req.card.expiry_year = "18";
-                req.card.cvd = "123";
-            
-            
-            
-            
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BeanstreamApiException ex) {
-            Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private void httpConnector() {
         
-    }*/
+            
+        CardPaymentRequest req = new CardPaymentRequest();
+        req.setAmount( "100.00" )
+        .setMerchant_id( "300200578" )
+        .setOrder_number( "402" );
+        req.getCard().setName( "John Doe" )
+            .setNumber( "5100000010001004" )
+            .setExpiry_month( "12" )
+            .setExpiry_year( "18" )
+            .setCvd( "123" );
+
+
+        Beanstream beanstream = new Beanstream(new Configuration(300200578, "4BaD82D9197b4cc4b70a221911eE9f70"));
+        
+        try {
+            PaymentResponse response = beanstream.payments().makePayment(req);
+            System.out.println("Aproved? "+response.isApproved());
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "An error occurred", ex);
+        }
+            
+    }
 }

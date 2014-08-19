@@ -27,7 +27,20 @@ package com.beanstream.exceptions;
  * @author bowens
  */
 public class BeanstreamApiException extends Exception {
-    public BeanstreamApiException(Exception e) {
+    private final String responseMessage;
+    
+    public BeanstreamApiException(int status, String responseMessage) {
+        super("Status code: "+status);
+        this.responseMessage = responseMessage;
+    }
+    
+    public BeanstreamApiException(Exception e, String responseMessage) {
         super(e);
+        this.responseMessage = responseMessage;
+    }
+    
+    @Override
+    public String getMessage() {
+        return super.getMessage()+"\n"+responseMessage;
     }
 }
