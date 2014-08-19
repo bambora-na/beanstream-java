@@ -23,7 +23,8 @@
 package com.beanstream.domain;
 
 /**
- *
+ * Represents a Credit Card.
+ * 
  * @author bowens
  */
 public class Card {

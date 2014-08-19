@@ -27,15 +27,8 @@ import com.beanstream.exceptions.BeanstreamApiException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
@@ -45,11 +38,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -136,8 +127,7 @@ public class HttpsConnector {
         http.addHeader("Authorization", "Passcode "+auth);
 
         String responseBody = httpclient.execute(http, responseHandler);
-        System.out.println("----------------------------------------");
-        System.out.println(responseBody);
+        
         return responseBody;
     }
     
@@ -160,13 +150,15 @@ public class HttpsConnector {
         return null;
     }
     
+    /**
+     * Provide a detailed error message when connecting to the Beanstream API fails.
+     */
     private BeanstreamApiException handleException(Exception ex, HttpsURLConnection connection) {
         String message = "";
         if (connection != null) {
             try {
                 int responseCode = connection.getResponseCode();
-                System.out.println(responseCode+" "+connection.getContent().toString() );
-                //message = connection.
+                message = responseCode+" "+connection.getContent().toString();
             } catch (IOException ex1) {
                 Logger.getLogger(HttpsConnector.class.getName()).log(Level.SEVERE, "Error getting response code", ex1);
             }
@@ -176,6 +168,11 @@ public class HttpsConnector {
         return new BeanstreamApiException(ex, message);
     }
     
+    /**
+     * TODO This will have to parse the status codes into specific Beanstream exceptions.
+     * Each exception will have a code and an ID that can help distinguish if the error
+     * is card-holder facing (ie. Insufficient Funds) or programmer-facing (wrong API key).
+     */
     private BeanstreamApiException handleException(int status, String message) {
         
         return new BeanstreamApiException(status, message);

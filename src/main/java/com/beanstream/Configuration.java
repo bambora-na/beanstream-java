@@ -23,7 +23,9 @@
 package com.beanstream;
 
 /**
- *
+ * Holds the configuration for connecting to the REST API. It holds the API version,
+ * the merchant ID, and the API keys.
+ * 
  * @author bowens
  */
 public class Configuration {

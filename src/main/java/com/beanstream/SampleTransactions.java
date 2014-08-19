@@ -44,16 +44,16 @@ public class SampleTransactions {
     
     public static void main(String[] args) {
         SampleTransactions t = new SampleTransactions();
-        t.httpConnector();
+        t.testPayment();
     }
     
-    private void httpConnector() {
+    private void testPayment() {
         
             
         CardPaymentRequest req = new CardPaymentRequest();
-        req.setAmount( "100.00" )
-        .setMerchant_id( "300200578" )
-        .setOrder_number( "402" );
+        req.setAmount( "100.00" );
+        req.setMerchant_id( "300200578" );
+        req.setOrder_number( "402" );
         req.getCard().setName( "John Doe" )
             .setNumber( "5100000010001004" )
             .setExpiry_month( "12" )
@@ -61,11 +61,13 @@ public class SampleTransactions {
             .setCvd( "123" );
 
 
-        Beanstream beanstream = new Beanstream(new Configuration(300200578, "4BaD82D9197b4cc4b70a221911eE9f70"));
+        Gateway beanstream = new Gateway("v1", 300200578, "4BaD82D9197b4cc4b70a221911eE9f70");
         
         try {
+            
             PaymentResponse response = beanstream.payments().makePayment(req);
             System.out.println("Aproved? "+response.isApproved());
+            
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "An error occurred", ex);
         }

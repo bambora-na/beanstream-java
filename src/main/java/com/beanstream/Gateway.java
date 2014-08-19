@@ -26,20 +26,20 @@ import com.beanstream.api.PaymentsAPI;
  */
 
 /**
- *
+ * The main entry point to process payments, create payment profiles, and run
+ * reports on payments.
+ * 
  * @author bowens
  */
-public class Beanstream {
+public class Gateway {
     
     private Configuration config;
 
-    public Beanstream() {
+    public Gateway(String version, int merchantId, String apiKey) {
+        config = new Configuration(merchantId, apiKey);
+        config.setVersion(version);
     }
-
-    public Beanstream(Configuration config) {
-        this.config = config;
-    }
-
+    
     public Configuration getConfiguration() {
         return config;
     }

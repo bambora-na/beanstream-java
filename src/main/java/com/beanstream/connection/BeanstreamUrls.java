@@ -23,7 +23,8 @@
 package com.beanstream.connection;
 
 /**
- *
+ * Common URLs to connect to the Beanstream servers and API services.
+ * 
  * @author bowens
  */
 public class BeanstreamUrls {
