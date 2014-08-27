@@ -1,4 +1,4 @@
-beanstream-java
+Beanstream Java SDK
 ===============
 
 Integration with Beanstream’s payments gateway is a simple, flexible solution.
@@ -9,7 +9,7 @@ In addition to credit card transactions, Canadian merchants can process INTERAC 
 
 For very detailed information on the Payments API, look at the Beanstream developer portal's [documentation](http://developer.beanstream.com/documentation/take-payments/purchases-pre-authorizations/).
 
-# Project Install
+# Setup
 Once you have cloned the repository you will need to load the project in your favourite IDE (NetBeans, Eclipse, etc.)
 
 The project uses [Gradle](http://www.gradle.org/) to build the project. If you are using Netbeans it is very easy to install the Gradle plugin. Just navigate to Tools->Plugins, click on the Available Plugins tab and locate the 'Gradle Support' plugin. Click the Install button.
