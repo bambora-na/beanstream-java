@@ -45,7 +45,7 @@ public class SampleTransactions {
     
     public static void main(String[] args) {
         SampleTransactions t = new SampleTransactions();
-        //t.testPayment();
+        t.testPayment();
         t.testVoidPayment();
     }
     

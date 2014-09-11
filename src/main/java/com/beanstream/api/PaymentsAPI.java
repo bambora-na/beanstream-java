@@ -77,10 +77,10 @@ public class PaymentsAPI {
 	 * Void the specified paymentId. Voids generally need to occur before end of
 	 * business on the same day that the transaction was processed. Voids are
 	 * used to cancel a transaction before the item is registered against a
-	 * customer credit card account. Cardholders will never see a voided
+	 * customer credit card account. Card holders will never see a voided
 	 * transaction on their credit card statement. As a result, voids can only
 	 * be attempted on the same day as the original transaction. After the end
-	 * of day (roughly 11:59 pm EST/EDT), void requests will be rejected from
+	 * of day (roughly 11:59 PM EST/EDT), void requests will be rejected from
 	 * the API if attempted.
 	 * 
 	 * @author Pedro Garcia
@@ -89,7 +89,7 @@ public class PaymentsAPI {
 	 * @param amount
 	 *            the amount to avoid in this transaction
 	 * @return PaymentResponse as result you will received a payment response
-	 *         with the same payment transaction id but with the new status
+	 *         with the same payment transaction id but with the type 'VP'
 	 * @throws BeanstreamApiException
 	 *             as a result of a business logic validation or any other error @see
 	 */
