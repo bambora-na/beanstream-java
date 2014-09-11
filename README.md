@@ -49,7 +49,7 @@ try {
 
 
 # Void a Payment
-To void a payment you will need a valid paymentId and the amount, and a Beanstream API (you can use the same Beanstream API instance for multiples requests of different operations like (makePayment, voidPayment,...))
+To void a payment you will need a valid paymentId and the amount, and a Beanstream API (you can use the same Beanstream API instance for multiples requests even for different operations like (makePayment, voidPayment,...))
 
 
 As with makePayment using your configured Beanstream API instance (Gateway object instance) call the voidPayment method of the PaymentAPI.
