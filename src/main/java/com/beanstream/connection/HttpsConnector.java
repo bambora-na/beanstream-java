@@ -57,10 +57,9 @@ public class HttpsConnector {
         this.apiPasscode = apiPasscode;
     }
     
-    
+    // this should be refactored to to use java naming conventions (start lowerCase for methods and properties, and Capital for class, Enum, Contructors etc.)
     public String ProcessTransaction(HttpMethod httpMethod, String url, Object data) throws BeanstreamApiException {
-        
-        
+            
         try {
             
             Gson gson = new Gson();

@@ -22,6 +22,8 @@
  */
 package com.beanstream.api;
 
+import java.text.MessageFormat;
+
 import com.beanstream.Configuration;
 import com.beanstream.connection.BeanstreamUrls;
 import com.beanstream.connection.HttpMethod;
@@ -30,7 +32,7 @@ import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.responses.PaymentResponse;
 import com.google.gson.Gson;
-import java.text.MessageFormat;
+import com.google.gson.JsonObject;
 
 /**
  * The entry point for processing payments.
@@ -38,32 +40,90 @@ import java.text.MessageFormat;
  * @author bowens
  */
 public class PaymentsAPI {
-    
-    private Configuration config;
-    
-    public PaymentsAPI(Configuration config) {
-        this.config = config;
-    }
 
-    public void setConfig(Configuration config) {
-        this.config = config;
-    }
+	private Configuration config;
+	private Gson gson = new Gson();
 
-    
-    public PaymentResponse makePayment(CardPaymentRequest paymentRequest) throws BeanstreamApiException {
-        paymentRequest.setMerchant_id( ""+config.getMerchantId() );
-        paymentRequest.getCard().setComplete( true ); // false for pre-auth
-        
-        HttpsConnector connector = new HttpsConnector(config.getMerchantId(), config.getApiPasscode());
-        
-        // build the URL
-        String url = MessageFormat.format(BeanstreamUrls.BasePaymentsUrl, config.getPlatform(), config.getVersion());
-        
-        // process the transaction using the REST API
-        String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
-        
-        // parse the output and return a PaymentResponse
-        Gson gson = new Gson();
-        return gson.fromJson(response, PaymentResponse.class);
-    }
+	public PaymentsAPI(Configuration config) {
+		this.config = config;
+	}
+
+	public void setConfig(Configuration config) {
+		this.config = config;
+	}
+
+	public PaymentResponse makePayment(CardPaymentRequest paymentRequest)
+			throws BeanstreamApiException {
+		paymentRequest.setMerchant_id("" + config.getMerchantId());
+		paymentRequest.getCard().setComplete(true); // false for pre-auth
+
+		HttpsConnector connector = new HttpsConnector(config.getMerchantId(),
+				config.getApiPasscode());
+
+		// build the URL
+		String url = MessageFormat.format(BeanstreamUrls.BasePaymentsUrl,
+				config.getPlatform(), config.getVersion());
+
+		// process the transaction using the REST API
+		String response = connector.ProcessTransaction(HttpMethod.post, url,
+				paymentRequest);
+
+		// parse the output and return a PaymentResponse
+		Gson gson = new Gson();
+		return gson.fromJson(response, PaymentResponse.class);
+	}
+
+	/**
+	 * Void the specified paymentId. Voids generally need to occur before end of
+	 * business on the same day that the transaction was processed. Voids are
+	 * used to cancel a transaction before the item is registered against a
+	 * customer credit card account. Cardholders will never see a voided
+	 * transaction on their credit card statement. As a result, voids can only
+	 * be attempted on the same day as the original transaction. After the end
+	 * of day (roughly 11:59 pm EST/EDT), void requests will be rejected from
+	 * the API if attempted.
+	 * 
+	 * @author Pedro Garcia
+	 * @param paymentId
+	 *            payment transaction id to void
+	 * @param amount
+	 *            the amount to avoid in this transaction
+	 * @return PaymentResponse as result you will received a payment response
+	 *         with the same payment transaction id but with the new status
+	 * @throws BeanstreamApiException
+	 *             as a result of a business logic validation or any other error @see
+	 */
+	public PaymentResponse voidPayment(String paymentId, double amount)
+			throws BeanstreamApiException {
+
+		// this should be injected to avoid creating one instance every single
+		// request
+		HttpsConnector connector = new HttpsConnector(config.getMerchantId(),
+				config.getApiPasscode());
+
+		assertNotEmpty(paymentId, "invalid paymentId");
+		String url = MessageFormat.format(BeanstreamUrls.VoidsUrl,
+				config.getPlatform(), config.getVersion(), paymentId);
+
+		JsonObject voidRequest = new JsonObject();
+		voidRequest.addProperty("merchant_id",
+				String.valueOf(config.getMerchantId()));
+		voidRequest.addProperty("amount", String.valueOf(amount));
+
+		String response = connector.ProcessTransaction(HttpMethod.post, url,
+				voidRequest);
+
+		// parse the output and return a PaymentResponse
+		return gson.fromJson(response, PaymentResponse.class);
+
+	}
+
+	private void assertNotEmpty(String value, String errorMessage)
+			throws BeanstreamApiException {
+		// could use StringUtils.assertNotNull();
+		if (value == null || value.toString().trim().isEmpty()) {
+			// throw a bad request
+			throw new BeanstreamApiException(400, errorMessage);
+		}
+	}
 }
