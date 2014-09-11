@@ -45,7 +45,8 @@ public class PaymentAPITest {
 	@Test()
 	public void voidPayment() throws BeanstreamApiException {
 
-		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(getRandomOrderId("PEDRO"),"300200578","90.00");
+		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
+				getRandomOrderId("PEDRO"), "300200578", "90.00");
 
 		PaymentResponse response = beanstream.payments().makePayment(
 				paymentRequest);
@@ -58,7 +59,8 @@ public class PaymentAPITest {
 		}
 	}
 
-	private CardPaymentRequest getCreditCardPaymentRequest(String orderId, String merchantId, String amount) {
+	private CardPaymentRequest getCreditCardPaymentRequest(String orderId,
+			String merchantId, String amount) {
 		CardPaymentRequest paymentRequest = new CardPaymentRequest();
 		paymentRequest.setAmount(amount);
 		paymentRequest.setMerchant_id(merchantId);
@@ -73,19 +75,25 @@ public class PaymentAPITest {
 	public void invalidPaymentIdVoidPayment() throws BeanstreamApiException {
 		beanstream.payments().voidPayment("-1", 90.00d);
 	}
-	
+
 	@Test(expected = BeanstreamApiException.class)
 	public void emptyPaymentIdVoidPayment() throws BeanstreamApiException {
 		beanstream.payments().voidPayment("", 90.00d);
 	}
-	
+
 	@Test(expected = BeanstreamApiException.class)
 	public void invalidAmountVoidPayment() throws BeanstreamApiException {
-		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(getRandomOrderId("PEDRO"),"300200578","90.00");
+		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
+				getRandomOrderId("PEDRO"), "300200578", "90.00");
+
+		PaymentResponse response = null;
+		try {
+			response = beanstream.payments().makePayment(paymentRequest);
+		} catch (BeanstreamApiException ex) {
+			// not testing makePayment operation, so ignore
+		}
 		
-		PaymentResponse response = beanstream.payments().makePayment(
-				paymentRequest);
-		if (response.isApproved()) {
+		if (response != null && response.isApproved()) {
 			response = beanstream.payments().voidPayment(response.id, 0.00);
 			Assert.fail("invalid transaction amount expected (BeanstreamApiException)");
 		} else {
