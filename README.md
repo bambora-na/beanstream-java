@@ -61,8 +61,8 @@ double amount = ....;
 try {
 	
 	PaymentResponse response = beanstream.payments().voidPayment(paymentId, amount);
-	// void payment success, your response contains the payment transaction but witht he type 'VP' //void payment
+	// void payment success, your response contains the payment transaction but witht he type 'VP'
 } catch (BeanstreamApiException ex) {
-	// handle exception here
+	// void payment request failed, handle exception here
 }	
 ```
