@@ -32,23 +32,31 @@ import com.beanstream.api.PaymentsAPI;
  * @author bowens
  */
 public class Gateway {
-    
-    private Configuration config;
 
-    public Gateway(String version, int merchantId, String apiKey) {
-        config = new Configuration(merchantId, apiKey);
-        config.setVersion(version);
-    }
-    
-    public Configuration getConfiguration() {
-        return config;
-    }
+	private Configuration config;
+	private PaymentsAPI paymentsApi;
 
-    public void setConfiguration(Configuration config) {
-        this.config = config;
-    }
-    
-    public PaymentsAPI payments() {
-        return new PaymentsAPI(config);
-    }
+	public Gateway(String version, int merchantId, String apiKey) {
+		config = new Configuration(merchantId, apiKey);
+		config.setVersion(version);
+	}
+
+	public Configuration getConfiguration() {
+		return config;
+	}
+
+	public void setConfiguration(Configuration config) {
+		this.config = config;
+	}
+
+	public PaymentsAPI payments() {
+		return getPaymentApi();
+	}
+
+	private PaymentsAPI getPaymentApi() {
+		if (paymentsApi == null) {
+			paymentsApi = new PaymentsAPI(config);
+		}
+		return paymentsApi;
+	}
 }

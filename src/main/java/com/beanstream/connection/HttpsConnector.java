@@ -23,15 +23,19 @@
 
 package com.beanstream.connection;
 
+import com.beanstream.Configuration;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.net.ssl.HttpsURLConnection;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -52,6 +56,11 @@ public class HttpsConnector {
     private final int merchantId;
     private final String apiPasscode;
 
+    public HttpsConnector(Configuration config) {
+        this.merchantId = config.getMerchantId();
+        this.apiPasscode = config.getApiPasscode();
+    }
+    
     public HttpsConnector(int merchantId, String apiPasscode) {
         this.merchantId = merchantId;
         this.apiPasscode = apiPasscode;
@@ -130,6 +139,7 @@ public class HttpsConnector {
         return responseBody;
     }
     
+  
     private HttpRequest getHttp(HttpMethod httpMethod, StringEntity entity) {
         if (HttpMethod.post.equals(httpMethod) ) {
             HttpPost http = new HttpPost();

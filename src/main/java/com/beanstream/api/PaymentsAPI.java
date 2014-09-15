@@ -42,14 +42,17 @@ import com.google.gson.JsonObject;
 public class PaymentsAPI {
 
 	private Configuration config;
+	private HttpsConnector connector;
 	private Gson gson = new Gson();
 
 	public PaymentsAPI(Configuration config) {
 		this.config = config;
+		connector = new HttpsConnector(config);
 	}
 
 	public void setConfig(Configuration config) {
 		this.config = config;
+		connector = new HttpsConnector(config);
 	}
 
 	public PaymentResponse makePayment(CardPaymentRequest paymentRequest)
@@ -57,8 +60,8 @@ public class PaymentsAPI {
 		paymentRequest.setMerchant_id("" + config.getMerchantId());
 		paymentRequest.getCard().setComplete(true); // false for pre-auth
 
-		HttpsConnector connector = new HttpsConnector(config.getMerchantId(),
-				config.getApiPasscode());
+//		HttpsConnector connector = new HttpsConnector(config.getMerchantId(),
+//				config.getApiPasscode());
 
 		// build the URL
 		String url = MessageFormat.format(BeanstreamUrls.BasePaymentsUrl,
@@ -69,7 +72,7 @@ public class PaymentsAPI {
 				paymentRequest);
 
 		// parse the output and return a PaymentResponse
-		Gson gson = new Gson();
+		//Gson gson = new Gson();
 		return gson.fromJson(response, PaymentResponse.class);
 	}
 
@@ -95,11 +98,6 @@ public class PaymentsAPI {
 	 */
 	public PaymentResponse voidPayment(String paymentId, double amount)
 			throws BeanstreamApiException {
-
-		// this should be injected to avoid creating one instance every single
-		// request
-		HttpsConnector connector = new HttpsConnector(config.getMerchantId(),
-				config.getApiPasscode());
 
 		assertNotEmpty(paymentId, "invalid paymentId");
 		String url = MessageFormat.format(BeanstreamUrls.VoidsUrl,
