@@ -59,4 +59,8 @@ public class Gateway {
 		}
 		return paymentsApi;
 	}
+    
+    public void setPaymentsApi(PaymentsAPI api) {
+        this.paymentsApi = api;
+    }
 }

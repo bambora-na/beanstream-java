@@ -43,4 +43,9 @@ public class BeanstreamApiException extends Exception {
     public String getMessage() {
         return super.getMessage()+"\n"+responseMessage;
     }
+
+	public String getResponseMessage() {
+		return responseMessage;
+	}
+    
 }

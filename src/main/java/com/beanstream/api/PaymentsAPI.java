@@ -34,6 +34,8 @@ import com.beanstream.responses.PaymentResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import static com.beanstream.connection.BeanstreamUrls.*;
+
 /**
  * The entry point for processing payments.
  * 
@@ -41,27 +43,27 @@ import com.google.gson.JsonObject;
  */
 public class PaymentsAPI {
 
+	private static final String ORDER_NUMBER_PARAM = "order_number";
+	private static final String AMOUNT_PARAM = "amount";
+	private static final String MERCHANT_ID_PARAM = "merchant_id";
 	private Configuration config;
 	private HttpsConnector connector;
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
 
 	public PaymentsAPI(Configuration config) {
 		this.config = config;
-		connector = new HttpsConnector(config);
+		connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
 	}
 
 	public void setConfig(Configuration config) {
 		this.config = config;
-		connector = new HttpsConnector(config);
+		connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
 	}
-
+    
 	public PaymentResponse makePayment(CardPaymentRequest paymentRequest)
 			throws BeanstreamApiException {
 		paymentRequest.setMerchant_id("" + config.getMerchantId());
 		paymentRequest.getCard().setComplete(true); // false for pre-auth
-
-//		HttpsConnector connector = new HttpsConnector(config.getMerchantId(),
-//				config.getApiPasscode());
 
 		// build the URL
 		String url = MessageFormat.format(BeanstreamUrls.BasePaymentsUrl,
@@ -72,7 +74,6 @@ public class PaymentsAPI {
 				paymentRequest);
 
 		// parse the output and return a PaymentResponse
-		//Gson gson = new Gson();
 		return gson.fromJson(response, PaymentResponse.class);
 	}
 
@@ -100,13 +101,13 @@ public class PaymentsAPI {
 			throws BeanstreamApiException {
 
 		assertNotEmpty(paymentId, "invalid paymentId");
-		String url = MessageFormat.format(BeanstreamUrls.VoidsUrl,
-				config.getPlatform(), config.getVersion(), paymentId);
+		String url = getVoidPaymentUrl(config.getPlatform(),
+				config.getVersion(), paymentId);
 
 		JsonObject voidRequest = new JsonObject();
-		voidRequest.addProperty("merchant_id",
+		voidRequest.addProperty(MERCHANT_ID_PARAM,
 				String.valueOf(config.getMerchantId()));
-		voidRequest.addProperty("amount", String.valueOf(amount));
+		voidRequest.addProperty(AMOUNT_PARAM, String.valueOf(amount));
 
 		String response = connector.ProcessTransaction(HttpMethod.post, url,
 				voidRequest);
@@ -116,10 +117,50 @@ public class PaymentsAPI {
 
 	}
 
+	public PaymentResponse preAuth(CardPaymentRequest paymentRequest)
+			throws BeanstreamApiException {
+
+		if (paymentRequest == null || paymentRequest.getCard() == null) {
+			throw new BeanstreamApiException(400, "invalid payment request");
+		}
+
+		paymentRequest.getCard().setComplete(false);
+
+		String preAuthUrl = getPaymentUrl(config.getPlatform(),
+				config.getVersion());
+
+		String response = connector.ProcessTransaction(HttpMethod.post,
+				preAuthUrl, paymentRequest);
+		return gson.fromJson(response, PaymentResponse.class);
+	}
+
+
+	public PaymentResponse preAuthCompletion(String paymentId, double amount,
+			String orderNumber) throws BeanstreamApiException {
+
+		assertNotEmpty(paymentId, "Invalid Payment Id");
+
+		String authorizePaymentUrl = getPreAuthCompletionsUrl(
+				config.getPlatform(), config.getVersion(), paymentId);
+
+		JsonObject authorizeRequest = new JsonObject();
+		authorizeRequest.addProperty(MERCHANT_ID_PARAM,
+				String.valueOf(config.getMerchantId()));
+		authorizeRequest.addProperty(AMOUNT_PARAM, String.valueOf(amount));
+		if (orderNumber != null) {
+			authorizeRequest.addProperty(ORDER_NUMBER_PARAM, orderNumber);
+		}
+		String response = connector.ProcessTransaction(HttpMethod.post,
+				authorizePaymentUrl, authorizeRequest);
+
+		return gson.fromJson(response, PaymentResponse.class);
+
+	}
+
 	private void assertNotEmpty(String value, String errorMessage)
 			throws BeanstreamApiException {
 		// could use StringUtils.assertNotNull();
-		if (value == null || value.toString().trim().isEmpty()) {
+		if (value == null || value.trim().isEmpty()) {
 			// throw a bad request
 			throw new BeanstreamApiException(400, errorMessage);
 		}

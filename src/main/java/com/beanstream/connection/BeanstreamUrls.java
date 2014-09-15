@@ -22,19 +22,40 @@
  */
 package com.beanstream.connection;
 
+import java.text.MessageFormat;
+
 /**
  * Common URLs to connect to the Beanstream servers and API services.
  * 
  * @author bowens
  */
 public class BeanstreamUrls {
-    public static final String BaseUrl = "https://{0}.beanstream.com/api";
-    public static final String BasePaymentsUrl = BaseUrl + "/{1}/payments";
-    public static final String BaseProfilesUrl = BaseUrl + "/{1}/profiles";
-    public static final String PreAuthCompletionsUrl = BasePaymentsUrl + "/{2}/completions";
-    public static final String ReturnsUrl = BasePaymentsUrl + "/{2}/returns";
-    public static final String VoidsUrl =  BasePaymentsUrl + "/{2}/void";
-    public static final String ContinuationsUrl = BasePaymentsUrl + "/{2}/continue";
-    public static final String ProfileUri = "/{id}";
-    public static final String CardsUri = ProfileUri+"/cards";
+	public static final String BaseUrl = "https://{0}.beanstream.com/api";
+	public static final String BasePaymentsUrl = BaseUrl + "/{1}/payments";
+	public static final String BaseProfilesUrl = BaseUrl + "/{1}/profiles";
+	public static final String PreAuthCompletionsUrl = BasePaymentsUrl
+			+ "/{2}/completions";
+	public static final String ReturnsUrl = BasePaymentsUrl + "/{2}/returns";
+	public static final String VoidsUrl = BasePaymentsUrl + "/{2}/void";
+	public static final String ContinuationsUrl = BasePaymentsUrl
+			+ "/{2}/continue";
+	public static final String ProfileUri = "/{id}";
+	public static final String CardsUri = ProfileUri + "/cards";
+
+	public static String getPaymentUrl(String platform, String version) {
+		return MessageFormat.format(BeanstreamUrls.BasePaymentsUrl, platform,
+				version);
+	}
+
+	public static String getPreAuthCompletionsUrl(String platform,
+			String version, String paymentId) {
+		return MessageFormat.format(PreAuthCompletionsUrl, platform, version,
+				paymentId);
+	}
+
+	public static String getVoidPaymentUrl(String platform, String version,
+			String paymentId) {
+		return MessageFormat.format(BeanstreamUrls.VoidsUrl, platform, version,
+				paymentId);
+	}
 }

@@ -30,17 +30,18 @@ package com.beanstream;
  */
 public class Configuration {
     private int merchantId;
-    private String apiPasscode;
-    private String profilesPasscode;
+    private String paymentsApiPasscode;
+    private String profilesApiPasscode;
+    private String reportingApiPasscode;
     private String version = "v1";
     private String platform = "www";
 
     public Configuration() {
     }
 
-    public Configuration(int merchantId, String apiPasscode) {
+    public Configuration(int merchantId, String paymentsApiPasscode) {
         this.merchantId = merchantId;
-        this.apiPasscode = apiPasscode;
+        this.paymentsApiPasscode = paymentsApiPasscode;
     }
 
     public int getMerchantId() {
@@ -52,21 +53,30 @@ public class Configuration {
         return this;
     }
 
-    public String getApiPasscode() {
-        return apiPasscode;
+    public String getPaymentsApiPasscode() {
+        return paymentsApiPasscode;
     }
 
-    public Configuration setApiPasscode(String apiPasscode) {
-        this.apiPasscode = apiPasscode;
+    public Configuration setPaymentsApiPasscode(String paymentsApiPasscode) {
+        this.paymentsApiPasscode = paymentsApiPasscode;
         return this;
     }
 
-    public String getProfilesPasscode() {
-        return profilesPasscode;
+    public String getProfilesApiPasscode() {
+        return profilesApiPasscode;
     }
 
-    public Configuration setProfilesPasscode(String profilesPasscode) {
-        this.profilesPasscode = profilesPasscode;
+    public Configuration setProfilesApiPasscode(String profilesApiPasscode) {
+        this.profilesApiPasscode = profilesApiPasscode;
+        return this;
+    }
+
+    public String getReportingApiPasscode() {
+        return reportingApiPasscode;
+    }
+
+    public Configuration setReportingApiPasscode(String reportingApiPasscode) {
+        this.reportingApiPasscode = reportingApiPasscode;
         return this;
     }
 

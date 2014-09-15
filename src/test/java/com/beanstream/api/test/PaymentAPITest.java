@@ -19,6 +19,39 @@ public class PaymentAPITest {
 	Gateway beanstream = new Gateway("v1", 300200578,
 			"4BaD82D9197b4cc4b70a221911eE9f70");
 
+	@Test
+	public void preAuth() throws BeanstreamApiException {
+		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
+				getRandomOrderId("GAS"), "300200578", "120.00");
+		PaymentResponse response = beanstream.payments()
+				.preAuth(paymentRequest);
+
+		if (response.isApproved()) {
+			PaymentResponse authResp = beanstream.payments().preAuthCompletion(
+					response.id, 43.50, null);
+			if (!authResp.isApproved()) {
+				Assert.fail("This auth completion should be approved because a greater amount has been pre authorized");
+			}
+		}
+	}
+
+	@Test(expected=BeanstreamApiException.class)
+	public void preAuthCompletionGreaterAmount() throws BeanstreamApiException {
+		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
+				getRandomOrderId("GAS"), "300200578", "120.00");
+		PaymentResponse response = beanstream.payments()
+				.preAuth(paymentRequest);
+
+		if (response.isApproved()) {
+			PaymentResponse authResp = beanstream.payments().preAuthCompletion(
+					response.id, 200, response.order_number);
+			if (authResp.isApproved()) {
+				Assert.fail("This auth completion should be not be approvord because a lower amount has been pre authorized");
+			}
+
+		}
+	}
+
 	@Test()
 	public void voidPayment() throws BeanstreamApiException {
 
