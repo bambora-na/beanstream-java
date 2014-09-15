@@ -55,11 +55,6 @@ public class HttpsConnector {
     
     private final int merchantId;
     private final String apiPasscode;
-
-    public HttpsConnector(Configuration config) {
-        this.merchantId = config.getMerchantId();
-        this.apiPasscode = config.getApiPasscode();
-    }
     
     public HttpsConnector(int merchantId, String apiPasscode) {
         this.merchantId = merchantId;

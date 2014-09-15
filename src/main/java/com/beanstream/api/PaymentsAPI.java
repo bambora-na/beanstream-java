@@ -43,25 +43,22 @@ public class PaymentsAPI {
 
 	private Configuration config;
 	private HttpsConnector connector;
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
 
 	public PaymentsAPI(Configuration config) {
 		this.config = config;
-		connector = new HttpsConnector(config);
+		connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
 	}
 
 	public void setConfig(Configuration config) {
 		this.config = config;
-		connector = new HttpsConnector(config);
+		connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
 	}
-
+    
 	public PaymentResponse makePayment(CardPaymentRequest paymentRequest)
 			throws BeanstreamApiException {
 		paymentRequest.setMerchant_id("" + config.getMerchantId());
 		paymentRequest.getCard().setComplete(true); // false for pre-auth
-
-//		HttpsConnector connector = new HttpsConnector(config.getMerchantId(),
-//				config.getApiPasscode());
 
 		// build the URL
 		String url = MessageFormat.format(BeanstreamUrls.BasePaymentsUrl,
@@ -72,7 +69,6 @@ public class PaymentsAPI {
 				paymentRequest);
 
 		// parse the output and return a PaymentResponse
-		//Gson gson = new Gson();
 		return gson.fromJson(response, PaymentResponse.class);
 	}
 
@@ -119,7 +115,7 @@ public class PaymentsAPI {
 	private void assertNotEmpty(String value, String errorMessage)
 			throws BeanstreamApiException {
 		// could use StringUtils.assertNotNull();
-		if (value == null || value.toString().trim().isEmpty()) {
+		if (value == null || value.trim().isEmpty()) {
 			// throw a bad request
 			throw new BeanstreamApiException(400, errorMessage);
 		}
