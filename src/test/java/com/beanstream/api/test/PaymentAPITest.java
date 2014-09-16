@@ -36,6 +36,7 @@ public class PaymentAPITest {
 		}
 	}
 
+	@Test
 	public void preAuthCompletionGreaterAmount() throws BeanstreamApiException {
 		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
 				getRandomOrderId("GAS"), "300200578", "120.00");
