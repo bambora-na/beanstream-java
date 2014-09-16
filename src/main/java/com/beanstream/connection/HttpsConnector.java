@@ -52,134 +52,158 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 public class HttpsConnector {
-    
-    private final int merchantId;
-    private final String apiPasscode;
-    
-    public HttpsConnector(int merchantId, String apiPasscode) {
-        this.merchantId = merchantId;
-        this.apiPasscode = apiPasscode;
-    }
-    
-    // this should be refactored to to use java naming conventions (start lowerCase for methods and properties, and Capital for class, Enum, Contructors etc.)
-    public String ProcessTransaction(HttpMethod httpMethod, String url, Object data) throws BeanstreamApiException {
-            
-        try {
-            
-            Gson gson = new Gson();
-            String json = data != null ? gson.toJson(data) : null;
-            
-            // this is a temporary println while SDK is in development
-            Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
-            System.out.println(gsonpp.toJson(data) );
-            
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        HttpEntity entity = response.getEntity();
-                        String res = entity != null ? EntityUtils.toString(entity) : null;
-                        throw new ClientProtocolException("Status code: "+status, handleException(status, res) );
-                    }
-                }
+	private final int merchantId;
+	private final String apiPasscode;
 
-            };
-            
-            if (HttpMethod.post.equals(httpMethod) ) {
-                StringEntity entity = new StringEntity(json);
-                HttpPost http = new HttpPost(url);
-                http.setEntity(entity);
-                return process(http, responseHandler);
-                
-            } else if (HttpMethod.put.equals(httpMethod) ) {
-                StringEntity entity = new StringEntity(json);
-                HttpPut http = new HttpPut(url);
-                http.setEntity(entity);
-                return process(http, responseHandler);
-                
-            } else if (HttpMethod.get.equals(httpMethod) ) {
-                return process(new HttpGet(url), responseHandler);
-                
-            } else if (HttpMethod.delete.equals(httpMethod) ) {
-                return process(new HttpDelete(url), responseHandler);
-            }
+	public HttpsConnector(int merchantId, String apiPasscode) {
+		this.merchantId = merchantId;
+		this.apiPasscode = apiPasscode;
+	}
 
-            return null;
-            
-        } catch (UnsupportedEncodingException ex) {
-            throw handleException(ex, null);
-            
-        } catch (IOException ex) {
-            throw handleException(ex, null);
-        } 
-	
-    }
+	// this should be refactored to to use java naming conventions (start
+	// lowerCase for methods and properties, and Capital for class, Enum,
+	// Contructors etc.)
+	public String ProcessTransaction(HttpMethod httpMethod, String url,
+			Object data) throws BeanstreamApiException {
 
-    private String process(HttpUriRequest http, ResponseHandler<String> responseHandler) throws IOException {
-        
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        String auth = Base64.encode( (merchantId+":"+apiPasscode).getBytes() );
-        
-        http.addHeader("Content-Type", "application/json");
-        http.addHeader("Authorization", "Passcode "+auth);
+		try {
 
-        String responseBody = httpclient.execute(http, responseHandler);
-        
-        return responseBody;
-    }
-    
-  
-    private HttpRequest getHttp(HttpMethod httpMethod, StringEntity entity) {
-        if (HttpMethod.post.equals(httpMethod) ) {
-            HttpPost http = new HttpPost();
-            http.setEntity(entity);
-            return http;
-        } else if (HttpMethod.put.equals(httpMethod) ) {
-            HttpPut http = new HttpPut();
-            http.setEntity(entity);
-            return http;
-        } else if (HttpMethod.get.equals(httpMethod) ) {
-            HttpGet http = new HttpGet();
-            return http;
-        } else if (HttpMethod.delete.equals(httpMethod) ) {
-            HttpDelete http = new HttpDelete();
-            return http;
-        }
-        return null;
-    }
-    
-    /**
-     * Provide a detailed error message when connecting to the Beanstream API fails.
-     */
-    private BeanstreamApiException handleException(Exception ex, HttpsURLConnection connection) {
-        String message = "";
-        if (connection != null) {
-            try {
-                int responseCode = connection.getResponseCode();
-                message = responseCode+" "+connection.getContent().toString();
-            } catch (IOException ex1) {
-                Logger.getLogger(HttpsConnector.class.getName()).log(Level.SEVERE, "Error getting response code", ex1);
-            }
-        } else {
-            message = "Connection error";
-        }
-        return new BeanstreamApiException(ex, message);
-    }
-    
-    /**
-     * TODO This will have to parse the status codes into specific Beanstream exceptions.
-     * Each exception will have a code and an ID that can help distinguish if the error
-     * is card-holder facing (ie. Insufficient Funds) or programmer-facing (wrong API key).
-     */
-    private BeanstreamApiException handleException(int status, String message) {
-        
-        return new BeanstreamApiException(status, message);
-    }
-			
+			Gson gson = new Gson();
+			String json = data != null ? gson.toJson(data) : null;
+
+			// this is a temporary println while SDK is in development
+			Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
+			System.out.println(gsonpp.toJson(data));
+
+			ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+				@Override
+				public String handleResponse(final HttpResponse response)
+						throws ClientProtocolException, IOException {
+					int status = response.getStatusLine().getStatusCode();
+					if (status >= 200 && status < 300) {
+						HttpEntity entity = response.getEntity();
+						return entity != null ? EntityUtils.toString(entity)
+								: null;
+					} else {
+						HttpEntity entity = response.getEntity();
+						String res = entity != null ? EntityUtils
+								.toString(entity) : null;
+						throw new ClientProtocolException("Status code: "
+								+ status, handleException(status, res));
+					}
+				}
+
+			};
+
+			if (HttpMethod.post.equals(httpMethod)) {
+				StringEntity entity = new StringEntity(json);
+				HttpPost http = new HttpPost(url);
+				http.setEntity(entity);
+				return process(http, responseHandler);
+
+			} else if (HttpMethod.put.equals(httpMethod)) {
+				StringEntity entity = new StringEntity(json);
+				HttpPut http = new HttpPut(url);
+				http.setEntity(entity);
+				return process(http, responseHandler);
+
+			} else if (HttpMethod.get.equals(httpMethod)) {
+				return process(new HttpGet(url), responseHandler);
+
+			} else if (HttpMethod.delete.equals(httpMethod)) {
+				return process(new HttpDelete(url), responseHandler);
+			}
+
+			return null;
+
+		} catch (UnsupportedEncodingException ex) {
+			throw handleException(ex, null);
+
+		} catch (IOException ex) {
+			throw handleException(ex, null);
+		}
+
+	}
+
+	private String process(HttpUriRequest http,
+			ResponseHandler<String> responseHandler) throws IOException {
+
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		String auth = Base64
+				.encode((merchantId + ":" + apiPasscode).getBytes());
+
+		http.addHeader("Content-Type", "application/json");
+		http.addHeader("Authorization", "Passcode " + auth);
+
+		String responseBody = httpclient.execute(http, responseHandler);
+
+		return responseBody;
+	}
+
+	private HttpRequest getHttp(HttpMethod httpMethod, StringEntity entity) {
+		if (HttpMethod.post.equals(httpMethod)) {
+			HttpPost http = new HttpPost();
+			http.setEntity(entity);
+			return http;
+		} else if (HttpMethod.put.equals(httpMethod)) {
+			HttpPut http = new HttpPut();
+			http.setEntity(entity);
+			return http;
+		} else if (HttpMethod.get.equals(httpMethod)) {
+			HttpGet http = new HttpGet();
+			return http;
+		} else if (HttpMethod.delete.equals(httpMethod)) {
+			HttpDelete http = new HttpDelete();
+			return http;
+		}
+		return null;
+	}
+
+	/**
+	 * Provide a detailed error message when connecting to the Beanstream API
+	 * fails.
+	 */
+	private BeanstreamApiException handleException(Exception ex,
+			HttpsURLConnection connection) {
+		String message = "";
+		BeanstreamApiException response = null;
+		if (connection != null) {
+			try {
+				int responseCode = connection.getResponseCode();
+				message = responseCode + " "
+						+ connection.getContent().toString();
+				response = new BeanstreamApiException(responseCode, connection
+						.getContent().toString());
+			} catch (IOException ex1) {
+				Logger.getLogger(HttpsConnector.class.getName()).log(
+						Level.SEVERE, "Error getting response code", ex1);
+				response = new BeanstreamApiException(ex, 500, message);
+			}
+		} else {
+			if (ex instanceof ClientProtocolException
+					&& ex.getCause() instanceof BeanstreamApiException) {
+				response = (BeanstreamApiException) ex.getCause();
+			} else {
+				message = "Connection error";
+				response = new BeanstreamApiException(ex, 500, message);
+			}
+
+		}
+		return response;
+
+	}
+
+	/**
+	 * TODO This will have to parse the status codes into specific Beanstream
+	 * exceptions. Each exception will have a code and an ID that can help
+	 * distinguish if the error is card-holder facing (ie. Insufficient Funds)
+	 * or programmer-facing (wrong API key).
+	 */
+	private BeanstreamApiException handleException(int status, String message) {
+
+		return new BeanstreamApiException(status, message);
+	}
+
 }

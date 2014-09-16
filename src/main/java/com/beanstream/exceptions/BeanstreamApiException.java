@@ -27,15 +27,22 @@ package com.beanstream.exceptions;
  * @author bowens
  */
 public class BeanstreamApiException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final int httpStatusCode;
     private final String responseMessage;
     
     public BeanstreamApiException(int status, String responseMessage) {
         super("Status code: "+status);
+        this.httpStatusCode = status;
         this.responseMessage = responseMessage;
     }
     
-    public BeanstreamApiException(Exception e, String responseMessage) {
+    public BeanstreamApiException(Exception e,int status, String responseMessage) {
         super(e);
+        this.httpStatusCode = status;
         this.responseMessage = responseMessage;
     }
     
@@ -46,6 +53,10 @@ public class BeanstreamApiException extends Exception {
 
 	public String getResponseMessage() {
 		return responseMessage;
+	}
+
+	public int getHttpStatusCode() {
+		return httpStatusCode;
 	}
     
 }

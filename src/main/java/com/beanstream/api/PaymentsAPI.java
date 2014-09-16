@@ -52,14 +52,16 @@ public class PaymentsAPI {
 
 	public PaymentsAPI(Configuration config) {
 		this.config = config;
-		connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
+		connector = new HttpsConnector(config.getMerchantId(),
+				config.getPaymentsApiPasscode());
 	}
 
 	public void setConfig(Configuration config) {
 		this.config = config;
-		connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
+		connector = new HttpsConnector(config.getMerchantId(),
+				config.getPaymentsApiPasscode());
 	}
-    
+
 	public PaymentResponse makePayment(CardPaymentRequest paymentRequest)
 			throws BeanstreamApiException {
 		paymentRequest.setMerchant_id("" + config.getMerchantId());
@@ -117,6 +119,20 @@ public class PaymentsAPI {
 
 	}
 
+	/**
+	 * <p>
+	 * Pre-authorize a payment. Use this if you want to know if a customer has
+	 * sufficient funds before processing a payment. A real-world example of
+	 * this is pre-authorizing at the gas pump for $100 before you fill up, then
+	 * end up only using $60 of gas; the customer is only charged $60. The final
+	 * payment is used with preAuthCompletion() method.
+	 * </p>
+	 * @param paymentRequest payment request to pre authorize with a valid amount
+	 * @return a PaymentResponse pre-approved containing the paymentId you will
+	 *         need to complete the transaction.
+	 * @throws BeanstreamApiException
+	 *             if any validation fail or error occur
+	 */
 	public PaymentResponse preAuth(CardPaymentRequest paymentRequest)
 			throws BeanstreamApiException {
 
@@ -134,7 +150,14 @@ public class PaymentsAPI {
 		return gson.fromJson(response, PaymentResponse.class);
 	}
 
-
+	/**
+	 * Push the actual payment through after a pre-authorization.
+	 * @param paymentId of the pre-authorized transaction
+	 * @param amount final amount to be charged
+	 * @param orderNumber optional order number of the transaction
+	 * @return the PaymentResponse for the final transaction
+	 * @throws BeanstreamApiException
+	 */
 	public PaymentResponse preAuthCompletion(String paymentId, double amount,
 			String orderNumber) throws BeanstreamApiException {
 

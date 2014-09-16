@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.beanstream.Gateway;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
+import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.responses.PaymentResponse;
 
 public class PaymentAPITest {
@@ -35,8 +36,36 @@ public class PaymentAPITest {
 		}
 	}
 
-	@Test(expected=BeanstreamApiException.class)
 	public void preAuthCompletionGreaterAmount() throws BeanstreamApiException {
+		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
+				getRandomOrderId("GAS"), "300200578", "120.00");
+		PaymentResponse response = beanstream.payments()
+				.preAuth(paymentRequest);
+		try {
+			if (response.isApproved()) {
+				PaymentResponse authResp = beanstream.payments()
+						.preAuthCompletion(response.id, 200,
+								response.order_number);
+				if (authResp.isApproved()) {
+					Assert.fail("This auth completion should be not be approved because a lower amount has been pre authorized");
+				}
+			}
+		} catch (BeanstreamApiException ex) {
+			BeanstreamResponse gatewayResp = new BeanstreamResponse(208, "2",
+					"Completion greater than remaining reserve amount.", null);
+			Assert.assertEquals(
+					"This auth completion should be not be approved because a lower amount has been pre authorized",
+					ex.getHttpStatusCode(), 400);
+			Assert.assertEquals(
+					"This auth completion should be not be approved because a lower amount has been pre authorized",
+					new BeanstreamResponse(ex.getResponseMessage()),
+					gatewayResp);
+		}
+	}
+
+	@Test()
+	public void preAuthCompletionDifferentOrderNumber()
+			throws BeanstreamApiException {
 		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
 				getRandomOrderId("GAS"), "300200578", "120.00");
 		PaymentResponse response = beanstream.payments()
@@ -44,9 +73,9 @@ public class PaymentAPITest {
 
 		if (response.isApproved()) {
 			PaymentResponse authResp = beanstream.payments().preAuthCompletion(
-					response.id, 200, response.order_number);
-			if (authResp.isApproved()) {
-				Assert.fail("This auth completion should be not be approvord because a lower amount has been pre authorized");
+					response.id, 120.00, response.order_number + 1);
+			if (!authResp.isApproved()) {
+				Assert.fail("This auth completion should be not be approved because the order number is diffrent than the pre-authorized one");
 			}
 
 		}
