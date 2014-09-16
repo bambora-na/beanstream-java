@@ -53,6 +53,8 @@ To void a payment you will need a valid paymentId and the amount, and a Beanstre
 
 
 As with makePayment using your configured Beanstream API instance (Gateway object instance) call the voidPayment method of the PaymentAPI.
+if  the voidPayment is success you won't have any exception, if no you need to handle the exception.
+you can get a list of all Beanstream response codes at http://support.beanstream.com/docs/response-message-codes-descriptions.htm.
 
 ```java
 String paymentId = ....;
@@ -64,5 +66,50 @@ try {
 	// void payment success, your response contains the payment transaction but witht he type 'VP'
 } catch (BeanstreamApiException ex) {
 	// void payment request failed, handle exception here
+	if(ex.getHttpStatusCode()==400) { // bad request
+		BeanstreamResponse resp = new BeanstreamResponse(ex.getResponseMessage());
+		// resp.code
+		// resp.category
+		// resp.message
+		// resp.reference
+	}
+	//
 }	
+```
+
+# Pre Authorize a purchase
+Pre authorize is the same process as doing a normal payment, with the only difference that with pre-authorize you have to steps
+Pre-authorize a payment. Use this if you want to know if a customer has sufficient funds before processing a payment.
+A real-world example of  this is pre-authorizing at the gas pump for $100 before you fill up, then end up only using $60 of gas; the customer is only charged $60. The final payment is used with preAuthCompletion() method.
+
+Step 1 do the pre authorization
+```java
+
+		CardPaymentRequest paymentRequest = ...;
+
+		try {
+			PaymentResponse response = beanstream.payments()
+				.preAuth(paymentRequest);
+
+		} catch (BeanstreamApiException ex) {
+			BeanstreamResponse response = new BeanstreamResponse(ex.getResponseMessage());
+			//response.code response code from beanstream
+			//response.category category of the response code
+			//response.message description of the response code
+		}
+
+```
+
+Step 2 complete the purchase with the final amount
+
+```java
+		try{
+			PaymentResponse authResp = beanstream.payments()
+						.preAuthCompletion(preAuthorizedPaymentId, finalAmount ,order_number);
+		} catch (BeanstreamApiException ex) {
+			BeanstreamResponse response = new BeanstreamResponse(ex.getResponseMessage());
+			//response.code response code from beanstream
+			//response.category category of the response code
+			//response.message description of the response code
+		}
 ```
