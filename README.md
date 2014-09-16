@@ -16,6 +16,8 @@ The project uses [Gradle](http://www.gradle.org/) to build the project. If you a
 
 With the gradle plugin installed you can open the java project by navigating to File->Open Project and locating the java project. 
 
+# Beanstream list of response codes/categories description
+please see the detailed list of codes/categories description here http://support.beanstream.com/docs/response-message-codes-descriptions.htm.
 
 # Make a Payment
 Before you begin making purchases, you need to create a Beanstream API object. It holds your user credentials and provides access to the various APIs.
