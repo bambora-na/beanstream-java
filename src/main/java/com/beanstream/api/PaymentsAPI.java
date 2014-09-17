@@ -22,17 +22,19 @@
  */
 package com.beanstream.api;
 
-import java.text.MessageFormat;
-
 import com.beanstream.Configuration;
 import com.beanstream.connection.BeanstreamUrls;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
+import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.responses.PaymentResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.apache.http.HttpStatus;
+
+import java.text.MessageFormat;
 
 import static com.beanstream.connection.BeanstreamUrls.*;
 
@@ -137,7 +139,9 @@ public class PaymentsAPI {
 			throws BeanstreamApiException {
 
 		if (paymentRequest == null || paymentRequest.getCard() == null) {
-			throw new BeanstreamApiException(400, "invalid payment request");
+            // TODO - do we need to supply default category and code ids here ?
+            BeanstreamResponse err = new BeanstreamResponse(-1, -1, "invalid payment request", null);
+                throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, err);
 		}
 
 		paymentRequest.getCard().setComplete(false);
@@ -184,8 +188,9 @@ public class PaymentsAPI {
 			throws BeanstreamApiException {
 		// could use StringUtils.assertNotNull();
 		if (value == null || value.trim().isEmpty()) {
-			// throw a bad request
-			throw new BeanstreamApiException(400, errorMessage);
-		}
+            // TODO - do we need to supply default category and code ids here ?
+            BeanstreamResponse err = new BeanstreamResponse(-1, -1, "invalid payment request", null);
+            throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, err);
+        }
 	}
 }

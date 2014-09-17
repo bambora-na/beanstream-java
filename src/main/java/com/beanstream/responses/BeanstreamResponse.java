@@ -1,15 +1,16 @@
 package com.beanstream.responses;
 
+import com.beanstream.exceptions.BeanstreamApiException;
 import com.google.gson.Gson;
 
 public class BeanstreamResponse {
 	public final int code;
-	public final String category;
+	public final int category;
 	public final String message;
 	public final String reference;
 	private static final Gson gson = new Gson();
 
-	public BeanstreamResponse(int code, String category, String message,
+	public BeanstreamResponse(int code, int category, String message,
 			String reference) {
 		super();
 		this.code = code;
@@ -24,7 +25,7 @@ public class BeanstreamResponse {
 		try {
 			response = gson.fromJson(jsonObject, BeanstreamResponse.class);
 			if (response == null) {
-				response = new BeanstreamResponse(0, null, null, null);
+				response = new BeanstreamResponse(0, 0, null, null);
 			}
 		} catch (Exception ex) {
 
@@ -36,12 +37,23 @@ public class BeanstreamResponse {
 
 	}
 
+    public static BeanstreamResponse fromJson(String json) {
+        return gson.fromJson(json, BeanstreamResponse.class);
+    }
+
+    public static BeanstreamResponse fromBeanstreamException(BeanstreamApiException e) {
+        return new BeanstreamResponse(e.getCode(), e.getCategory(), e.getResponseMessage(), null);
+    }
+
+    public static BeanstreamResponse emptyResponse() {
+        return new BeanstreamResponse(-1, -1, "", "");
+    }
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((category == null) ? 0 : category.hashCode());
+		result = prime * result + category;
 		result = prime * result + code;
 		return result;
 	}
@@ -55,13 +67,10 @@ public class BeanstreamResponse {
 		if (getClass() != obj.getClass())
 			return false;
 		BeanstreamResponse other = (BeanstreamResponse) obj;
-		if (category == null) {
-			if (other.category != null)
-				return false;
-		} else if (!category.equals(other.category))
-			return false;
+		if (category != other.category)
+            return false;
 		if (code != other.code)
-			return false;
+            return false;
 		return true;
 	}
 

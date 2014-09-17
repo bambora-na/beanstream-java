@@ -1,19 +1,18 @@
 package com.beanstream;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import junit.framework.Assert;
-
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.responses.PaymentResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.junit.Assert;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* The MIT License (MIT)
  *

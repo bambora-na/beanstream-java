@@ -10,6 +10,15 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# local IDE files/folders
 /build/
 /.nb-gradle/private/
 /bin/
+*.idea
+*.iml
+*.gradle
+gradle*
+
+
+

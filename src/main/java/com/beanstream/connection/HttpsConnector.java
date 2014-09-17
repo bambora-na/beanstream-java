@@ -23,33 +23,27 @@
 
 package com.beanstream.connection;
 
-import com.beanstream.Configuration;
 import com.beanstream.exceptions.BeanstreamApiException;
+import com.beanstream.responses.BeanstreamResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.net.ssl.HttpsURLConnection;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HttpsConnector {
 
@@ -90,8 +84,7 @@ public class HttpsConnector {
 						HttpEntity entity = response.getEntity();
 						String res = entity != null ? EntityUtils
 								.toString(entity) : null;
-						throw new ClientProtocolException("Status code: "
-								+ status, handleException(status, res));
+						throw mappedException(status, res);
 					}
 				}
 
@@ -161,49 +154,39 @@ public class HttpsConnector {
 		return null;
 	}
 
-	/**
-	 * Provide a detailed error message when connecting to the Beanstream API
-	 * fails.
-	 */
-	private BeanstreamApiException handleException(Exception ex,
-			HttpsURLConnection connection) {
-		String message = "";
-		BeanstreamApiException response = null;
-		if (connection != null) {
-			try {
-				int responseCode = connection.getResponseCode();
-				message = responseCode + " "
-						+ connection.getContent().toString();
-				response = new BeanstreamApiException(responseCode, connection
-						.getContent().toString());
-			} catch (IOException ex1) {
-				Logger.getLogger(HttpsConnector.class.getName()).log(
-						Level.SEVERE, "Error getting response code", ex1);
-				response = new BeanstreamApiException(ex, 500, message);
-			}
-		} else {
-			if (ex instanceof ClientProtocolException
-					&& ex.getCause() instanceof BeanstreamApiException) {
-				response = (BeanstreamApiException) ex.getCause();
-			} else {
-				message = "Connection error";
-				response = new BeanstreamApiException(ex, 500, message);
-			}
+    /**
+     * Provide a detailed error message when connecting to the Beanstream API fails.
+     */
+    private BeanstreamApiException handleException(Exception ex, HttpsURLConnection connection) {
+        String message = "";
+        if (connection != null) {
+            try {
+                int responseCode = connection.getResponseCode();
+                message = responseCode+" "+connection.getContent().toString();
+            } catch (IOException ex1) {
+                Logger.getLogger(HttpsConnector.class.getName()).log(Level.SEVERE, "Error getting response code", ex1);
+            }
+        } else {
+            message = "Connection error";
+        }
+        return new BeanstreamApiException(ex, message);
+    }
 
-		}
-		return response;
+    /**
+     * Each exception will have a code and an ID that can help distinguish if the error
+     * is card-holder facing (ie. Insufficient Funds) or programmer-facing (wrong API key).
+     */
+    private BeanstreamApiException mappedException(int status, String res) {
 
-	}
+        BeanstreamResponse response = null;
+        try {
+            response = BeanstreamResponse.fromJson(res);
+        } catch(Exception e) {
+            BeanstreamApiException ex = BeanstreamApiException.getMappedException(status);
+            return ex;
+        }
 
-	/**
-	 * TODO This will have to parse the status codes into specific Beanstream
-	 * exceptions. Each exception will have a code and an ID that can help
-	 * distinguish if the error is card-holder facing (ie. Insufficient Funds)
-	 * or programmer-facing (wrong API key).
-	 */
-	private BeanstreamApiException handleException(int status, String message) {
-
-		return new BeanstreamApiException(status, message);
-	}
+        return BeanstreamApiException.getMappedException(status, response);
+    }
 
 }
