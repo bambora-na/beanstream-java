@@ -4,13 +4,17 @@ import com.beanstream.exceptions.BeanstreamApiException;
 import com.google.gson.Gson;
 
 public class BeanstreamResponse {
-	public final int code;
-	public final int category;
-	public final String message;
-	public final String reference;
-	private static final Gson gson = new Gson();
+	public int code;
+	public int category;
+	public String message;
+	public String reference;
+    public int httpStatusCode;
+    public String responseBody;
+    private static final Gson gson = new Gson();
 
-	public BeanstreamResponse(int code, int category, String message,
+    public BeanstreamResponse() {}
+
+    public BeanstreamResponse(int code, int category, String message,
 			String reference) {
 		super();
 		this.code = code;
@@ -34,7 +38,6 @@ public class BeanstreamResponse {
 		this.category = response.category;
 		this.message = response.message;
 		this.reference = response.reference;
-
 	}
 
     public static BeanstreamResponse fromJson(String json) {
@@ -47,6 +50,13 @@ public class BeanstreamResponse {
 
     public static BeanstreamResponse emptyResponse() {
         return new BeanstreamResponse(-1, -1, "", "");
+    }
+    
+    public static BeanstreamResponse onSuccess(int httpStatusCode, String responseBody) {
+        BeanstreamResponse bsRes = new BeanstreamResponse();
+        bsRes.httpStatusCode = httpStatusCode;
+        bsRes.responseBody = responseBody;
+        return bsRes;
     }
 
 	@Override

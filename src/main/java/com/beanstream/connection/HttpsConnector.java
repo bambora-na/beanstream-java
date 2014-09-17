@@ -25,6 +25,7 @@ package com.beanstream.connection;
 
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.responses.BeanstreamResponse;
+import com.google.common.net.MediaType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
@@ -61,6 +62,7 @@ public class HttpsConnector {
 	public String ProcessTransaction(HttpMethod httpMethod, String url,
 			Object data) throws BeanstreamApiException {
 
+        String result = null;
 		try {
 
 			Gson gson = new Gson();
@@ -70,46 +72,63 @@ public class HttpsConnector {
 			Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
 			System.out.println(gsonpp.toJson(data));
 
-			ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+            ResponseHandler<BeanstreamResponse> responseHandler = new ResponseHandler<BeanstreamResponse>() {
 
-				@Override
-				public String handleResponse(final HttpResponse response)
-						throws ClientProtocolException, IOException {
-					int status = response.getStatusLine().getStatusCode();
-					if (status >= 200 && status < 300) {
-						HttpEntity entity = response.getEntity();
-						return entity != null ? EntityUtils.toString(entity)
-								: null;
-					} else {
-						HttpEntity entity = response.getEntity();
-						String res = entity != null ? EntityUtils
-								.toString(entity) : null;
-						throw mappedException(status, res);
-					}
-				}
+                @Override
+                public BeanstreamResponse handleResponse(final HttpResponse httpRes)
+                        throws ClientProtocolException, IOException {
 
-			};
+                    int httpStatus = httpRes.getStatusLine().getStatusCode();
+                    HttpEntity httpEntity = httpRes.getEntity();
+                    String resBody = httpEntity != null ? EntityUtils.toString(httpEntity) : null;
 
-			if (HttpMethod.post.equals(httpMethod)) {
-				StringEntity entity = new StringEntity(json);
-				HttpPost http = new HttpPost(url);
-				http.setEntity(entity);
-				return process(http, responseHandler);
+                    BeanstreamResponse bsRes = new BeanstreamResponse();
+                    MediaType responseType = MediaType.parse(httpEntity.getContentType().getValue());
 
-			} else if (HttpMethod.put.equals(httpMethod)) {
-				StringEntity entity = new StringEntity(json);
-				HttpPut http = new HttpPut(url);
-				http.setEntity(entity);
-				return process(http, responseHandler);
+                    // if we got a 2XX response, or the payload is xml instead of json...
+                    // ...then don't fromJson-ify it, just set it on the responseBody field of BeanstreamResponse
+                    if ((httpStatus >= 200 && httpStatus < 300) || responseType != MediaType.JSON_UTF_8) {
+                        bsRes.responseBody = resBody;
+                    } else {
+                        bsRes = BeanstreamResponse.fromJson(resBody);
+                    }
+                    bsRes.httpStatusCode = httpStatus;
+                    return bsRes;
+                }
+            };
 
-			} else if (HttpMethod.get.equals(httpMethod)) {
-				return process(new HttpGet(url), responseHandler);
+            BeanstreamResponse bsRes = null;
+            HttpUriRequest http = null;
 
-			} else if (HttpMethod.delete.equals(httpMethod)) {
-				return process(new HttpDelete(url), responseHandler);
-			}
+            switch(httpMethod) {
+                case post: {
+                    StringEntity entity = new StringEntity(json);
+                    http = new HttpPost(url);
+                    ((HttpPost) http).setEntity(entity);
+                    break;
+                }
+                case put: {
+                    StringEntity entity = new StringEntity(json);
+                    ((HttpPut) http).setEntity(entity);
+                    break;
+                }
+                case get: {
+                    http = new HttpGet(url);
+                    break;
+                }
+                case delete: {
+                    http = new HttpDelete(url);
+                    break;
+                }
+            }
 
-			return null;
+            bsRes = process(http, responseHandler);
+            int httpStatus = bsRes.httpStatusCode;
+            if (httpStatus >= 200 && httpStatus < 300) {
+                result = bsRes.responseBody;
+            } else {
+                throw mappedException(httpStatus, bsRes);
+            }
 
 		} catch (UnsupportedEncodingException ex) {
 			throw handleException(ex, null);
@@ -118,10 +137,11 @@ public class HttpsConnector {
 			throw handleException(ex, null);
 		}
 
+        return result;
 	}
 
-	private String process(HttpUriRequest http,
-			ResponseHandler<String> responseHandler) throws IOException {
+	private BeanstreamResponse process(HttpUriRequest http,
+                                       ResponseHandler<BeanstreamResponse> responseHandler) throws IOException {
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		String auth = Base64
@@ -130,7 +150,7 @@ public class HttpsConnector {
 		http.addHeader("Content-Type", "application/json");
 		http.addHeader("Authorization", "Passcode " + auth);
 
-		String responseBody = httpclient.execute(http, responseHandler);
+		BeanstreamResponse responseBody = httpclient.execute(http, responseHandler);
 
 		return responseBody;
 	}
@@ -176,17 +196,13 @@ public class HttpsConnector {
      * Each exception will have a code and an ID that can help distinguish if the error
      * is card-holder facing (ie. Insufficient Funds) or programmer-facing (wrong API key).
      */
-    private BeanstreamApiException mappedException(int status, String res) {
+    private BeanstreamApiException mappedException(int status, BeanstreamResponse bsRes) {
 
-        BeanstreamResponse response = null;
-        try {
-            response = BeanstreamResponse.fromJson(res);
-        } catch(Exception e) {
-            BeanstreamApiException ex = BeanstreamApiException.getMappedException(status);
-            return ex;
+        if (bsRes != null) {
+            return BeanstreamApiException.getMappedException(status, bsRes);
         }
 
-        return BeanstreamApiException.getMappedException(status, response);
+        return BeanstreamApiException.getMappedException(status);
     }
 
 }

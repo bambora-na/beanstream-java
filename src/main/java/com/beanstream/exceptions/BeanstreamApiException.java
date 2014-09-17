@@ -54,7 +54,7 @@ import org.apache.http.HttpStatus;
  *
  * @author bowens
  */
-public class BeanstreamApiException extends RuntimeException {
+public class BeanstreamApiException extends Exception {
 	private static final long serialVersionUID = 1L;
     private int statusCode;
     private String responseMessage;
@@ -104,9 +104,9 @@ public class BeanstreamApiException extends RuntimeException {
             case HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE: { // 415
                 return new InvalidRequestException(statusCode, response, category, code); // Sending an incorrect Content-Type
             }
-            default:
+            default: {
                 return new InternalServerException(statusCode, response, category, code);
-
+            }
 
         }
     }
