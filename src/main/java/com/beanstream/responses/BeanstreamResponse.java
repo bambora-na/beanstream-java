@@ -52,13 +52,6 @@ public class BeanstreamResponse {
         return new BeanstreamResponse(-1, -1, "", "");
     }
     
-    public static BeanstreamResponse onSuccess(int httpStatusCode, String responseBody) {
-        BeanstreamResponse bsRes = new BeanstreamResponse();
-        bsRes.httpStatusCode = httpStatusCode;
-        bsRes.responseBody = responseBody;
-        return bsRes;
-    }
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
