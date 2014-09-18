@@ -47,31 +47,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class HttpsConnector {
+    
+    private final int merchantId;
+    private final String apiPasscode;
 
-	private final int merchantId;
-	private final String apiPasscode;
-
-	public HttpsConnector(int merchantId, String apiPasscode) {
-		this.merchantId = merchantId;
-		this.apiPasscode = apiPasscode;
-	}
-
+    public HttpsConnector(int merchantId, String apiPasscode) {
+        this.merchantId = merchantId;
+        this.apiPasscode = apiPasscode;
+    }
+    
 	// this should be refactored to to use java naming conventions (start
 	// lowerCase for methods and properties, and Capital for class, Enum,
 	// Contructors etc.)
 	public String ProcessTransaction(HttpMethod httpMethod, String url,
 			Object data) throws BeanstreamApiException {
-
+    
         String result = null;
-		try {
-
-			Gson gson = new Gson();
-			String json = data != null ? gson.toJson(data) : null;
-
-			// this is a temporary println while SDK is in development
-			Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
+        try {
+            
+            Gson gson = new Gson();
+            String json = data != null ? gson.toJson(data) : null;
+            
+            // this is a temporary println while SDK is in development
+            Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
 			System.out.println(gsonpp.toJson(data));
-
+            
             ResponseHandler<BeanstreamResponse> responseHandler = new ResponseHandler<BeanstreamResponse>() {
 
                 @Override
@@ -96,13 +96,13 @@ public class HttpsConnector {
                     return bsRes;
                 }
             };
-
+            
             BeanstreamResponse bsRes = null;
             HttpUriRequest http = null;
-
+                
             switch(httpMethod) {
                 case post: {
-                    StringEntity entity = new StringEntity(json);
+                StringEntity entity = new StringEntity(json);
                     http = new HttpPost(url);
                     ((HttpPost) http).setEntity(entity);
                     break;
@@ -121,7 +121,7 @@ public class HttpsConnector {
                     break;
                 }
             }
-
+                
             bsRes = process(http, responseHandler);
             int httpStatus = bsRes.httpStatusCode;
             if (httpStatus >= 200 && httpStatus < 300) {
@@ -130,50 +130,50 @@ public class HttpsConnector {
                 throw mappedException(httpStatus, bsRes);
             }
 
-		} catch (UnsupportedEncodingException ex) {
-			throw handleException(ex, null);
-
-		} catch (IOException ex) {
-			throw handleException(ex, null);
-		}
-
+        } catch (UnsupportedEncodingException ex) {
+            throw handleException(ex, null);
+            
+        } catch (IOException ex) {
+            throw handleException(ex, null);
+        } 
+	
         return result;
-	}
+    }
 
 	private BeanstreamResponse process(HttpUriRequest http,
                                        ResponseHandler<BeanstreamResponse> responseHandler) throws IOException {
-
-		CloseableHttpClient httpclient = HttpClients.createDefault();
+        
+        CloseableHttpClient httpclient = HttpClients.createDefault();
 		String auth = Base64
 				.encode((merchantId + ":" + apiPasscode).getBytes());
-
-		http.addHeader("Content-Type", "application/json");
+        
+        http.addHeader("Content-Type", "application/json");
 		http.addHeader("Authorization", "Passcode " + auth);
 
 		BeanstreamResponse responseBody = httpclient.execute(http, responseHandler);
-
-		return responseBody;
-	}
-
-	private HttpRequest getHttp(HttpMethod httpMethod, StringEntity entity) {
+        
+        return responseBody;
+    }
+    
+    private HttpRequest getHttp(HttpMethod httpMethod, StringEntity entity) {
 		if (HttpMethod.post.equals(httpMethod)) {
-			HttpPost http = new HttpPost();
-			http.setEntity(entity);
-			return http;
+            HttpPost http = new HttpPost();
+            http.setEntity(entity);
+            return http;
 		} else if (HttpMethod.put.equals(httpMethod)) {
-			HttpPut http = new HttpPut();
-			http.setEntity(entity);
-			return http;
+            HttpPut http = new HttpPut();
+            http.setEntity(entity);
+            return http;
 		} else if (HttpMethod.get.equals(httpMethod)) {
-			HttpGet http = new HttpGet();
-			return http;
+            HttpGet http = new HttpGet();
+            return http;
 		} else if (HttpMethod.delete.equals(httpMethod)) {
-			HttpDelete http = new HttpDelete();
-			return http;
-		}
-		return null;
-	}
-
+            HttpDelete http = new HttpDelete();
+            return http;
+        }
+        return null;
+    }
+    
     /**
      * Provide a detailed error message when connecting to the Beanstream API fails.
      */
@@ -191,18 +191,18 @@ public class HttpsConnector {
         }
         return new BeanstreamApiException(ex, message);
     }
-
+    
     /**
      * Each exception will have a code and an ID that can help distinguish if the error
      * is card-holder facing (ie. Insufficient Funds) or programmer-facing (wrong API key).
      */
     private BeanstreamApiException mappedException(int status, BeanstreamResponse bsRes) {
-
+        
         if (bsRes != null) {
             return BeanstreamApiException.getMappedException(status, bsRes);
-        }
-
-        return BeanstreamApiException.getMappedException(status);
     }
+			
+        return BeanstreamApiException.getMappedException(status);
+}
 
 }
