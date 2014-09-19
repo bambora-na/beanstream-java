@@ -4,6 +4,7 @@ import com.beanstream.Gateway;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.responses.BeanstreamResponse;
+import com.beanstream.responses.BeanstreamResponseBuilder;
 import com.beanstream.responses.PaymentResponse;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -50,14 +51,18 @@ public class PaymentAPITest {
 				}
 			}
 		} catch (BeanstreamApiException ex) {
-			BeanstreamResponse gatewayResp = new BeanstreamResponse(208, 2,
-					"Completion greater than remaining reserve amount.", null);
-			Assert.assertEquals(
+            BeanstreamResponse gatewayResp = new BeanstreamResponseBuilder()
+                    .withCode(208)
+                    .withCategory(2)
+                    .withMessage("Completion greater than remaining reserve amount.")
+                    .withHttpStatusCode(400)
+                    .build();
+            Assert.assertEquals(
 					"This auth completion should be not be approved because a lower amount has been pre authorized",
 					ex.getHttpStatusCode(), 400);
 			Assert.assertEquals(
 					"This auth completion should be not be approved because a lower amount has been pre authorized",
-					BeanstreamResponse.fromBeanstreamException(ex),
+					BeanstreamResponse.fromException(ex),
 					gatewayResp);
 		}
 	}

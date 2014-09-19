@@ -46,113 +46,113 @@ import java.util.logging.Logger;
 
 /**
  * Example code.
- *
+ * 
  * @author bowens
  */
 public class SampleTransactions {
 
-    public static void main(String[] args) {
-        SampleTransactions t = new SampleTransactions();
+	public static void main(String[] args) {
+		SampleTransactions t = new SampleTransactions();
         t.testPayment();
-        // t.testVoidPayment();
+		// t.testVoidPayment();
         //t.testPreAuthorization();
-    }
+	}
 
-    private AtomicInteger sequence = new AtomicInteger(1);
+	private AtomicInteger sequence = new AtomicInteger(1);
 
-    private String getRandomOrderId(String prefix) {
-        String orderId = null;
-        Date date = new Date();
-        StringBuilder sb = new StringBuilder();
-        if (prefix != null) {
-            sb.append(prefix);
-            sb.append("_");
-        }
-        SimpleDateFormat df = new SimpleDateFormat("MMkkmmssSSSS");
-        sb.append(sequence.getAndIncrement());
-        sb.append("_");
-        sb.append(df.format(date));
-        orderId = sb.toString();
-        if (orderId.length() > 30) {
-            orderId = orderId.substring(0, 29);
-        }
-        return orderId;
-    }
+	private String getRandomOrderId(String prefix) {
+		String orderId = null;
+		Date date = new Date();
+		StringBuilder sb = new StringBuilder();
+		if (prefix != null) {
+			sb.append(prefix);
+			sb.append("_");
+		}
+		SimpleDateFormat df = new SimpleDateFormat("MMkkmmssSSSS");
+		sb.append(sequence.getAndIncrement());
+		sb.append("_");
+		sb.append(df.format(date));
+		orderId = sb.toString();
+		if (orderId.length() > 30) {
+			orderId = orderId.substring(0, 29);
+		}
+		return orderId;
+	}
 
-    private void testVoidPayment() {
+	private void testVoidPayment() {
 
-        Gateway beanstream = new Gateway("v1", 300200578,
-                "4BaD82D9197b4cc4b70a221911eE9f70");
+		Gateway beanstream = new Gateway("v1", 300200578,
+				"4BaD82D9197b4cc4b70a221911eE9f70");
 
-        CardPaymentRequest paymentRequest = new CardPaymentRequest();
-        paymentRequest.setAmount("90.00");
-        paymentRequest.setMerchant_id("300200578");
-        paymentRequest.setOrder_number(getRandomOrderId("PEDRO"));
-        paymentRequest.getCard().setName("John Doe")
-                .setNumber("5100000010001004").setExpiry_month("12")
-                .setExpiry_year("18").setCvd("123");
+		CardPaymentRequest paymentRequest = new CardPaymentRequest();
+		paymentRequest.setAmount("90.00");
+		paymentRequest.setMerchant_id("300200578");
+		paymentRequest.setOrder_number(getRandomOrderId("PEDRO"));
+		paymentRequest.getCard().setName("John Doe")
+				.setNumber("5100000010001004").setExpiry_month("12")
+				.setExpiry_year("18").setCvd("123");
 
-        try {
-            PaymentResponse response = beanstream.payments().makePayment(
-                    paymentRequest);
-            if (response.isApproved()) {
-                Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
-                System.out
-                        .println("Your Payment has been approved response: \n"
-                                + gsonpp.toJson(response));
+		try {
+			PaymentResponse response = beanstream.payments().makePayment(
+					paymentRequest);
+			if (response.isApproved()) {
+				Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
+				System.out
+						.println("Your Payment has been approved response: \n"
+								+ gsonpp.toJson(response));
 
-                response = beanstream.payments()
-                        .voidPayment(response.id, 90.00);
+				response = beanstream.payments()
+						.voidPayment(response.id, 90.00);
 
-                if ("VP".equals(response.type)) {
-                    System.out.println("The payment was voided");
+				if ("VP".equals(response.type)) {
+					System.out.println("The payment was voided");
 
-                } else {
-                    System.out.println("The payment was not voided");
-                }
-            }
-        } catch (BeanstreamApiException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-                    "An error occurred", ex);
-        }
+				} else {
+					System.out.println("The payment was not voided");
+				}
+			}
+		} catch (BeanstreamApiException ex) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					"An error occurred", ex);
+		}
 
-    }
+	}
 
-    public void testPreAuthorization() {
+	public void testPreAuthorization() {
 
-        Gateway beanstream = new Gateway("v1", 300200578,
-                "4BaD82D9197b4cc4b70a221911eE9f70");
+		Gateway beanstream = new Gateway("v1", 300200578,
+				"4BaD82D9197b4cc4b70a221911eE9f70");
 
-        CardPaymentRequest paymentRequest = new CardPaymentRequest();
-        paymentRequest.setAmount("90.00");
-        paymentRequest.setMerchant_id("300200578");
-        paymentRequest.setOrder_number(getRandomOrderId("GAS"));
-        paymentRequest.getCard().setName("John Doe")
-                .setNumber("5100000010001004").setExpiry_month("12")
-                .setExpiry_year("18").setCvd("123");
+		CardPaymentRequest paymentRequest = new CardPaymentRequest();
+		paymentRequest.setAmount("90.00");
+		paymentRequest.setMerchant_id("300200578");
+		paymentRequest.setOrder_number(getRandomOrderId("GAS"));
+		paymentRequest.getCard().setName("John Doe")
+				.setNumber("5100000010001004").setExpiry_month("12")
+				.setExpiry_year("18").setCvd("123");
 
-        try {
-            PaymentResponse response = beanstream.payments().preAuth(
-                    paymentRequest);
-            if (response.isApproved()) {
+		try {
+			PaymentResponse response = beanstream.payments().preAuth(
+					paymentRequest);
+			if (response.isApproved()) {
 
-                PaymentResponse authResp = beanstream.payments()
-                        .preAuthCompletion(response.id, 43.50, null);
-                if (!authResp.isApproved()) {
-                    Assert.fail("This auth completion should be approved because a greater amount has been pre authorized");
-                }
-            }
-        } catch (BeanstreamApiException ex) {
-            System.out.println(new BeanstreamResponse(ex.getResponseMessage()));
+				PaymentResponse authResp = beanstream.payments()
+						.preAuthCompletion(response.id, 43.50, null);
+				if (!authResp.isApproved()) {
+					Assert.fail("This auth completion should be approved because a greater amount has been pre authorized");
+				}
+			}
+		} catch (BeanstreamApiException ex) {
+			System.out.println(BeanstreamResponse.fromException(ex));
 
-        }
+		}
     }
 
     private void testPayment() {
 
         Gateway beanstream = new Gateway("v1", 300200578, "4BaD82D9197b4cc4b70a221911eE9f70");
         HttpsConnector connector = new HttpsConnector(300200578, "4BaD82D9197b4cc4b70a221911eE9f70");
-        
+
         /* Test Card Payment */
         CardPaymentRequest req = new CardPaymentRequest();
         req.setAmount("100.00");
@@ -222,7 +222,7 @@ public class SampleTransactions {
             Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        // Parse the output and return a token response to get the token for the payment request 
+        // Parse the output and return a token response to get the token for the payment request
         Gson gson = new Gson();
         LegatoTokenResponse tokenResponse = gson.fromJson(output, LegatoTokenResponse.class);
 
@@ -244,5 +244,5 @@ public class SampleTransactions {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "An error occurred", ex);
         }
 
-    }
+	}
 }

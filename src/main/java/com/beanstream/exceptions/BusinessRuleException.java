@@ -11,7 +11,7 @@ package com.beanstream.exceptions;
 /// </summary>
 public class BusinessRuleException extends BeanstreamApiException {
 
-    public BusinessRuleException(int statusCode, String response, int category, int code) {
-        super(statusCode, response, category, code);
+    public BusinessRuleException(int code, int category, String message, int httpStatusCode) {
+        super(code, category, message, httpStatusCode);
     }
 }

@@ -16,7 +16,7 @@ package com.beanstream.exceptions;
 /// </summary>
 public class InvalidRequestException extends BeanstreamApiException {
 
-    public InvalidRequestException(int statusCode, String response, int category, int code) {
-        super(statusCode, response, category, code);
+    public InvalidRequestException(int code, int category, String message, int httpStatusCode) {
+        super(code, category, message, httpStatusCode);
     }
 }

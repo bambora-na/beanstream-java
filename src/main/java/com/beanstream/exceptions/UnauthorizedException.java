@@ -15,7 +15,7 @@ package com.beanstream.exceptions;
 /// </summary>
 public class UnauthorizedException extends BeanstreamApiException {
 
-    public UnauthorizedException(int statusCode, String response, int category, int code) {
-        super(statusCode, response, category, code);
+    public UnauthorizedException(int code, int category, String message, int httpStatusCode) {
+        super(code, category, message, httpStatusCode);
     }
 }

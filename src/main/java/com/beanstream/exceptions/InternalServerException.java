@@ -19,7 +19,7 @@ package com.beanstream.exceptions;
 /// </summary>
 public class InternalServerException extends BeanstreamApiException {
 
-    public InternalServerException(int statusCode, String response, int category, int code) {
-        super(statusCode, response, category, code);
+    public InternalServerException(int code, int category, String message, int httpStatusCode) {
+        super(code, category, message, httpStatusCode);
     }
 }

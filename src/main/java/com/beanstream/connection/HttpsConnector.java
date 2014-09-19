@@ -25,11 +25,9 @@ package com.beanstream.connection;
 
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.responses.BeanstreamResponse;
-import com.google.common.net.MediaType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -38,7 +36,6 @@ import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -73,27 +70,10 @@ public class HttpsConnector {
 			System.out.println(gsonpp.toJson(data));
             
             ResponseHandler<BeanstreamResponse> responseHandler = new ResponseHandler<BeanstreamResponse>() {
-
                 @Override
-                public BeanstreamResponse handleResponse(final HttpResponse httpRes)
+                public BeanstreamResponse handleResponse(final HttpResponse http)
                         throws ClientProtocolException, IOException {
-
-                    int httpStatus = httpRes.getStatusLine().getStatusCode();
-                    HttpEntity httpEntity = httpRes.getEntity();
-                    String resBody = httpEntity != null ? EntityUtils.toString(httpEntity) : null;
-
-                    BeanstreamResponse bsRes = new BeanstreamResponse();
-                    MediaType responseType = MediaType.parse(httpEntity.getContentType().getValue());
-
-                    // if we got a 2XX response, or the payload is xml instead of json...
-                    // ...then don't fromJson-ify it, just set it on the responseBody field of BeanstreamResponse
-                    if ((httpStatus >= 200 && httpStatus < 300) || responseType != MediaType.JSON_UTF_8) {
-                        bsRes.responseBody = resBody;
-                    } else {
-                        bsRes = BeanstreamResponse.fromJson(resBody);
-                    }
-                    bsRes.httpStatusCode = httpStatus;
-                    return bsRes;
+                    return BeanstreamResponse.fromHttpResponse(http);
                 }
             };
             
@@ -123,9 +103,9 @@ public class HttpsConnector {
             }
                 
             bsRes = process(http, responseHandler);
-            int httpStatus = bsRes.httpStatusCode;
+            int httpStatus = bsRes.getHttpStatusCode();
             if (httpStatus >= 200 && httpStatus < 300) {
-                result = bsRes.responseBody;
+                result = bsRes.getResponseBody();
             } else {
                 throw mappedException(httpStatus, bsRes);
             }

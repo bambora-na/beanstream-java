@@ -11,7 +11,7 @@ package com.beanstream.exceptions;
 /// </summary>
 public class ForbiddenException extends BeanstreamApiException {
 
-    public ForbiddenException(int statusCode, String response, int category, int code) {
-        super(statusCode, response, category, code);
+    public ForbiddenException(int code, int category, String message, int httpStatusCode) {
+        super(code, category, message, httpStatusCode);
     }
 }

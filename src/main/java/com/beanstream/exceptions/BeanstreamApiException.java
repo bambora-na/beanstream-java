@@ -53,78 +53,86 @@ import org.apache.http.HttpStatus;
 /**
  *
  * @author bowens
+ * @author Sanchez
+ *
  */
 public class BeanstreamApiException extends Exception {
-	private static final long serialVersionUID = 1L;
-    private int statusCode;
-    private String responseMessage;
-    private int category;
-    private int code;
 
-    protected BeanstreamApiException(int statusCode, String responseMessage, int category, int code) {
-        this.statusCode = statusCode;
-        this.responseMessage = responseMessage;
-        this.category = category;
+    private final int code;
+    private final int category;
+    private final String message;
+    private final int httpStatusCode;
+
+    private static final long serialVersionUID = 1L;
+
+    protected BeanstreamApiException(int code, int category, String message, int httpStatusCode) {
         this.code = code;
+        this.category = category;
+        this.message = message;
+        this.httpStatusCode = httpStatusCode;
     }
 
-    public BeanstreamApiException(Exception e, String responseMessage) {
+    public BeanstreamApiException(Exception e, String message) {
         super(e);
-        this.responseMessage = responseMessage;
+        this.code = -1;
+        this.category = -1;
+        this.httpStatusCode = -1;
+        this.message = message;
     }
 
-    public static BeanstreamApiException getMappedException(int statusCode) {
-        return getMappedException(statusCode, BeanstreamResponse.emptyResponse());
+    public static BeanstreamApiException getMappedException(int httpStatusCode) {
+        return getMappedException(httpStatusCode, BeanstreamResponse.emptyResponse());
     }
 
-    public static BeanstreamApiException getMappedException(int statusCode, BeanstreamResponse err) {
-        String response = err.message;
-        int category = err.category;
-        int code = err.code;
+    public static BeanstreamApiException getMappedException(int httpStatusCode, BeanstreamResponse response) {
 
-        switch (statusCode) {
+        int code = response.getCode();
+        int category = response.getCategory();
+        String message = response.getMessage();
+
+        switch (httpStatusCode) {
             case HttpStatus.SC_MOVED_TEMPORARILY: { // 302
-                return new RedirectionException(statusCode, response, category, code); // Used for redirection response in 3DS, Masterpass and Interac Online requests
+                return new RedirectionException(code, category, message, httpStatusCode); // Used for redirection response in 3DS, Masterpass and Interac Online requests
             }
             case HttpStatus.SC_BAD_REQUEST: { // 400
-                return new InvalidRequestException(statusCode, response, category, code); // Often missing a required parameter
+                return new InvalidRequestException(code, category, message, httpStatusCode); // Often missing a required parameter
             }
             case HttpStatus.SC_UNAUTHORIZED: { // 401
-                return new UnauthorizedException(statusCode, response, category, code); // Authentication exception
+                return new UnauthorizedException(code, category, message, httpStatusCode); // Authentication exception
             }
             case HttpStatus.SC_PAYMENT_REQUIRED: { // 402
-                return new BusinessRuleException(statusCode, response, category, code); // Request failed business requirements or rejected by processor/bank
+                return new BusinessRuleException(code, category, message, httpStatusCode); // Request failed business requirements or rejected by processor/bank
             }
             case HttpStatus.SC_FORBIDDEN: { // 403
-                return new ForbiddenException(statusCode, response, category, code); // Authorization failure
+                return new ForbiddenException(code, category, message, httpStatusCode); // Authorization failure
             }
             case HttpStatus.SC_METHOD_NOT_ALLOWED: { // 405
-                return new InvalidRequestException(statusCode, response, category, code); // Sending the wrong HTTP Method
+                return new InvalidRequestException(code, category, message, httpStatusCode); // Sending the wrong HTTP Method
             }
             case HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE: { // 415
-                return new InvalidRequestException(statusCode, response, category, code); // Sending an incorrect Content-Type
+                return new InvalidRequestException(code, category, message, httpStatusCode); // Sending an incorrect Content-Type
             }
             default: {
-                return new InternalServerException(statusCode, response, category, code);
+                return new InternalServerException(code, category, message, httpStatusCode);
             }
 
         }
     }
 
-	public String getResponseMessage() {
-		return responseMessage;
-	}
-
-	public int getHttpStatusCode() {
-		return statusCode;
-	}
+    public int getCode() {
+        return code;
+    }
 
     public int getCategory() {
         return category;
     }
 
-    public int getCode() {
-        return code;
-    }
+	public String getMessage() {
+		return message;
+	}
+
+	public int getHttpStatusCode() {
+		return httpStatusCode;
+	}
 
 }

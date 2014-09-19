@@ -10,7 +10,7 @@ package com.beanstream.exceptions;
 /// </summary>
 public class RedirectionException extends BeanstreamApiException {
 
-    public RedirectionException(int statusCode, String response, int category, int code) {
-        super(statusCode, response, category, code);
+    public RedirectionException(int code, int category, String message, int httpStatusCode) {
+        super(code, category, message, httpStatusCode);
     }
 }
