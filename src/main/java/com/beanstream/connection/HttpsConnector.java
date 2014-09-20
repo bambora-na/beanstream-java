@@ -77,7 +77,6 @@ public class HttpsConnector {
                 }
             };
             
-            BeanstreamResponse bsRes = null;
             HttpUriRequest http = null;
                 
             switch(httpMethod) {
@@ -101,8 +100,8 @@ public class HttpsConnector {
                     break;
                 }
             }
-                
-            bsRes = process(http, responseHandler);
+
+            BeanstreamResponse bsRes = process(http, responseHandler);
             int httpStatus = bsRes.getHttpStatusCode();
             if (httpStatus >= 200 && httpStatus < 300) {
                 result = bsRes.getResponseBody();
