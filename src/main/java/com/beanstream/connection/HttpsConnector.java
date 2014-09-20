@@ -104,7 +104,7 @@ public class HttpsConnector {
             BeanstreamResponse bsRes = process(http, responseHandler);
             int httpStatus = bsRes.getHttpStatusCode();
             if (httpStatus >= 200 && httpStatus < 300) {
-                result = bsRes.getResponseBody();
+                return bsRes.getResponseBody();
             } else {
                 throw mappedException(httpStatus, bsRes);
             }
@@ -115,8 +115,7 @@ public class HttpsConnector {
         } catch (IOException ex) {
             throw handleException(ex, null);
         } 
-	
-        return result;
+
     }
 
 	private BeanstreamResponse process(HttpUriRequest http,
