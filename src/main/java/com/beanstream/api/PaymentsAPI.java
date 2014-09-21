@@ -31,6 +31,8 @@ import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.CashPaymentRequest;
 import com.beanstream.requests.ChequePaymentRequest;
 import com.beanstream.requests.TokenPaymentRequest;
+import com.beanstream.requests.UnreferencedCardReturnRequest;
+import com.beanstream.requests.UnreferencedSwipeReturnRequest;
 import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.responses.PaymentResponse;
 import com.google.gson.Gson;
@@ -234,4 +236,79 @@ public class PaymentsAPI {
             throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
         }
 	}
+        
+	/**
+	 * Return a previous payment made through Beanstream.
+         *
+	 * @param paymentId of the return transaction
+	 * @param amount final amount to be returned
+	 * @param orderNumber optional order number of the transaction
+	 * @return the PaymentResponse for the final transaction
+	 * @throws BeanstreamApiException
+	 */        
+        public PaymentResponse Return(String paymentId, double amount,
+			String orderNumber) throws BeanstreamApiException {
+
+		assertNotEmpty(paymentId, "Invalid Payment Id");
+
+		String returnPaymentUrl = getReturnUrl(
+				config.getPlatform(), config.getVersion(), paymentId);
+
+		JsonObject returnRequest = new JsonObject();
+		returnRequest.addProperty(MERCHANT_ID_PARAM,
+				String.valueOf(config.getMerchantId()));
+		returnRequest.addProperty(AMOUNT_PARAM, String.valueOf(amount));
+		if (orderNumber != null) {
+			returnRequest.addProperty(ORDER_NUMBER_PARAM, orderNumber);
+		}
+		String response = connector.ProcessTransaction(HttpMethod.post,
+				returnPaymentUrl, returnRequest);
+
+		return gson.fromJson(response, PaymentResponse.class);
+
+	}
+        
+
+	/**
+	 * Return a previous card payment that was not made through Beanstream. Use this if you would like to
+	 * return a payment but that payment was performed on another gateway.
+         *
+	 * @param returnRequest of the UnreferencedCardReturnRequest
+	 * @return the PaymentResponse for the final transaction
+	 * @throws BeanstreamApiException
+	 */           
+        public PaymentResponse UnreferencedReturn(UnreferencedCardReturnRequest returnRequest) throws BeanstreamApiException {
+
+            String unreferencedReturnUrl = getUnreferencedReturnUrl(
+                    config.getPlatform(), config.getVersion());
+
+            returnRequest.MerchantId = "" + config.getMerchantId();
+
+            String response = connector.ProcessTransaction(HttpMethod.post, unreferencedReturnUrl, returnRequest);
+
+            return gson.fromJson(response, PaymentResponse.class);
+
+        }
+
+	/**
+	 * Return a previous swipe payment that was not made through Beanstream. Use this if you would like to
+	 * return a payment but that payment was performed on another payment service.
+         *
+	 * @param returnRequest of the UnreferencedSwipeReturnRequest
+	 * @return the PaymentResponse for the final transaction
+	 * @throws BeanstreamApiException
+	 */             
+        public PaymentResponse UnreferencedReturn(UnreferencedSwipeReturnRequest returnRequest) throws BeanstreamApiException {
+
+            String unreferencedReturnUrl = getUnreferencedReturnUrl(
+                    config.getPlatform(), config.getVersion());
+
+            returnRequest.MerchantId = "" + config.getMerchantId();
+
+            String response = connector.ProcessTransaction(HttpMethod.post, unreferencedReturnUrl, returnRequest);
+
+            return gson.fromJson(response, PaymentResponse.class);
+
+        }
+         
 }

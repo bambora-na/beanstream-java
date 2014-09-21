@@ -36,6 +36,8 @@ public class BeanstreamUrls {
 	public static final String PreAuthCompletionsUrl = BasePaymentsUrl
 			+ "/{2}/completions";
 	public static final String ReturnsUrl = BasePaymentsUrl + "/{2}/returns";
+        public static final String UnreferencedReturnsUrl = "https://{0}.beanstream.com/www/{1}/payments/0/returns";
+        
 	public static final String VoidsUrl = BasePaymentsUrl + "/{2}/void";
 	public static final String ContinuationsUrl = BasePaymentsUrl
 			+ "/{2}/continue";
@@ -58,4 +60,16 @@ public class BeanstreamUrls {
 		return MessageFormat.format(BeanstreamUrls.VoidsUrl, platform, version,
 				paymentId);
 	}
+        
+        public static String getReturnUrl(String platform,
+			String version, String paymentId){
+                return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform, version,
+				paymentId);
+        }
+        
+        public static String getUnreferencedReturnUrl(String platform,
+			String version){
+                return MessageFormat.format(BeanstreamUrls.UnreferencedReturnsUrl, platform, version);
+        }
+        
 }
