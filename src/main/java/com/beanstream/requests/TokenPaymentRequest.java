@@ -25,7 +25,8 @@ package com.beanstream.requests;
 import com.beanstream.domain.Token;
 
 /**
- *
+ * Token payments use a token generated from Beanstream's Legato Javascript utility.
+ * The token is a unique one-time-use reference to the user's credit card information.
  * @author ctihor
  */
 public class TokenPaymentRequest extends PaymentRequest {
