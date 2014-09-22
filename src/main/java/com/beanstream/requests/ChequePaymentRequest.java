@@ -23,7 +23,10 @@
 package com.beanstream.requests;
 
 /**
- *
+ * Process Cheque payments. This is a useful way to record a payment that
+ * you physically took.
+ * NOTE: You will need to have these payment options ACTIVATED by calling Beanstream 
+ * support at 1-888-472-0811
  * @author ctihor
  */
 public class ChequePaymentRequest extends PaymentRequest {
