@@ -28,7 +28,7 @@ package com.beanstream.requests;
  */
 public class ReturnRequest {
     
-        public String MerchantId;
-        public String OrderNumber;
-        public Double Amount;
+        public String merchant_id;
+        public String order_number;
+        public Double amount;
 }
