@@ -25,7 +25,8 @@ package com.beanstream.requests;
 import com.beanstream.domain.Card;
 
 /**
- *
+ * Process a Credit Card payment. Along with the regular payment request parameters
+ * it also takes in a Card.
  * @author bowens
  */
 public class CardPaymentRequest extends PaymentRequest {
