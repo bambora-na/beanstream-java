@@ -59,15 +59,16 @@ public class HttpsConnector {
 	public String ProcessTransaction(HttpMethod httpMethod, String url,
 			Object data) throws BeanstreamApiException {
     
-        String result = null;
         try {
             
             Gson gson = new Gson();
             String json = data != null ? gson.toJson(data) : null;
             
             // this is a temporary println while SDK is in development
-            Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
-			System.out.println(gsonpp.toJson(data));
+            if (data != null) {
+                Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
+                System.out.println(gsonpp.toJson(data));
+            }
             
             ResponseHandler<BeanstreamResponse> responseHandler = new ResponseHandler<BeanstreamResponse>() {
                 @Override
@@ -81,13 +82,14 @@ public class HttpsConnector {
                 
             switch(httpMethod) {
                 case post: {
-                StringEntity entity = new StringEntity(json);
+                    StringEntity entity = new StringEntity(json);
                     http = new HttpPost(url);
                     ((HttpPost) http).setEntity(entity);
                     break;
                 }
                 case put: {
                     StringEntity entity = new StringEntity(json);
+                    http = new HttpPost(url);
                     ((HttpPut) http).setEntity(entity);
                     break;
                 }

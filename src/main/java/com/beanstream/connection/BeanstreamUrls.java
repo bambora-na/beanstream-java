@@ -32,11 +32,11 @@ import java.text.MessageFormat;
 public class BeanstreamUrls {
 	public static final String BaseUrl = "https://{0}.beanstream.com/api";
 	public static final String BasePaymentsUrl = BaseUrl + "/{1}/payments";
+    public static final String GetPaymentUrl =  BasePaymentsUrl + "/{2}";
 	public static final String BaseProfilesUrl = BaseUrl + "/{1}/profiles";
 	public static final String PreAuthCompletionsUrl = BasePaymentsUrl
 			+ "/{2}/completions";
 	public static final String ReturnsUrl = BasePaymentsUrl + "/{2}/returns";
-        public static final String UnreferencedReturnsUrl = "https://{0}.beanstream.com/www/{1}/payments/0/returns";
         
 	public static final String VoidsUrl = BasePaymentsUrl + "/{2}/void";
 	public static final String ContinuationsUrl = BasePaymentsUrl
@@ -61,15 +61,19 @@ public class BeanstreamUrls {
 				paymentId);
 	}
         
-        public static String getReturnUrl(String platform,
-			String version, String paymentId){
-                return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform, version,
+    public static String getReturnUrl(String platform,
+        String version, String paymentId){
+            return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform, version,
+            paymentId);
+    }
+
+    public static String getUnreferencedReturnUrl(String platform,
+        String version){
+            return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform, version, "0");
+    }
+    
+    public static String getPaymentUrl(String platform, String version, String paymentId) {
+		return MessageFormat.format(BeanstreamUrls.GetPaymentUrl, platform, version,
 				paymentId);
-        }
-        
-        public static String getUnreferencedReturnUrl(String platform,
-			String version){
-                return MessageFormat.format(BeanstreamUrls.UnreferencedReturnsUrl, platform, version);
-        }
-        
+	}
 }

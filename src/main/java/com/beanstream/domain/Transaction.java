@@ -26,7 +26,11 @@ import com.beanstream.responses.Link;
 import java.util.List;
 
 /**
- *
+ * Represents a single transaction with any adjustments that were performed
+ * on it (return, void etc).
+ * 
+ * This is returned from the ReportingAPI class when you query for a single transaction.
+ * 
  * @author bowens
  */
 public class Transaction {
@@ -41,7 +45,7 @@ public class Transaction {
 
     public String authCode;
 
-    //public DateTime created;
+    public String created;
 
     public String amount;
 

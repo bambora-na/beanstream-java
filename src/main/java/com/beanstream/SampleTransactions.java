@@ -2,6 +2,7 @@ package com.beanstream;
 
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
+import com.beanstream.domain.Transaction;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.CashPaymentRequest;
@@ -56,9 +57,10 @@ public class SampleTransactions {
         t.testPayment();
 		t.testVoidPayment();
         t.testPreAuthorization();
+        t.testGetTransaction();
 	}
 
-	private AtomicInteger sequence = new AtomicInteger(1);
+	private final AtomicInteger sequence = new AtomicInteger(1);
 
 	private String getRandomOrderId(String prefix) {
 		String orderId = null;
@@ -245,5 +247,36 @@ public class SampleTransactions {
         }
 
 	}
-    
+ 
+    private void testGetTransaction() {
+
+		Gateway beanstream = new Gateway("v1", 300200578,
+				"4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
+                "D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
+                "4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
+
+		CardPaymentRequest paymentRequest = new CardPaymentRequest();
+		paymentRequest.setAmount("30.00")
+            .setMerchantId("300200578")
+            .setOrderNumber(getRandomOrderId("get"));
+		paymentRequest.getCard().setName("John Doe")
+            .setNumber("5100000010001004")
+            .setExpiryMonth("12")
+            .setExpiryYear("18")
+            .setCvd("123");
+
+		try {
+			PaymentResponse response = beanstream.payments().makePayment(paymentRequest);
+			if (response.isApproved()) {
+				
+                Transaction transaction = beanstream.reports().getTransaction(response.id);
+
+                System.out.println("Transaction: "+transaction.amount + " approved? "+transaction.approved);
+			}
+		} catch (BeanstreamApiException ex) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					"An error occurred", ex);
+		}
+
+	}
 }

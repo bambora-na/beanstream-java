@@ -1,6 +1,7 @@
 package com.beanstream;
 
 import com.beanstream.api.PaymentsAPI;
+import com.beanstream.api.ReportingAPI;
 
 /* The MIT License (MIT)
  *
@@ -35,9 +36,23 @@ public class Gateway {
 
 	private Configuration config;
 	private PaymentsAPI paymentsApi;
+    private ReportingAPI reportingApi;
 
-	public Gateway(String version, int merchantId, String apiKey) {
-		config = new Configuration(merchantId, apiKey);
+	public Gateway(String version, int merchantId, String apiKeyPayments) {
+		config = new Configuration(merchantId, apiKeyPayments);
+		config.setVersion(version);
+	}
+    
+    public Gateway(String version, int merchantId, String apiKeyPayments, String apiKeyProfiles) {
+		config = new Configuration(merchantId, apiKeyPayments);
+        config.setProfilesApiPasscode(apiKeyProfiles);
+		config.setVersion(version);
+	}
+    
+    public Gateway(String version, int merchantId, String apiKeyPayments, String apiKeyProfiles, String apiKeyReporting) {
+		config = new Configuration(merchantId, apiKeyPayments);
+        config.setReportingApiPasscode(apiKeyProfiles);
+        config.setReportingApiPasscode(apiKeyReporting);
 		config.setVersion(version);
 	}
 
@@ -49,9 +64,25 @@ public class Gateway {
 		this.config = config;
 	}
 
+    /**
+     * Process payments, pre-auth's, void payments, return payments. Handle credit cards,
+     * cash, cheque, and tokenized payments.
+     * 
+     * @return The API class that does the payment magic
+     */
 	public PaymentsAPI payments() {
 		return getPaymentApi();
 	}
+    
+    /**
+     * Get a transaction or search for a range of transactions with the Reports
+     * API.
+     * 
+     * @return API that gives you access to all previous transactions.
+     */
+    public ReportingAPI reports() {
+        return getReportingApi();
+    }
 
 	private PaymentsAPI getPaymentApi() {
 		if (paymentsApi == null) {
@@ -63,4 +94,16 @@ public class Gateway {
     public void setPaymentsApi(PaymentsAPI api) {
         this.paymentsApi = api;
     }
+
+    private ReportingAPI getReportingApi() {
+        if (reportingApi == null)
+            reportingApi = new ReportingAPI(config);
+        return reportingApi;
+    }
+
+    public void setReportingApi(ReportingAPI api) {
+        this.reportingApi = api;
+    }
+    
+    
 }

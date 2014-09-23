@@ -22,15 +22,66 @@
  */
 package com.beanstream.api;
 
+import com.beanstream.Configuration;
+import com.beanstream.connection.BeanstreamUrls;
+import com.beanstream.connection.HttpMethod;
+import com.beanstream.connection.HttpsConnector;
+import com.beanstream.domain.Transaction;
+import com.beanstream.exceptions.BeanstreamApiException;
+import com.beanstream.responses.BeanstreamResponse;
+import com.google.gson.Gson;
+import org.apache.http.HttpStatus;
+
 /**
- *
+ * Get a transaction or search for a range of transactions with the Reporting API.
+ * 
+ * You can get an individual transaction and all of its Adjustments (voids, returns) or 
+ * you can search for transactions using date ranges and specific criteria.
+ * 
  * @author bowens
  */
 public class ReportingAPI {
     
+    private Configuration config;
+    private HttpsConnector connector;
+    private final Gson gson = new Gson();
+
+    public ReportingAPI(Configuration config) {
+        this.config = config;
+        connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
+    }
+
+    public void setConfig(Configuration config) {
+        this.config = config;
+        connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
+    }
     
-    public void getTransaction() {
+    /**
+     * Get a single transaction
+     * @param paymentId
+     * @return
+     * @throws BeanstreamApiException 
+     */
+    public Transaction getTransaction(String paymentId) throws BeanstreamApiException {
         
+        assertNotEmpty(paymentId, "invalid paymentId");
         
+        String url = BeanstreamUrls.getPaymentUrl(config.getPlatform(), config.getVersion(), paymentId);
+        
+        // get the transaction using the REST API
+        String response = connector.ProcessTransaction(HttpMethod.get, url, null);
+        
+        return gson.fromJson(response, Transaction.class);
+    }
+    
+    
+    private void assertNotEmpty(String value, String errorMessage)
+            throws BeanstreamApiException {
+        // could use StringUtils.assertNotNull();
+        if (value == null || value.trim().isEmpty()) {
+            // TODO - do we need to supply category and code ids here?
+            BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
+            throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
+        }
     }
 }
