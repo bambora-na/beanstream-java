@@ -3,6 +3,7 @@ package com.beanstream.api.test;
 import com.beanstream.Gateway;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
+import com.beanstream.requests.UnreferencedCardReturnRequest;
 import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.responses.BeanstreamResponseBuilder;
 import com.beanstream.responses.PaymentResponse;
@@ -130,7 +131,46 @@ public class PaymentAPITest {
 			Assert.fail("Test can not be executed cause the payment api could not approved the test payment");
 		}
 	}
+        
+        @Test()
+	public void Return() throws BeanstreamApiException {
 
+		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
+				getRandomOrderId("PEDRO"), "300200578", "90.00");
+
+		PaymentResponse response = beanstream.payments().makePayment(
+				paymentRequest);
+                
+		if (response.isApproved()) {
+			response = beanstream.payments().Return(response.id, 90.0,response.orderNumber);
+			Assert.assertTrue("void payment response is not R",
+					"R".equals(response.type));
+                        
+		} else {
+			Assert.fail("Test can not be executed cause the payment api could not approved the test payment");
+		}
+	}
+
+        @Test()
+	public void unreferencedCardReturn() throws BeanstreamApiException {
+
+            UnreferencedCardReturnRequest unrefCardReturnRequest = new UnreferencedCardReturnRequest();
+            unrefCardReturnRequest.getCard().setName("John Doe")
+                            .setNumber("5100000010001004").setExpiryMonth("12")
+                            .setExpiryYear("18").setCvd("123");
+
+            unrefCardReturnRequest.setAmount( 100.00 );
+            unrefCardReturnRequest.setMerchantId( "300200578" );
+            unrefCardReturnRequest.setOrderNumber( getRandomOrderId("GAS") );
+
+            //PaymentResponse response = beanstream.payments().unreferencedReturn(unrefCardReturnRequest);
+            //if ( !response.isApproved()) {
+            //        Assert.fail("Unreferenced Return is not approved");
+            //}
+
+        }
+        
+        
 	private String getRandomOrderId(String prefix) {
 		String orderId = null;
 		Date date = new Date();
@@ -162,3 +202,4 @@ public class PaymentAPITest {
 		return paymentRequest;
 	}
 }
+

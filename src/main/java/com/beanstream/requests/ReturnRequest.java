@@ -22,13 +22,43 @@
  */
 package com.beanstream.requests;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  *
  * @author bomberman
  */
 public class ReturnRequest {
     
-        public String MerchantId;
-        public String OrderNumber;
-        public Double Amount;
+    @SerializedName("merchant_id")
+    private String merchantId;
+    @SerializedName("order_number")
+    private String orderNumber;
+    private Double amount;
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+    
+    
 }

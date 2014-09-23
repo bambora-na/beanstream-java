@@ -31,6 +31,7 @@ import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.CashPaymentRequest;
 import com.beanstream.requests.ChequePaymentRequest;
 import com.beanstream.requests.TokenPaymentRequest;
+import com.beanstream.requests.ReturnRequest;
 import com.beanstream.requests.UnreferencedCardReturnRequest;
 import com.beanstream.requests.UnreferencedSwipeReturnRequest;
 import com.beanstream.responses.BeanstreamResponse;
@@ -291,13 +292,11 @@ public class PaymentsAPI {
         String returnPaymentUrl = getReturnUrl(
                 config.getPlatform(), config.getVersion(), paymentId);
 
-        JsonObject returnRequest = new JsonObject();
-        returnRequest.addProperty(MERCHANT_ID_PARAM,
-                String.valueOf(config.getMerchantId()));
-        returnRequest.addProperty(AMOUNT_PARAM, String.valueOf(amount));
-        if (orderNumber != null) {
-            returnRequest.addProperty(ORDER_NUMBER_PARAM, orderNumber);
-        }
+        ReturnRequest returnRequest = new ReturnRequest();
+        returnRequest.setMerchantId( String.valueOf(config.getMerchantId()) );
+        returnRequest.setAmount( amount );
+        returnRequest.setOrderNumber( orderNumber );
+        
         String response = connector.ProcessTransaction(HttpMethod.post,
                 returnPaymentUrl, returnRequest);
 
@@ -314,12 +313,12 @@ public class PaymentsAPI {
      * @return the PaymentResponse for the final transaction
      * @throws BeanstreamApiException
      */
-    public PaymentResponse UnreferencedReturn(UnreferencedCardReturnRequest returnRequest) throws BeanstreamApiException {
+    public PaymentResponse unreferencedReturn(UnreferencedCardReturnRequest returnRequest) throws BeanstreamApiException {
 
         String unreferencedReturnUrl = getUnreferencedReturnUrl(
                 config.getPlatform(), config.getVersion());
 
-        returnRequest.MerchantId = "" + config.getMerchantId();
+        returnRequest.setMerchantId( String.valueOf(config.getMerchantId()) );
 
         String response = connector.ProcessTransaction(HttpMethod.post, unreferencedReturnUrl, returnRequest);
 
@@ -336,12 +335,12 @@ public class PaymentsAPI {
      * @return the PaymentResponse for the final transaction
      * @throws BeanstreamApiException
      */
-    public PaymentResponse UnreferencedReturn(UnreferencedSwipeReturnRequest returnRequest) throws BeanstreamApiException {
+    public PaymentResponse unreferencedReturn(UnreferencedSwipeReturnRequest returnRequest) throws BeanstreamApiException {
 
         String unreferencedReturnUrl = getUnreferencedReturnUrl(
                 config.getPlatform(), config.getVersion());
 
-        returnRequest.MerchantId = "" + config.getMerchantId();
+        returnRequest.setMerchantId( String.valueOf(config.getMerchantId()) );
 
         String response = connector.ProcessTransaction(HttpMethod.post, unreferencedReturnUrl, returnRequest);
 

@@ -32,6 +32,14 @@ public class UnreferencedCardReturnRequest extends ReturnRequest {
     public String paymentMethod = "card";
     public Card card;
     
-    
+    public Card getCard() {
+        if (card == null)
+            card = new Card();
+        return card;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
+    }    
     
 }

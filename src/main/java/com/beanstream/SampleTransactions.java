@@ -157,7 +157,7 @@ public class SampleTransactions {
         CardPaymentRequest req = new CardPaymentRequest();
         req.setAmount("100.00");
         req.setMerchantId("300200578");
-        req.setOrderNumber("430");
+        req.setOrderNumber( getRandomOrderId("test") );
         req.getCard().setName("John Doe")
                 .setNumber("5100000010001004")
                 .setExpiryMonth("12")
@@ -177,7 +177,7 @@ public class SampleTransactions {
         CashPaymentRequest cashReq = new CashPaymentRequest();
         cashReq.setAmount("123.45");
         cashReq.setMerchantId("300200578");
-        cashReq.setOrderNumber("431");
+        cashReq.setOrderNumber( getRandomOrderId("cash") );
 
         try {
 
@@ -192,7 +192,7 @@ public class SampleTransactions {
         ChequePaymentRequest chequeReq = new ChequePaymentRequest();
         chequeReq.setAmount("668.99");
         chequeReq.setMerchantId("300200578");
-        chequeReq.setOrderNumber("432");
+        chequeReq.setOrderNumber( getRandomOrderId("cheque") );
 
         try {
 
@@ -231,7 +231,7 @@ public class SampleTransactions {
         TokenPaymentRequest tokenReq = new TokenPaymentRequest();
         tokenReq.setAmount("100.00");
         tokenReq.setMerchantId("300200578");
-        tokenReq.setOrderNumber("433");
+        tokenReq.setOrderNumber( getRandomOrderId("token") );
         tokenReq.getToken().setName("John Doe")
                 .setCode(tokenResponse.token)
                 .setFunction("12");
@@ -245,4 +245,5 @@ public class SampleTransactions {
         }
 
 	}
+    
 }
