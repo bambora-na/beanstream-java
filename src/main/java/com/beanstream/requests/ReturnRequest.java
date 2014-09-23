@@ -34,7 +34,7 @@ public class ReturnRequest {
     private String merchantId;
     @SerializedName("order_number")
     private String orderNumber;
-    private Double amount;
+    private double amount;
 
     public String getMerchantId() {
         return merchantId;
@@ -52,11 +52,11 @@ public class ReturnRequest {
         this.orderNumber = orderNumber;
     }
 
-    public Double getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
     
