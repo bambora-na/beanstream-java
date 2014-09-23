@@ -22,6 +22,8 @@
  */
 package com.beanstream.requests;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Process Cheque payments. This is a useful way to record a payment that
  * you physically took.
@@ -30,5 +32,6 @@ package com.beanstream.requests;
  * @author ctihor
  */
 public class ChequePaymentRequest extends PaymentRequest {
-    public String payment_method = "cheque";
+    @SerializedName("payment_method")
+    public final String paymentMethod = "cheque";
 }

@@ -86,11 +86,11 @@ public class SampleTransactions {
 
 		CardPaymentRequest paymentRequest = new CardPaymentRequest();
 		paymentRequest.setAmount("90.00");
-		paymentRequest.setMerchant_id("300200578");
-		paymentRequest.setOrder_number(getRandomOrderId("PEDRO"));
+		paymentRequest.setMerchantId("300200578");
+		paymentRequest.setOrderNumber(getRandomOrderId("PEDRO"));
 		paymentRequest.getCard().setName("John Doe")
-				.setNumber("5100000010001004").setExpiry_month("12")
-				.setExpiry_year("18").setCvd("123");
+				.setNumber("5100000010001004").setExpiryMonth("12")
+				.setExpiryYear("18").setCvd("123");
 
 		try {
 			PaymentResponse response = beanstream.payments().makePayment(
@@ -125,11 +125,11 @@ public class SampleTransactions {
 
 		CardPaymentRequest paymentRequest = new CardPaymentRequest();
 		paymentRequest.setAmount("90.00");
-		paymentRequest.setMerchant_id("300200578");
-		paymentRequest.setOrder_number(getRandomOrderId("GAS"));
+		paymentRequest.setMerchantId("300200578");
+		paymentRequest.setOrderNumber(getRandomOrderId("GAS"));
 		paymentRequest.getCard().setName("John Doe")
-				.setNumber("5100000010001004").setExpiry_month("12")
-				.setExpiry_year("18").setCvd("123");
+				.setNumber("5100000010001004").setExpiryMonth("12")
+				.setExpiryYear("18").setCvd("123");
 
 		try {
 			PaymentResponse response = beanstream.payments().preAuth(
@@ -156,12 +156,12 @@ public class SampleTransactions {
         /* Test Card Payment */
         CardPaymentRequest req = new CardPaymentRequest();
         req.setAmount("100.00");
-        req.setMerchant_id("300200578");
-        req.setOrder_number("430");
+        req.setMerchantId("300200578");
+        req.setOrderNumber("430");
         req.getCard().setName("John Doe")
                 .setNumber("5100000010001004")
-                .setExpiry_month("12")
-                .setExpiry_year("18")
+                .setExpiryMonth("12")
+                .setExpiryYear("18")
                 .setCvd("123");
 
         try {
@@ -176,8 +176,8 @@ public class SampleTransactions {
         /* Test Cash Payment */
         CashPaymentRequest cashReq = new CashPaymentRequest();
         cashReq.setAmount("123.45");
-        cashReq.setMerchant_id("300200578");
-        cashReq.setOrder_number("431");
+        cashReq.setMerchantId("300200578");
+        cashReq.setOrderNumber("431");
 
         try {
 
@@ -191,8 +191,8 @@ public class SampleTransactions {
         /* Test Cheque Payment */
         ChequePaymentRequest chequeReq = new ChequePaymentRequest();
         chequeReq.setAmount("668.99");
-        chequeReq.setMerchant_id("300200578");
-        chequeReq.setOrder_number("432");
+        chequeReq.setMerchantId("300200578");
+        chequeReq.setOrderNumber("432");
 
         try {
 
@@ -210,8 +210,8 @@ public class SampleTransactions {
         // thus lowering your scope for PCI compliance
         LegatoTokenRequest tokenRequest = new LegatoTokenRequest();
         tokenRequest.number = "5100000010001004";
-        tokenRequest.expiry_month = 12;
-        tokenRequest.expiry_year = 18;
+        tokenRequest.expiryMonth = 12;
+        tokenRequest.expiryYear = 18;
         tokenRequest.cvd = "123";
 
         String url = "https://www.beanstream.com/scripts/tokenization/tokens";
@@ -230,8 +230,8 @@ public class SampleTransactions {
 
         TokenPaymentRequest tokenReq = new TokenPaymentRequest();
         tokenReq.setAmount("100.00");
-        tokenReq.setMerchant_id("300200578");
-        tokenReq.setOrder_number("433");
+        tokenReq.setMerchantId("300200578");
+        tokenReq.setOrderNumber("433");
         tokenReq.getToken().setName("John Doe")
                 .setCode(tokenResponse.token)
                 .setFunction("12");

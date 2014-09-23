@@ -23,6 +23,7 @@
 package com.beanstream.requests;
 
 import com.beanstream.domain.Card;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Process a Credit Card payment. Along with the regular payment request parameters
@@ -31,7 +32,9 @@ import com.beanstream.domain.Card;
  */
 public class CardPaymentRequest extends PaymentRequest {
     
-    public String payment_method = "card";
+    @SerializedName("payment_method")
+    public final String paymentMethod = "card";
+    
     private Card card;
 
     public Card getCard() {

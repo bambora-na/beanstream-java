@@ -23,11 +23,40 @@
 package com.beanstream.responses;
 
 /**
- *
+ * Links that a response will return.
+ * They are useful for straight REST calls but when
+ * using this SDK they don't provide much purpose.
+ * 
  * @author bowens
  */
 public class Link {
-    public String rel;
-    public String href;
-    public String method;
+    private String rel;
+    private String href;
+    private String method;
+
+    public String getRel() {
+        return rel;
+    }
+
+    protected void setRel(String rel) {
+        this.rel = rel;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    protected void setHref(String href) {
+        this.href = href;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    protected void setMethod(String method) {
+        this.method = method;
+    }
+    
+    
 }

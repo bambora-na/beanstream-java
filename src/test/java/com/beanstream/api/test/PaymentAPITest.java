@@ -45,7 +45,7 @@ public class PaymentAPITest {
 			if (response.isApproved()) {
 				PaymentResponse authResp = beanstream.payments()
 						.preAuthCompletion(response.id, 200,
-								response.order_number);
+								response.orderNumber);
 				if (authResp.isApproved()) {
 					Assert.fail("This auth completion should be not be approved because a lower amount has been pre authorized");
 				}
@@ -77,7 +77,7 @@ public class PaymentAPITest {
 
 		if (response.isApproved()) {
 			PaymentResponse authResp = beanstream.payments().preAuthCompletion(
-					response.id, 120.00, response.order_number + 1);
+					response.id, 120.00, response.orderNumber + 1);
 			if (!authResp.isApproved()) {
 				Assert.fail("This auth completion should be not be approved because the order number is diffrent than the pre-authorized one");
 			}
@@ -154,11 +154,11 @@ public class PaymentAPITest {
 			String merchantId, String amount) {
 		CardPaymentRequest paymentRequest = new CardPaymentRequest();
 		paymentRequest.setAmount(amount);
-		paymentRequest.setMerchant_id(merchantId);
-		paymentRequest.setOrder_number(orderId);
+		paymentRequest.setMerchantId(merchantId);
+		paymentRequest.setOrderNumber(orderId);
 		paymentRequest.getCard().setName("John Doe")
-				.setNumber("5100000010001004").setExpiry_month("12")
-				.setExpiry_year("18").setCvd("123");
+				.setNumber("5100000010001004").setExpiryMonth("12")
+				.setExpiryYear("18").setCvd("123");
 		return paymentRequest;
 	}
 }

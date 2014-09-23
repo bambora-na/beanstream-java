@@ -22,38 +22,49 @@
  */
 package com.beanstream.requests;
 
+import com.beanstream.domain.Address;
+import com.beanstream.domain.CustomFields;
+import com.google.gson.annotations.SerializedName;
+
 /**
- *
+ * A request to make a payment. Specific payment requests need to subclass this
+ * abstract class. Example payments: Card, Cash, Cheque, Token.
+ * 
  * @author bowens
  */
 public abstract class PaymentRequest {
+    
+    @SerializedName("merchant_id")
     private String merchant_id;
-    private String order_number;
+    @SerializedName("order_number")
+    private String orderNumber;
     private String amount;
     private String language;
-    private String customer_ip;
-    private String term_url;
+    @SerializedName("customer_ip")
+    private String customerIp;
+    @SerializedName("term_url")
+    private String termUrl;
     private String comments;
 
-    //public BillingAddress billing;
-    //public ShippingAddress shipping;
-    //public Custom custom;
+    public Address billing;
+    public Address shipping;
+    public CustomFields custom;
     
-    public String getMerchant_id() {
+    public String getMerchantId() {
         return merchant_id;
     }
 
-    public PaymentRequest setMerchant_id(String merchant_id) {
+    public PaymentRequest setMerchantId(String merchant_id) {
         this.merchant_id = merchant_id;
         return this;
     }
 
-    public String getOrder_number() {
-        return order_number;
+    public String getOrderNumber() {
+        return orderNumber;
     }
 
-    public PaymentRequest setOrder_number(String order_number) {
-        this.order_number = order_number;
+    public PaymentRequest setOrderNumber(String order_number) {
+        this.orderNumber = order_number;
         return this;
     }
 
@@ -75,21 +86,21 @@ public abstract class PaymentRequest {
         return this;
     }
 
-    public String getCustomer_ip() {
-        return customer_ip;
+    public String getCustomerIp() {
+        return customerIp;
     }
 
-    public PaymentRequest setCustomer_ip(String customer_ip) {
-        this.customer_ip = customer_ip;
+    public PaymentRequest setCustomerIp(String customer_ip) {
+        this.customerIp = customer_ip;
         return this;
     }
 
-    public String getTerm_url() {
-        return term_url;
+    public String getTermUrl() {
+        return termUrl;
     }
 
-    public PaymentRequest setTerm_url(String term_url) {
-        this.term_url = term_url;
+    public PaymentRequest setTermUrl(String term_url) {
+        this.termUrl = term_url;
         return this;
     }
 
@@ -100,6 +111,30 @@ public abstract class PaymentRequest {
     public PaymentRequest setComments(String comments) {
         this.comments = comments;
         return this;
+    }
+
+    public Address getBilling() {
+        return billing;
+    }
+
+    public void setBilling(Address billing) {
+        this.billing = billing;
+    }
+
+    public Address getShipping() {
+        return shipping;
+    }
+
+    public void setShipping(Address shipping) {
+        this.shipping = shipping;
+    }
+
+    public CustomFields getCustom() {
+        return custom;
+    }
+
+    public void setCustom(CustomFields custom) {
+        this.custom = custom;
     }
     
     

@@ -80,7 +80,7 @@ public class PaymentsAPI {
      */
     public PaymentResponse makePayment(CardPaymentRequest paymentRequest)
             throws BeanstreamApiException {
-        paymentRequest.setMerchant_id("" + config.getMerchantId());
+        paymentRequest.setMerchantId("" + config.getMerchantId());
         paymentRequest.getCard().setComplete(true); // false for pre-auth
 
         // build the URL
@@ -106,7 +106,7 @@ public class PaymentsAPI {
      * or any other error @see
      */
     public PaymentResponse makePayment(TokenPaymentRequest paymentRequest) throws BeanstreamApiException {
-        paymentRequest.setMerchant_id("" + config.getMerchantId());
+        paymentRequest.setMerchantId("" + config.getMerchantId());
         paymentRequest.getToken().setComplete(true); // false for pre-auth
 
         // build the URL

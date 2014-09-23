@@ -22,6 +22,8 @@
  */
 package com.beanstream.requests;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Process Cash payments. This is a useful way to record a payment that
  * you physically took.
@@ -30,5 +32,6 @@ package com.beanstream.requests;
  * @author ctihor
  */
 public class CashPaymentRequest extends PaymentRequest {
-    public String payment_method = "cash";    
+    @SerializedName("payment_method")
+    public final String paymentMethod = "cash";    
 }

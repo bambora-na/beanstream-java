@@ -22,8 +22,12 @@
  */
 package com.beanstream.responses;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- *
+ * The response from a payment request. Use isApproved() to check if the
+ * request was successful and approved, signaling that you received the funds.
+ * 
  * @author bowens
  */
 public class PaymentResponse {
@@ -31,19 +35,23 @@ public class PaymentResponse {
 
     public String approved;
 
-    public String message_id;
+    @SerializedName("message_id")
+    public String messageId;
 
     public String message;
 
-    public String auth_code;
+    @SerializedName("auth_code")
+    public String authCode;
 
     public String created;
 
-    public String order_number;
+    @SerializedName("order_number")
+    public String orderNumber;
 
     public String type;
 
-    public String payment_method;
+    @SerializedName("payment_method")
+    public String paymentMethod;
 
     public CardResponse card;
 

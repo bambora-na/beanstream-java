@@ -23,6 +23,7 @@
 package com.beanstream.requests;
 
 import com.beanstream.domain.Token;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Token payments use a token generated from Beanstream's Legato Javascript utility.
@@ -30,8 +31,9 @@ import com.beanstream.domain.Token;
  * @author ctihor
  */
 public class TokenPaymentRequest extends PaymentRequest {
-
-    public String payment_method = "token";
+    
+    @SerializedName("payment_method")
+    public final String paymentMethod = "token";
     private Token token;
 
     public Token getToken() {

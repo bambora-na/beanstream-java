@@ -20,21 +20,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.beanstream.requests;
-
-import com.google.gson.annotations.SerializedName;
+package com.beanstream.api;
 
 /**
- * The request format for retrieving a payment token from the Legato tokenization
- * service.
- * 
- * @author ctihor
+ *
+ * @author bowens
  */
-public class LegatoTokenRequest {
-    public String number;
-    @SerializedName("expiry_month")
-    public int expiryMonth;
-    @SerializedName("expiry_year")
-    public int expiryYear;
-    public String cvd;
+public class ReportingAPI {
+    
+    
+    public void getTransaction() {
+        
+        
+    }
 }

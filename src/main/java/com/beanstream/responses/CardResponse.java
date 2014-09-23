@@ -22,14 +22,26 @@
  */
 package com.beanstream.responses;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- *
+ * The card that is part of the PaymentResponse.
+ * 
  * @author bowens
  */
 public class CardResponse {
-    public String card_type;
-    public int last_four;
-    public String cvd_match;
-    public String address_match;
-    public String postal_result;
+    @SerializedName("card_type")
+    public String cardType;
+    
+    @SerializedName("last_four")
+    public int lastFour;
+    
+    @SerializedName("cvd_match")
+    public String cvdMatch;
+    
+    @SerializedName("address_match")
+    public String addressMatch;
+    
+    @SerializedName("postal_result")
+    public String postalResult;
 }

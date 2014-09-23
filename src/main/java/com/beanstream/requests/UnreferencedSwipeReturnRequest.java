@@ -22,16 +22,21 @@
  */
 package com.beanstream.requests;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  *
  * @author bomberman
  */
 public class UnreferencedSwipeReturnRequest extends ReturnRequest {
-    public String payment_method = "swipe";
+    
+    @SerializedName("payment_method")
+    public String paymentMethod = "swipe";
     public boolean complete;
-    public String track2_data;
+    @SerializedName("track2_data")
+    public String track2Data;
 
     public UnreferencedSwipeReturnRequest() {
-	complete = true;
+        complete = true;
     }
 }

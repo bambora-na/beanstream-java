@@ -22,13 +22,14 @@
  */
 package com.beanstream.requests;
 import com.beanstream.domain.Card;
+import com.google.gson.annotations.SerializedName;
 /**
  *
  * @author bomberman
  */
 public class UnreferencedCardReturnRequest extends ReturnRequest {
-    
-    public String payment_method = "card";
+    @SerializedName("payment_method")
+    public String paymentMethod = "card";
     public Card card;
     
     

@@ -20,21 +20,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.beanstream.requests;
+package com.beanstream.domain;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The request format for retrieving a payment token from the Legato tokenization
- * service.
+ * A billing or shipping address.
  * 
- * @author ctihor
+ * @author bowens
  */
-public class LegatoTokenRequest {
-    public String number;
-    @SerializedName("expiry_month")
-    public int expiryMonth;
-    @SerializedName("expiry_year")
-    public int expiryYear;
-    public String cvd;
+public class Address {
+    
+    public String name;
+
+    @SerializedName("address_line1")
+    public String addressLine1;
+
+    @SerializedName("address_line2")
+    public String addressLine2;
+
+    public String city;
+
+    public String province;
+
+    public String country;
+
+    @SerializedName("postal_code")
+    public String postalCode;
+
+    @SerializedName("phone_number")
+    public String phoneNumber;
+
+    @SerializedName("email_address")
+    public String emailAddress;
 }

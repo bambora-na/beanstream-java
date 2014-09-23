@@ -20,21 +20,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.beanstream.requests;
+package com.beanstream.domain;
 
-import com.google.gson.annotations.SerializedName;
+import com.beanstream.responses.Link;
+import java.util.List;
 
 /**
- * The request format for retrieving a payment token from the Legato tokenization
- * service.
- * 
- * @author ctihor
+ *
+ * @author bowens
  */
-public class LegatoTokenRequest {
-    public String number;
-    @SerializedName("expiry_month")
-    public int expiryMonth;
-    @SerializedName("expiry_year")
-    public int expiryYear;
-    public String cvd;
+public class Transaction {
+    
+    public String id;
+
+    public String approved;
+
+    public String messageId;
+
+    public String message;
+
+    public String authCode;
+
+    //public DateTime created;
+
+    public String amount;
+
+    public String orderNumber;
+
+    public String type;
+
+    public String comments;
+
+    public String batchNumber;
+
+    public String totalRefunds;
+
+    public String totalCompletions;
+
+    public String paymentMethod;
+
+    public Card card;
+
+    public Address billing;
+
+    public Address shipping;
+
+    public CustomFields customFields;
+
+    public List<Adjustment> adjustments;
+
+    public List<Link> links;
 }

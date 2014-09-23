@@ -22,6 +22,8 @@
  */
 package com.beanstream.domain;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represents a Credit Card.
  * 
@@ -30,8 +32,10 @@ package com.beanstream.domain;
 public class Card {
     public String name;
     public String number;
-    public String expiry_month;
-    public String expiry_year;
+    @SerializedName("expiry_month")
+    public String expiryMonth;
+    @SerializedName("expiry_year")
+    public String expiryYear;
     public String cvd;
     public boolean complete = true; // false for pre-authorizations
 
@@ -53,21 +57,21 @@ public class Card {
         return this;
     }
 
-    public String getExpiry_month() {
-        return expiry_month;
+    public String getExpiryMonth() {
+        return expiryMonth;
     }
 
-    public Card setExpiry_month(String expiry_month) {
-        this.expiry_month = expiry_month;
+    public Card setExpiryMonth(String expiry_month) {
+        this.expiryMonth = expiry_month;
         return this;
     }
 
-    public String getExpiry_year() {
-        return expiry_year;
+    public String getExpiryYear() {
+        return expiryYear;
     }
 
-    public Card setExpiry_year(String expiry_year) {
-        this.expiry_year = expiry_year;
+    public Card setExpiryYear(String expiry_year) {
+        this.expiryYear = expiry_year;
         return this;
     }
 
