@@ -54,8 +54,8 @@ public class SampleTransactions {
 	public static void main(String[] args) {
 		SampleTransactions t = new SampleTransactions();
         t.testPayment();
-		// t.testVoidPayment();
-        //t.testPreAuthorization();
+		t.testVoidPayment();
+        t.testPreAuthorization();
 	}
 
 	private AtomicInteger sequence = new AtomicInteger(1);
