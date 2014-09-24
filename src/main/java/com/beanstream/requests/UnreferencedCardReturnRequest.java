@@ -24,8 +24,8 @@ package com.beanstream.requests;
 import com.beanstream.domain.Card;
 import com.google.gson.annotations.SerializedName;
 /**
- *
- * @author bomberman
+ * A request for a unreferenced return with a credit card. 
+ * @author jchen8000
  */
 public class UnreferencedCardReturnRequest extends ReturnRequest {
     @SerializedName("payment_method")

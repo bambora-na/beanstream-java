@@ -276,7 +276,7 @@ public class PaymentsAPI {
     /**
      * Return a previous payment made through Beanstream.
      *
-     * @param paymentId of the return transaction
+     * @param paymentId payment transaction id to return
      * @param amount final amount to be returned
      * @param orderNumber optional order number of the transaction
      * @return the PaymentResponse for the final transaction

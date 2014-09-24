@@ -25,8 +25,8 @@ package com.beanstream.requests;
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
- * @author bomberman
+ * A request for a unreferenced return with a swipe (Beanstream's mobile reader). 
+ * @author jchen8000
  */
 public class UnreferencedSwipeReturnRequest extends ReturnRequest {
     

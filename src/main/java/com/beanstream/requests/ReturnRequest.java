@@ -25,8 +25,8 @@ package com.beanstream.requests;
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
- * @author bomberman
+ * A request to return a payment. 
+ * @author jchen8000
  */
 public class ReturnRequest {
     
