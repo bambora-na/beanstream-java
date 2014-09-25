@@ -34,35 +34,35 @@ import com.beanstream.api.ReportingAPI;
  */
 public class Gateway {
 
-	private Configuration config;
-	private PaymentsAPI paymentsApi;
+    private Configuration config;
+    private PaymentsAPI paymentsApi;
     private ReportingAPI reportingApi;
 
-	public Gateway(String version, int merchantId, String apiKeyPayments) {
-		config = new Configuration(merchantId, apiKeyPayments);
-		config.setVersion(version);
-	}
+    public Gateway(String version, int merchantId, String apiKeyPayments) {
+        config = new Configuration(merchantId, apiKeyPayments);
+        config.setVersion(version);
+    }
     
     public Gateway(String version, int merchantId, String apiKeyPayments, String apiKeyProfiles) {
-		config = new Configuration(merchantId, apiKeyPayments);
+        config = new Configuration(merchantId, apiKeyPayments);
         config.setProfilesApiPasscode(apiKeyProfiles);
-		config.setVersion(version);
-	}
+        config.setVersion(version);
+    }
     
     public Gateway(String version, int merchantId, String apiKeyPayments, String apiKeyProfiles, String apiKeyReporting) {
-		config = new Configuration(merchantId, apiKeyPayments);
+        config = new Configuration(merchantId, apiKeyPayments);
         config.setReportingApiPasscode(apiKeyProfiles);
         config.setReportingApiPasscode(apiKeyReporting);
-		config.setVersion(version);
-	}
+        config.setVersion(version);
+    }
 
-	public Configuration getConfiguration() {
-		return config;
-	}
+    public Configuration getConfiguration() {
+        return config;
+    }
 
-	public void setConfiguration(Configuration config) {
-		this.config = config;
-	}
+    public void setConfiguration(Configuration config) {
+        this.config = config;
+    }
 
     /**
      * Process payments, pre-auth's, void payments, return payments. Handle credit cards,
@@ -70,9 +70,9 @@ public class Gateway {
      * 
      * @return The API class that does the payment magic
      */
-	public PaymentsAPI payments() {
-		return getPaymentApi();
-	}
+    public PaymentsAPI payments() {
+        return getPaymentApi();
+    }
     
     /**
      * Get a transaction or search for a range of transactions with the Reports
@@ -84,12 +84,12 @@ public class Gateway {
         return getReportingApi();
     }
 
-	private PaymentsAPI getPaymentApi() {
-		if (paymentsApi == null) {
-			paymentsApi = new PaymentsAPI(config);
-		}
-		return paymentsApi;
-	}
+    private PaymentsAPI getPaymentApi() {
+        if (paymentsApi == null) {
+            paymentsApi = new PaymentsAPI(config);
+        }
+        return paymentsApi;
+    }
     
     public void setPaymentsApi(PaymentsAPI api) {
         this.paymentsApi = api;

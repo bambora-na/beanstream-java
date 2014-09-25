@@ -53,10 +53,10 @@ public class HttpsConnector {
         this.apiPasscode = apiPasscode;
     }
     
-	// this should be refactored to to use java naming conventions (start
-	// lowerCase for methods and properties, and Capital for class, Enum,
-	// Contructors etc.)
-	public String ProcessTransaction(HttpMethod httpMethod, String url,
+    // this should be refactored to to use java naming conventions (start
+    // lowerCase for methods and properties, and Capital for class, Enum,
+    // Contructors etc.)
+    public String ProcessTransaction(HttpMethod httpMethod, String url,
 			Object data) throws BeanstreamApiException {
     
         try {
@@ -120,23 +120,22 @@ public class HttpsConnector {
 
     }
 
-	private BeanstreamResponse process(HttpUriRequest http,
-                                       ResponseHandler<BeanstreamResponse> responseHandler) throws IOException {
+    private BeanstreamResponse process(HttpUriRequest http,
+                ResponseHandler<BeanstreamResponse> responseHandler) throws IOException {
         
         CloseableHttpClient httpclient = HttpClients.createDefault();
-		String auth = Base64
-				.encode((merchantId + ":" + apiPasscode).getBytes());
+        String auth = Base64.encode((merchantId + ":" + apiPasscode).getBytes());
         
         http.addHeader("Content-Type", "application/json");
-		http.addHeader("Authorization", "Passcode " + auth);
+        http.addHeader("Authorization", "Passcode " + auth);
 
-		BeanstreamResponse responseBody = httpclient.execute(http, responseHandler);
+        BeanstreamResponse responseBody = httpclient.execute(http, responseHandler);
         
         return responseBody;
     }
     
     private HttpRequest getHttp(HttpMethod httpMethod, StringEntity entity) {
-		if (HttpMethod.post.equals(httpMethod)) {
+        if (HttpMethod.post.equals(httpMethod)) {
             HttpPost http = new HttpPost();
             http.setEntity(entity);
             return http;
@@ -180,9 +179,9 @@ public class HttpsConnector {
         
         if (bsRes != null) {
             return BeanstreamApiException.getMappedException(status, bsRes);
-    }
+        }
 			
         return BeanstreamApiException.getMappedException(status);
-}
+    }
 
 }
