@@ -30,14 +30,14 @@ import com.google.gson.annotations.SerializedName;
  * @author bowens
  */
 public class Card {
-    public String name;
-    public String number;
+    private String name;
+    private String number;
     @SerializedName("expiry_month")
-    public String expiryMonth;
+    private String expiryMonth;
     @SerializedName("expiry_year")
-    public String expiryYear;
-    public String cvd;
-    public boolean complete = true; // false for pre-authorizations
+    private String expiryYear;
+    private String cvd;
+    private boolean complete = true; // false for pre-authorizations
 
     public String getName() {
         return name;
