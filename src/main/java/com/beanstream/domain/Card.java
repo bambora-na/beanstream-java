@@ -105,11 +105,5 @@ public class Card implements Serializable{
         this.complete = complete;
         return this;
     }
-
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
-    
     
 }
