@@ -1,7 +1,12 @@
 package com.beanstream;
 
+import org.apache.http.HttpStatus;
+
 import com.beanstream.api.PaymentsAPI;
+import com.beanstream.api.ProfilesAPI;
 import com.beanstream.api.ReportingAPI;
+import com.beanstream.exceptions.BeanstreamApiException;
+import com.beanstream.responses.BeanstreamResponse;
 
 /* The MIT License (MIT)
  *
@@ -34,76 +39,108 @@ import com.beanstream.api.ReportingAPI;
  */
 public class Gateway {
 
-    private Configuration config;
-    private PaymentsAPI paymentsApi;
-    private ReportingAPI reportingApi;
+	private Configuration config;
+	private PaymentsAPI paymentsApi;
+	private ReportingAPI reportingApi;
 
-    public Gateway(String version, int merchantId, String apiKeyPayments) {
-        config = new Configuration(merchantId, apiKeyPayments);
-        config.setVersion(version);
-    }
-    
-    public Gateway(String version, int merchantId, String apiKeyPayments, String apiKeyProfiles) {
-        config = new Configuration(merchantId, apiKeyPayments);
-        config.setProfilesApiPasscode(apiKeyProfiles);
-        config.setVersion(version);
-    }
-    
-    public Gateway(String version, int merchantId, String apiKeyPayments, String apiKeyProfiles, String apiKeyReporting) {
-        config = new Configuration(merchantId, apiKeyPayments);
-        config.setReportingApiPasscode(apiKeyProfiles);
-        config.setReportingApiPasscode(apiKeyReporting);
-        config.setVersion(version);
-    }
+	public Gateway(String version, int merchantId, String apiKeyPayments) {
+		config = new Configuration(merchantId, apiKeyPayments);
+		config.setVersion(version);
+	}
 
-    public Configuration getConfiguration() {
-        return config;
-    }
+	public Gateway(String version, int merchantId, String apiKeyPayments,
+			String apiKeyProfiles) {
+		config = new Configuration(merchantId, apiKeyPayments);
+		config.setProfilesApiPasscode(apiKeyProfiles);
+		config.setVersion(version);
+	}
 
-    public void setConfiguration(Configuration config) {
-        this.config = config;
-    }
+	public Gateway(String version, int merchantId, String apiKeyPayments,
+			String apiKeyProfiles, String apiKeyReporting) {
+		config = new Configuration(merchantId, apiKeyPayments);
+		config.setReportingApiPasscode(apiKeyProfiles);
+		config.setReportingApiPasscode(apiKeyReporting);
+		config.setVersion(version);
+	}
 
-    /**
-     * Process payments, pre-auth's, void payments, return payments. Handle credit cards,
-     * cash, cheque, and tokenized payments.
-     * 
-     * @return The API class that does the payment magic
-     */
-    public PaymentsAPI payments() {
-        return getPaymentApi();
-    }
-    
-    /**
-     * Get a transaction or search for a range of transactions with the Reports
-     * API.
-     * 
-     * @return API that gives you access to all previous transactions.
-     */
-    public ReportingAPI reports() {
-        return getReportingApi();
-    }
+	public Configuration getConfiguration() {
+		return config;
+	}
 
-    private PaymentsAPI getPaymentApi() {
-        if (paymentsApi == null) {
-            paymentsApi = new PaymentsAPI(config);
+	public void setConfiguration(Configuration config) {
+		this.config = config;
+	}
+
+	/**
+	 * Process payments, pre-auth's, void payments, return payments. Handle
+	 * credit cards, cash, cheque, and tokenized payments.
+	 * 
+	 * @return The API class that does the payment magic
+	 */
+	public PaymentsAPI payments() {
+		return getPaymentApi();
+	}
+
+	/**
+	 * Get a transaction or search for a range of transactions with the Reports
+	 * API.
+	 * 
+	 * @return API that gives you access to all previous transactions.
+	 */
+	public ReportingAPI reports() {
+		return getReportingApi();
+	}
+
+	public ProfilesAPI profiles() {
+		return getProfilesApi();
+	}
+
+	private ProfilesAPI profilesApi;
+
+	private ProfilesAPI getProfilesApi() {
+		if (profilesApi == null) {
+			profilesApi = new ProfilesAPI(config);
+		}
+		return profilesApi;
+	}
+
+	private PaymentsAPI getPaymentApi() {
+		if (paymentsApi == null) {
+			paymentsApi = new PaymentsAPI(config);
+		}
+		return paymentsApi;
+	}
+
+	public void setPaymentsApi(PaymentsAPI api) {
+		this.paymentsApi = api;
+	}
+
+	private ReportingAPI getReportingApi() {
+		if (reportingApi == null)
+			reportingApi = new ReportingAPI(config);
+		return reportingApi;
+	}
+
+	public void setReportingApi(ReportingAPI api) {
+		this.reportingApi = api;
+	}
+
+	public static void assertNotEmpty(String value, String errorMessage)
+            throws BeanstreamApiException {
+        // could use StringUtils.assertNotNull();
+        if (value == null || value.trim().isEmpty()) {
+            // TODO - do we need to supply category and code ids here?
+            BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
+            throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
         }
-        return paymentsApi;
     }
-    
-    public void setPaymentsApi(PaymentsAPI api) {
-        this.paymentsApi = api;
+	public static void assertNotNull(Object value, String errorMessage)
+            throws BeanstreamApiException {
+        // could use StringUtils.assertNotNull();
+        if (value == null) {
+            // TODO - do we need to supply category and code ids here?
+            BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
+            throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
+        }
     }
-
-    private ReportingAPI getReportingApi() {
-        if (reportingApi == null)
-            reportingApi = new ReportingAPI(config);
-        return reportingApi;
-    }
-
-    public void setReportingApi(ReportingAPI api) {
-        this.reportingApi = api;
-    }
-    
-    
 }

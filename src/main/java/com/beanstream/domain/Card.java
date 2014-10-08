@@ -32,9 +32,7 @@ import com.google.gson.annotations.SerializedName;
  * @author bowens
  */
 public class Card implements Serializable{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private String id;
     private String name;

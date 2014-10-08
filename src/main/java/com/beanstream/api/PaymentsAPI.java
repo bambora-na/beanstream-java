@@ -23,6 +23,7 @@
 package com.beanstream.api;
 
 import com.beanstream.Configuration;
+import com.beanstream.Gateway;
 import com.beanstream.connection.BeanstreamUrls;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
@@ -38,7 +39,9 @@ import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.responses.PaymentResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
 import org.apache.http.HttpStatus;
+
 
 
 import static com.beanstream.connection.BeanstreamUrls.*;
@@ -181,7 +184,7 @@ public class PaymentsAPI {
     public PaymentResponse voidPayment(String paymentId, double amount)
             throws BeanstreamApiException {
 
-        assertNotEmpty(paymentId, "invalid paymentId");
+    	Gateway.assertNotEmpty(paymentId, "invalid paymentId");
         String url = getVoidPaymentUrl(config.getPlatform(),
                 config.getVersion(), paymentId);
 
@@ -244,7 +247,7 @@ public class PaymentsAPI {
     public PaymentResponse preAuthCompletion(String paymentId, double amount,
             String orderNumber) throws BeanstreamApiException {
 
-        assertNotEmpty(paymentId, "Invalid Payment Id");
+    	Gateway.assertNotEmpty(paymentId, "Invalid Payment Id");
 
         String authorizePaymentUrl = getPreAuthCompletionsUrl(
                 config.getPlatform(), config.getVersion(), paymentId);
@@ -263,16 +266,6 @@ public class PaymentsAPI {
 
     }
 
-    private void assertNotEmpty(String value, String errorMessage)
-            throws BeanstreamApiException {
-        // could use StringUtils.assertNotNull();
-        if (value == null || value.trim().isEmpty()) {
-            // TODO - do we need to supply category and code ids here?
-            BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
-            throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
-        }
-    }
-
     /**
      * Return a previous payment made through Beanstream.
      *
@@ -285,7 +278,7 @@ public class PaymentsAPI {
     public PaymentResponse Return(String paymentId, double amount,
             String orderNumber) throws BeanstreamApiException {
 
-        assertNotEmpty(paymentId, "Invalid Payment Id");
+    	Gateway.assertNotEmpty(paymentId, "Invalid Payment Id");
 
         String returnPaymentUrl = getReturnUrl(
                 config.getPlatform(), config.getVersion(), paymentId);
