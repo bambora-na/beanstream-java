@@ -32,17 +32,35 @@ import java.text.MessageFormat;
 public class BeanstreamUrls {
 	public static final String BaseUrl = "https://{0}.beanstream.com/api";
 	public static final String BasePaymentsUrl = BaseUrl + "/{1}/payments";
-    public static final String GetPaymentUrl =  BasePaymentsUrl + "/{2}";
+	public static final String GetPaymentUrl = BasePaymentsUrl + "/{2}";
 	public static final String BaseProfilesUrl = BaseUrl + "/{1}/profiles";
 	public static final String PreAuthCompletionsUrl = BasePaymentsUrl
 			+ "/{2}/completions";
 	public static final String ReturnsUrl = BasePaymentsUrl + "/{2}/returns";
-        
+
 	public static final String VoidsUrl = BasePaymentsUrl + "/{2}/void";
 	public static final String ContinuationsUrl = BasePaymentsUrl
 			+ "/{2}/continue";
 	public static final String ProfileUri = "/{id}";
 	public static final String CardsUri = ProfileUri + "/cards";
+
+	public static final String ProfilesUrl = BaseUrl + "{1}/profiles";
+
+	public static String getProfilesUrl(String platform, String version) {
+		return MessageFormat.format(BeanstreamUrls.ProfilesUrl, platform, version);
+	}
+	
+	public static String getProfileCardUrl(String platform, String version, String profileId, String cardId) {
+		return MessageFormat.format(BeanstreamUrls.ProfilesUrl +"/{2}/cards/{3}", platform, version, profileId, cardId);
+	}
+	
+	public static String getProfileCardsUrl(String platform, String version, String profileId) {
+		return MessageFormat.format(BeanstreamUrls.ProfilesUrl +"/{2}/cards", platform, version, profileId);
+	}
+	
+	public static String getProfilesUrl(String platform, String version, String profileId) {
+		return MessageFormat.format(BeanstreamUrls.ProfilesUrl +"/{2}", platform, version, profileId);
+	}
 
 	public static String getPaymentUrl(String platform, String version) {
 		return MessageFormat.format(BeanstreamUrls.BasePaymentsUrl, platform,
@@ -60,20 +78,22 @@ public class BeanstreamUrls {
 		return MessageFormat.format(BeanstreamUrls.VoidsUrl, platform, version,
 				paymentId);
 	}
-        
-    public static String getReturnUrl(String platform,
-        String version, String paymentId){
-            return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform, version,
-            paymentId);
-    }
 
-    public static String getUnreferencedReturnUrl(String platform,
-        String version){
-            return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform, version, "0");
-    }
-    
-    public static String getPaymentUrl(String platform, String version, String paymentId) {
-		return MessageFormat.format(BeanstreamUrls.GetPaymentUrl, platform, version,
-				paymentId);
+	public static String getReturnUrl(String platform, String version,
+			String paymentId) {
+		return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform,
+				version, paymentId);
+	}
+
+	public static String getUnreferencedReturnUrl(String platform,
+			String version) {
+		return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform,
+				version, "0");
+	}
+
+	public static String getPaymentUrl(String platform, String version,
+			String paymentId) {
+		return MessageFormat.format(BeanstreamUrls.GetPaymentUrl, platform,
+				version, paymentId);
 	}
 }

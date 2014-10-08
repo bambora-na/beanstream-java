@@ -22,6 +22,8 @@
  */
 package com.beanstream.domain;
 
+import java.io.Serializable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -29,17 +31,30 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author bowens
  */
-public class Card {
-    public String name;
-    public String number;
+public class Card implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String id;
+    private String name;
+    private String number;
     @SerializedName("expiry_month")
-    public String expiryMonth;
+    private String expiryMonth;
     @SerializedName("expiry_year")
-    public String expiryYear;
-    public String cvd;
-    public boolean complete = true; // false for pre-authorizations
+    private String expiryYear;
+    private String cvd;
+    private boolean complete = true; // false for pre-authorizations
 
-    public String getName() {
+    public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
         return name;
     }
 
@@ -92,6 +107,11 @@ public class Card {
         this.complete = complete;
         return this;
     }
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
     
     
 }

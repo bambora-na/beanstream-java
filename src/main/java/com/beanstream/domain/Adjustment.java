@@ -28,19 +28,66 @@ package com.beanstream.domain;
  */
 public class Adjustment {
     
-    public String id;
+    private String id;
 
-    public String type;
+    private String type;
 
-    public String approval;
+    private String approval;
 
-    public String message;
+    private String message;
 
-    public String amount;
+    private String amount;
 
     //public DateTime created;
 
-    public String url;
-    
+    private String url;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getApproval() {
+		return approval;
+	}
+
+	public void setApproval(String approval) {
+		this.approval = approval;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
     
 }

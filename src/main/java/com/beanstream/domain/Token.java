@@ -28,10 +28,10 @@ package com.beanstream.domain;
  */
 public class Token {
 
-    public boolean complete = true;
-    public String name;
-    public String code;
-    public String function;
+    private boolean complete = true;
+    private String name;
+    private String code;
+    private String function;
 
     public String getName() {
         return name;

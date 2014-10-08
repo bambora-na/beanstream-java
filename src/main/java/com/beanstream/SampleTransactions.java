@@ -271,7 +271,7 @@ public class SampleTransactions {
 				
                 Transaction transaction = beanstream.reports().getTransaction(response.id);
 
-                System.out.println("Transaction: "+transaction.amount + " approved? "+transaction.approved);
+                System.out.println("Transaction: "+transaction.getAmount() + " approved? "+transaction.getApproved());
 			}
 		} catch (BeanstreamApiException ex) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,

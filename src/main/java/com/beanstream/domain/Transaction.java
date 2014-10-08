@@ -35,43 +35,204 @@ import java.util.List;
  */
 public class Transaction {
     
-    public String id;
+    private String id;
 
-    public String approved;
+    private String approved;
 
-    public String messageId;
+    private String messageId;
 
-    public String message;
+    private String message;
 
-    public String authCode;
+    private String authCode;
 
-    public String created;
+    private String created;
 
-    public String amount;
+    private String amount;
 
-    public String orderNumber;
+    private String orderNumber;
 
-    public String type;
+    private String type;
 
-    public String comments;
+    private String comments;
 
-    public String batchNumber;
+    private String batchNumber;
 
-    public String totalRefunds;
+    private String totalRefunds;
 
-    public String totalCompletions;
+    private String totalCompletions;
 
-    public String paymentMethod;
+    private String paymentMethod;
 
-    public Card card;
+    private Card card;
 
-    public Address billing;
+    private Address billing;
 
-    public Address shipping;
+    private Address shipping;
 
-    public CustomFields customFields;
+    private CustomFields customFields;
 
-    public List<Adjustment> adjustments;
+    private List<Adjustment> adjustments;
 
-    public List<Link> links;
+    private List<Link> links;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getApproved() {
+		return approved;
+	}
+
+	public void setApproved(String approved) {
+		this.approved = approved;
+	}
+
+	public String getMessageId() {
+		return messageId;
+	}
+
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getAuthCode() {
+		return authCode;
+	}
+
+	public void setAuthCode(String authCode) {
+		this.authCode = authCode;
+	}
+
+	public String getCreated() {
+		return created;
+	}
+
+	public void setCreated(String created) {
+		this.created = created;
+	}
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getComments() {
+		return comments;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+
+	public String getBatchNumber() {
+		return batchNumber;
+	}
+
+	public void setBatchNumber(String batchNumber) {
+		this.batchNumber = batchNumber;
+	}
+
+	public String getTotalRefunds() {
+		return totalRefunds;
+	}
+
+	public void setTotalRefunds(String totalRefunds) {
+		this.totalRefunds = totalRefunds;
+	}
+
+	public String getTotalCompletions() {
+		return totalCompletions;
+	}
+
+	public void setTotalCompletions(String totalCompletions) {
+		this.totalCompletions = totalCompletions;
+	}
+
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
+
+	public Card getCard() {
+		return card;
+	}
+
+	public void setCard(Card card) {
+		this.card = card;
+	}
+
+	public Address getBilling() {
+		return billing;
+	}
+
+	public void setBilling(Address billing) {
+		this.billing = billing;
+	}
+
+	public Address getShipping() {
+		return shipping;
+	}
+
+	public void setShipping(Address shipping) {
+		this.shipping = shipping;
+	}
+
+	public CustomFields getCustomFields() {
+		return customFields;
+	}
+
+	public void setCustomFields(CustomFields customFields) {
+		this.customFields = customFields;
+	}
+
+	public List<Adjustment> getAdjustments() {
+		return adjustments;
+	}
+
+	public void setAdjustments(List<Adjustment> adjustments) {
+		this.adjustments = adjustments;
+	}
+
+	public List<Link> getLinks() {
+		return links;
+	}
+
+	public void setLinks(List<Link> links) {
+		this.links = links;
+	}
+    
 }

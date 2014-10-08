@@ -31,26 +31,99 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Address {
     
-    public String name;
+    private String name;
 
     @SerializedName("address_line1")
-    public String addressLine1;
+    private String addressLine1;
 
     @SerializedName("address_line2")
-    public String addressLine2;
+    private String addressLine2;
 
-    public String city;
+    private String city;
 
-    public String province;
+    private String province;
 
-    public String country;
+    private String country;
 
     @SerializedName("postal_code")
-    public String postalCode;
+    private String postalCode;
 
     @SerializedName("phone_number")
-    public String phoneNumber;
+    private String phoneNumber;
 
     @SerializedName("email_address")
-    public String emailAddress;
+    private String emailAddress;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAddressLine1() {
+		return addressLine1;
+	}
+
+	public void setAddressLine1(String addressLine1) {
+		this.addressLine1 = addressLine1;
+	}
+
+	public String getAddressLine2() {
+		return addressLine2;
+	}
+
+	public void setAddressLine2(String addressLine2) {
+		this.addressLine2 = addressLine2;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+    
 }
