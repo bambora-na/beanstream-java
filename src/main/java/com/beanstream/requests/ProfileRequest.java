@@ -18,6 +18,10 @@ public class ProfileRequest {
 	public void setCard(Card card) {
 		this.card = card;
 	}
+	public ProfileRequest card(Card card) {
+		this.card = card;
+		return this;
+	}
 
 	public Address getBilling() {
 		return billing;
@@ -25,6 +29,11 @@ public class ProfileRequest {
 
 	public void setBilling(Address billing) {
 		this.billing = billing;
+	}
+	
+	public ProfileRequest billing(Address billing){
+		this.billing = billing;
+		return this;
 	}
 
 	public CustomFields getCustom() {
@@ -34,13 +43,21 @@ public class ProfileRequest {
 	public void setCustom(CustomFields custom) {
 		this.custom = custom;
 	}
-
+	
+	public ProfileRequest custom(CustomFields custom){
+		setCustom(custom);
+		return this;
+	}
 	public String getLanguage() {
 		return language;
 	}
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+	public ProfileRequest language(String language){
+		setLanguage(language);
+		return this;
 	}
 
 	public String getComments() {
@@ -53,5 +70,9 @@ public class ProfileRequest {
 		}
 		this.comments = comments;
 	}
-
+	public ProfileRequest comments(String comments){
+		setComments(comments);
+		return this;
+	}
+	
 }

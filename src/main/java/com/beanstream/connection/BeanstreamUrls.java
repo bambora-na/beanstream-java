@@ -41,25 +41,25 @@ public class BeanstreamUrls {
 	public static final String VoidsUrl = BasePaymentsUrl + "/{2}/void";
 	public static final String ContinuationsUrl = BasePaymentsUrl
 			+ "/{2}/continue";
-	public static final String ProfileUri = "/{id}";
+	public static final String ProfileUri = BaseProfilesUrl + "/{id}";
 	public static final String CardsUri = ProfileUri + "/cards";
 
-	public static final String ProfilesUrl = BaseUrl + "{1}/profiles";
+	
 
 	public static String getProfilesUrl(String platform, String version) {
-		return MessageFormat.format(BeanstreamUrls.ProfilesUrl, platform, version);
+		return MessageFormat.format(BeanstreamUrls.BaseProfilesUrl, platform, version);
 	}
 	
 	public static String getProfileCardUrl(String platform, String version, String profileId, String cardId) {
-		return MessageFormat.format(BeanstreamUrls.ProfilesUrl +"/{2}/cards/{3}", platform, version, profileId, cardId);
+		return MessageFormat.format(BeanstreamUrls.BaseProfilesUrl +"/{2}/cards/{3}", platform, version, profileId, cardId);
 	}
 	
 	public static String getProfileCardsUrl(String platform, String version, String profileId) {
-		return MessageFormat.format(BeanstreamUrls.ProfilesUrl +"/{2}/cards", platform, version, profileId);
+		return MessageFormat.format(BeanstreamUrls.BaseProfilesUrl +"/{2}/cards", platform, version, profileId);
 	}
 	
 	public static String getProfilesUrl(String platform, String version, String profileId) {
-		return MessageFormat.format(BeanstreamUrls.ProfilesUrl +"/{2}", platform, version, profileId);
+		return MessageFormat.format(BeanstreamUrls.BaseProfilesUrl +"/{2}", platform, version, profileId);
 	}
 
 	public static String getPaymentUrl(String platform, String version) {

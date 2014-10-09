@@ -58,7 +58,7 @@ public class Gateway {
 	public Gateway(String version, int merchantId, String apiKeyPayments,
 			String apiKeyProfiles, String apiKeyReporting) {
 		config = new Configuration(merchantId, apiKeyPayments);
-		config.setReportingApiPasscode(apiKeyProfiles);
+		config.setProfilesApiPasscode(apiKeyProfiles);
 		config.setReportingApiPasscode(apiKeyReporting);
 		config.setVersion(version);
 	}

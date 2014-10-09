@@ -15,6 +15,7 @@ import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.ProfileRequest;
 import com.beanstream.responses.ProfileCardsResponse;
 import com.beanstream.responses.ProfileResponse;
+import com.beanstream.util.ProfilesUtils;
 import com.google.gson.Gson;
 
 public class ProfilesAPI {
@@ -37,28 +38,24 @@ public class ProfilesAPI {
 
 	public ProfileResponse createProfile(Card card, Address billing)
 			throws BeanstreamApiException {
-		ProfileRequest request = new ProfileRequest();
-		request.setBilling(billing);
-		request.setCard(card);
+		ProfileRequest request = new ProfileRequest().billing(billing).card(
+				card);
 		return createProfile(request);
 	}
 
 	public ProfileResponse createProfile(Card card, Address billing,
-			CustomFields customs, String language, String comments)
+			CustomFields custom, String language, String comments)
 			throws BeanstreamApiException {
-		ProfileRequest request = new ProfileRequest();
-		request.setBilling(billing);
-		request.setCard(card);
-		request.setLanguage(language);
-		request.setComments(comments);
-		request.setCustom(customs);
+		ProfileRequest request = new ProfileRequest().card(card)
+				.billing(billing).language(language).comments(comments)
+				.custom(custom);
 		return createProfile(request);
 	}
 
 	public ProfileResponse createProfile(ProfileRequest profileRequest)
 			throws BeanstreamApiException {
 
-		validateProfileRequest(profileRequest);
+		ProfilesUtils.validateProfileRequest(profileRequest);
 
 		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion());
@@ -71,7 +68,7 @@ public class ProfilesAPI {
 
 	public PaymentProfile getProfileById(String profileId)
 			throws BeanstreamApiException {
-		validateProfileId(profileId);
+		ProfilesUtils.validateProfileId(profileId);
 		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion(), profileId);
 
@@ -81,9 +78,41 @@ public class ProfilesAPI {
 
 	}
 
-	public List<Card> getCardsByProfileId(String profileId)
+	public ProfileResponse deleteProfileById(String profileId)
 			throws BeanstreamApiException {
-		validateProfileId(profileId);
+
+		ProfilesUtils.validateProfileId(profileId);
+		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
+				config.getVersion(), profileId);
+
+		String response = connector.ProcessTransaction(HttpMethod.delete, url,
+				null);
+		return gson.fromJson(response, ProfileResponse.class);
+
+	}
+
+	public ProfileResponse updateProfile(PaymentProfile profile)
+			throws BeanstreamApiException {
+		Gateway.assertNotNull(profile, "profile to update is null");
+		ProfilesUtils.validateProfileId(profile.getId());
+
+		// validateCard(profile.getCard());
+		ProfilesUtils.validateBillingAddress(profile.getBilling());
+
+		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
+				config.getVersion(), profile.getId());
+		// don't send the card in the update request only
+		Card card = profile.getCard();
+		profile.setCard(null);
+		String profileJson = gson.toJson(profile);
+		profile.setCard(card);
+		String response = connector.ProcessTransaction(HttpMethod.delete, url,
+				profileJson);
+		return gson.fromJson(response, ProfileResponse.class);
+	}
+
+	public List<Card> getCards(String profileId) throws BeanstreamApiException {
+		ProfilesUtils.validateProfileId(profileId);
 		String url = BeanstreamUrls.getProfileCardsUrl(config.getPlatform(),
 				config.getVersion(), profileId);
 
@@ -98,7 +127,8 @@ public class ProfilesAPI {
 	public Card getCard(String profileId, String cardId)
 			throws BeanstreamApiException {
 
-		validateProfileId(profileId);
+		ProfilesUtils.validateProfileId(profileId);
+		Gateway.assertNotEmpty(cardId, "card id is empty");
 		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
 
@@ -117,14 +147,17 @@ public class ProfilesAPI {
 
 	}
 
-	public ProfileResponse updateProfileCard(String profileId, Card card)
+	public ProfileResponse updateCard(String profileId, Card card)
 			throws BeanstreamApiException {
-		validateProfileId(profileId);
+		ProfilesUtils.validateProfileId(profileId);
+		Gateway.assertNotNull(card, "card it to to update is empty");
 		String cardId = card.getId();
+		Gateway.assertNotEmpty(cardId, "card id it to update is empty");
+
 		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
 
-		validateCard(card);
+		ProfilesUtils.validateCard(card);
 		// send the card json without id
 		card.setId(null);
 		String cardJson = gson.toJson(card, Card.class);
@@ -136,25 +169,25 @@ public class ProfilesAPI {
 
 	}
 
-	public ProfileResponse addProfileCard(String profileId, Card card)
+	public ProfileResponse addCard(String profileId, Card card)
 			throws BeanstreamApiException {
-		validateProfileId(profileId);
+		ProfilesUtils.validateProfileId(profileId);
 		String url = BeanstreamUrls.getProfileCardsUrl(config.getPlatform(),
 				config.getVersion(), profileId);
 
-		validateCard(card);
+		ProfilesUtils.validateCard(card);
 		String response = connector.ProcessTransaction(HttpMethod.post, url,
 				card);
 		return gson.fromJson(response, ProfileResponse.class);
 
 	}
 
-	public ProfileResponse deleteProfileById(String profileId)
+	public ProfileResponse removeCard(String profileId, String cardId)
 			throws BeanstreamApiException {
-
-		validateProfileId(profileId);
-		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
-				config.getVersion(), profileId);
+		ProfilesUtils.validateProfileId(profileId);
+		Gateway.assertNotEmpty(cardId, "card it to remove is empty");
+		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
+				config.getVersion(), profileId, cardId);
 
 		String response = connector.ProcessTransaction(HttpMethod.delete, url,
 				null);
@@ -162,79 +195,4 @@ public class ProfilesAPI {
 
 	}
 
-	public ProfileResponse updateProfile(PaymentProfile profile)
-			throws BeanstreamApiException {
-		Gateway.assertNotNull(profile, "profile to update is null");
-		validateProfileId(profile.getId());
-
-		// validateCard(profile.getCard());
-		validateBillingAddress(profile.getBilling());
-
-		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
-				config.getVersion(), profile.getId());
-		// don't send the card in the update request only
-		Card card = profile.getCard();
-		profile.setCard(null);
-		String profileJson = gson.toJson(profile);
-		profile.setCard(card);
-		String response = connector.ProcessTransaction(HttpMethod.delete, url,
-				profileJson);
-		return gson.fromJson(response, ProfileResponse.class);
-	}
-
-	private void validateProfileId(String profileId)
-			throws BeanstreamApiException {
-		Gateway.assertNotEmpty(profileId,
-				"profile id is not valid because is empty");
-	}
-
-	private void validateCard(Card card) throws BeanstreamApiException {
-		Gateway.assertNotNull(card,
-				"profile request is not valid because the card object is null");
-		Gateway.assertNotEmpty(card.getName(),
-				"profile request is not valid because the name on card is empty");
-		Gateway.assertNotEmpty(card.getNumber(),
-				"profile request is not valid because the card number is empty");
-		Gateway.assertNotEmpty(card.getExpiryMonth(),
-				"profile request is not valid because the card expiry month is empty");
-		Gateway.assertNotEmpty(card.getExpiryYear(),
-				"profile request is not valid because the card expiry year is empty");
-	}
-
-	private void validateBillingAddress(Address billing)
-			throws BeanstreamApiException {
-		Gateway.assertNotNull(billing,
-				"profile request is not valid because the billing address object is null");
-		Gateway.assertNotEmpty(billing.getName(),
-				"profile request is not valid because the billing address name is empty");
-		Gateway.assertNotEmpty(billing.getEmailAddress(),
-				"profile request is not valid because the billing address email is empty");
-		Gateway.assertNotEmpty(
-				billing.getPhoneNumber(),
-				"profile request is not valid because the billing address phone number is empty");
-		Gateway.assertNotEmpty(billing.getAddressLine1(),
-				"profile request is not valid because the billing address line1 is empty");
-
-		Gateway.assertNotEmpty(billing.getCity(),
-				"profile request is not valid because the billing address city is empty");
-		Gateway.assertNotEmpty(
-				billing.getProvince(),
-				"profile request is not valid because the billing address province/state is empty");
-		Gateway.assertNotEmpty(billing.getCountry(),
-				"profile request is not valid because the billing address country is empty");
-	}
-
-	/**
-	 * Validate all required properties in the profile request are valid Throws
-	 * a BeanstreamApiException with a bad request status, if any required
-	 * property is missing
-	 */
-	private void validateProfileRequest(ProfileRequest profileRequest)
-			throws BeanstreamApiException {
-		Gateway.assertNotNull(profileRequest, "profile request object is null");
-		Card card = profileRequest.getCard();
-		Address billing = profileRequest.getBilling();
-		validateCard(card);
-		validateBillingAddress(billing);
-	}
 }

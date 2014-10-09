@@ -1,24 +1,17 @@
 package com.beanstream.api.test;
 
-import com.beanstream.Gateway;
+import junit.framework.Assert;
+
+import org.junit.Test;
+
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.UnreferencedCardReturnRequest;
 import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.responses.BeanstreamResponseBuilder;
 import com.beanstream.responses.PaymentResponse;
-import junit.framework.Assert;
-import org.junit.Test;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class PaymentAPITest {
-
-	private AtomicInteger sequence = new AtomicInteger(1);
-	Gateway beanstream = new Gateway("v1", 300200578,
-			"4BaD82D9197b4cc4b70a221911eE9f70");
+public class PaymentAPITest extends BaseBeanstreamTest{
 
 	@Test
 	public void preAuth() throws BeanstreamApiException {
@@ -170,36 +163,5 @@ public class PaymentAPITest {
 
         }
         
-        
-	private String getRandomOrderId(String prefix) {
-		String orderId = null;
-		Date date = new Date();
-		StringBuilder sb = new StringBuilder();
-		if (prefix != null) {
-			sb.append(prefix);
-			sb.append("_");
-		}
-		SimpleDateFormat df = new SimpleDateFormat("MMkkmmssSSSS");
-		sb.append(sequence.getAndIncrement());
-		sb.append("_");
-		sb.append(df.format(date));
-		orderId = sb.toString();
-		if (orderId.length() > 30) {
-			orderId = orderId.substring(0, 29);
-		}
-		return orderId;
-	}
-
-	private CardPaymentRequest getCreditCardPaymentRequest(String orderId,
-			String merchantId, String amount) {
-		CardPaymentRequest paymentRequest = new CardPaymentRequest();
-		paymentRequest.setAmount(amount);
-		paymentRequest.setMerchantId(merchantId);
-		paymentRequest.setOrderNumber(orderId);
-		paymentRequest.getCard().setName("John Doe")
-				.setNumber("5100000010001004").setExpiryMonth("12")
-				.setExpiryYear("18").setCvd("123");
-		return paymentRequest;
-	}
 }
 
