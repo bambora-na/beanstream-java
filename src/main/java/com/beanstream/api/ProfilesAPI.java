@@ -38,6 +38,13 @@ public class ProfilesAPI {
 				config.getProfilesApiPasscode());
 	}
 
+	/**
+	 * <p>Create a profile with all information sent in the parameters billing, card</p>
+	 * @param card to be default in the profile <b>*Required</b>
+	 * @param billing address of the card holders <b>*Required</b>
+	 * @return profile response of the request
+	 * @throws BeanstreamApiException if any validation or error occur
+	 */
 	public ProfileResponse createProfile(Card card, Address billing)
 			throws BeanstreamApiException {
 		ProfileRequest request = new ProfileRequest().billing(billing).card(
@@ -45,6 +52,16 @@ public class ProfilesAPI {
 		return createProfile(request);
 	}
 
+	/**
+	 * <p>Create a profile with all information sent in the parameters like (billing, card, comments, etc.)</p>
+	 * @param card to be default in the profile <b>*Required</b>
+	 * @param billing address of the card holders <b>*Required</b>
+	 * @param custom fields <b>Optional</p>
+	 * @param comments field <b>Optional</p>
+	 * @param language field <b>Optional</p>
+	 * @return profile response of the request
+	 * @throws BeanstreamApiException if any validation or error occur
+	 */
 	public ProfileResponse createProfile(Card card, Address billing,
 			CustomFields custom, String language, String comments)
 			throws BeanstreamApiException {
@@ -54,6 +71,14 @@ public class ProfilesAPI {
 		return createProfile(request);
 	}
 
+	/**
+	 * <p>Create a profile with all information contained in the ProfileRequest
+	 * object like (billing, card, comments, etc.)</p>
+	 * 
+	 * @param profileRequest to create
+	 * @return profile response of the request
+	 * @throws BeanstreamApiException if any validation or error occur
+	 */
 	public ProfileResponse createProfile(ProfileRequest profileRequest)
 			throws BeanstreamApiException {
 
@@ -68,6 +93,18 @@ public class ProfilesAPI {
 
 	}
 
+	/**
+	 * <p>
+	 * Retrieve a profile using the profile's ID. If you want to modify a
+	 * profile you must first retrieve it using this method
+	 * </p>
+	 * 
+	 * @param the
+	 *            id of the profile to retrieve
+	 * @return PaymentProfile if the profile is successfully found.
+	 * @throws BeanstreamApiException
+	 *             if the profile id is not found or any error occur
+	 */
 	public PaymentProfile getProfileById(String profileId)
 			throws BeanstreamApiException {
 		ProfilesUtils.validateProfileId(profileId);
@@ -80,6 +117,15 @@ public class ProfilesAPI {
 
 	}
 
+	/**
+	 * <p>
+	 * Delete the profile. You must send and valid profileId
+	 * </p>
+	 * 
+	 * @param the id of the profile to delete
+	 * @return The profile response if successful, an BeanstreamApiException if
+	 *         not.
+	 **/
 	public ProfileResponse deleteProfileById(String profileId)
 			throws BeanstreamApiException {
 
@@ -93,6 +139,16 @@ public class ProfilesAPI {
 
 	}
 
+	/**
+	 * <p>
+	 * Updates the profile. You must first retrieve the profile using
+	 * ProfilesAPI.getProfileById(id)
+	 * </p>
+	 * 
+	 * @param profile object to update
+	 * @return The profile response if successful, an BeanstreamApiException if
+	 *         not.
+	 **/
 	public ProfileResponse updateProfile(PaymentProfile profile)
 			throws BeanstreamApiException {
 		Gateway.assertNotNull(profile, "profile to update is null");
@@ -103,14 +159,15 @@ public class ProfilesAPI {
 
 		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion(), profile.getId());
-		
+
 		JsonObject req = new JsonObject();
-		req.add("billing", gson.toJsonTree(profile.getBilling(),Address.class));
-		req.add("custom", gson.toJsonTree(profile.getCustom(),CustomFields.class));
-		req.addProperty("language",profile.getLanguage());
-		req.addProperty("comments",profile.getComments());
-		String response = connector.ProcessTransaction(HttpMethod.put, url,
-				req);
+		req.add("billing", gson.toJsonTree(profile.getBilling(), Address.class));
+		req.add("custom",
+				gson.toJsonTree(profile.getCustom(), CustomFields.class));
+		req.addProperty("language", profile.getLanguage());
+		req.addProperty("comments", profile.getComments());
+		String response = connector
+				.ProcessTransaction(HttpMethod.put, url, req);
 		return gson.fromJson(response, ProfileResponse.class);
 	}
 
@@ -144,7 +201,7 @@ public class ProfilesAPI {
 			card = null;
 		} else {
 			card = pcr.getCards().get(0);
-//			card.setId(cardId);
+			// card.setId(cardId);
 		}
 		return card;
 
@@ -152,7 +209,7 @@ public class ProfilesAPI {
 
 	public ProfileResponse updateCard(String profileId, Card card)
 			throws BeanstreamApiException {
-		
+
 		ProfilesUtils.validateProfileId(profileId);
 		Gateway.assertNotNull(card, "card it to to update is empty");
 		String cardId = card.getId();
@@ -160,9 +217,9 @@ public class ProfilesAPI {
 		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
 		ProfilesUtils.validateCard(card);
-		
+
 		// send the card json without id
-		JsonElement _card = gson.toJsonTree(card,Card.class);
+		JsonElement _card = gson.toJsonTree(card, Card.class);
 		String response = connector.ProcessTransaction(HttpMethod.put, url,
 				_card);
 		return gson.fromJson(response, ProfileResponse.class);

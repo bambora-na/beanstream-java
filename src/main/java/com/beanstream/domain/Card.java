@@ -45,6 +45,7 @@ public class Card implements Serializable{
     private String cvd;
     @SerializedName("card_type")
     private String type;
+    private String function;
     private boolean complete = true; // false for pre-authorizations
 
     public String getId() {
@@ -108,5 +109,21 @@ public class Card implements Serializable{
         this.complete = complete;
         return this;
     }
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getFunction() {
+		return function;
+	}
+
+	public void setFunction(String function) {
+		this.function = function;
+	}
     
 }

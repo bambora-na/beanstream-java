@@ -13,9 +13,9 @@ public abstract class BaseBeanstreamTest {
 	protected AtomicInteger sequence = new AtomicInteger(1);
 	Gateway beanstream = new Gateway("v1", 300200578,
 			"4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
-            "D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
-            "4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
-	
+			"D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
+			"4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
+
 	protected String getRandomOrderId(String prefix) {
 		String orderId = null;
 		Date date = new Date();
@@ -34,29 +34,29 @@ public abstract class BaseBeanstreamTest {
 		}
 		return orderId;
 	}
-	
-	protected Address getTestCardValidAddress(){
-		Address billing = new Address();
-		billing.setName("JANE DOE");
-		billing.setCity("VICTORIA");
-		billing.setProvince("BC");
-		billing.setCountry("CA");
-		billing.setAddressLine1("123 FAKE ST.");
-		billing.setPostalCode("V9T2G6");
-		billing.setEmailAddress("TEST@BEANSTREAM.COM");
-		billing.setPhoneNumber("12501234567");
-		return billing;
+
+	protected Address getTestCardValidAddress() {
+		return new Address.AddressBuilder().name("JANE DOE").city("VICTORIA")
+				.province("BC").country("CA").addressLine1("123 FAKE ST.")
+				.postalCode("V9T2G6").emailAddress("TEST@BEANSTREAM.COM")
+				.phoneNumber("12501234567").build();
 	}
-	protected Address getTestShippingAddress(){
-		return getAddress("Shipping","Miami","FL","US","2564 NW 10TH AVE","33689","client@domain.com","789-325-4565");
-		
+
+	protected Address getTestShippingAddress() {
+		return getAddress("Shipping", "Miami", "FL", "US", "2564 NW 10TH AVE",
+				"33689", "client@domain.com", "789-325-4565");
+
 	}
-	protected Address getTestBillingAddress(){
-		return getAddress("Billing","Miami","FL","US","3524 NW 72TH ST","33601","client@domain.com","305-325-4565");
-		
+
+	protected Address getTestBillingAddress() {
+		return getAddress("Billing", "Miami", "FL", "US", "3524 NW 72TH ST",
+				"33601", "client@domain.com", "305-325-4565");
+
 	}
-	
-	protected Address getAddress(String name, String city, String state, String country, String addressLine1, String postalCode, String email, String phoneNumber){
+
+	protected Address getAddress(String name, String city, String state,
+			String country, String addressLine1, String postalCode,
+			String email, String phoneNumber) {
 		Address addr = new Address();
 		addr.setName(name);
 		addr.setCity(city);
@@ -67,7 +67,7 @@ public abstract class BaseBeanstreamTest {
 		addr.setEmailAddress(email);
 		addr.setPhoneNumber(phoneNumber);
 		return addr;
-		
+
 	}
 
 	protected CardPaymentRequest getCreditCardPaymentRequest(String orderId,
@@ -81,10 +81,9 @@ public abstract class BaseBeanstreamTest {
 				.setExpiryYear("18").setCvd("123");
 		return paymentRequest;
 	}
-	
-	protected Card getTestCard(){
-		return new Card().setName("John Doe")
-				.setNumber("5100000010001004").setExpiryMonth("12")
-				.setExpiryYear("18").setCvd("123");
+
+	protected Card getTestCard() {
+		return new Card().setName("John Doe").setNumber("5100000010001004")
+				.setExpiryMonth("12").setExpiryYear("18").setCvd("123");
 	}
 }

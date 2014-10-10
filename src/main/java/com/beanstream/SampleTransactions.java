@@ -12,6 +12,7 @@ import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
 import com.beanstream.domain.Address;
 import com.beanstream.domain.Card;
+import com.beanstream.domain.PaymentProfile;
 import com.beanstream.domain.Transaction;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
@@ -62,7 +63,7 @@ public class SampleTransactions {
 //		t.testVoidPayment();
 //		t.testPreAuthorization();
 //		t.testGetTransaction();
-		t.testCreateProfile();
+		t.testProfileCrud();
 	}
 
 	private final AtomicInteger sequence = new AtomicInteger(1);
@@ -149,35 +150,6 @@ public class SampleTransactions {
 					Assert.fail("This auth completion should be approved because a greater amount has been pre authorized");
 				}
 			}
-		} catch (BeanstreamApiException ex) {
-			System.out.println(BeanstreamResponse.fromException(ex));
-
-		}
-	}
-
-	public void testCreateProfile() {
-
-		Gateway beanstream = new Gateway("v1", 300200578,
-				"4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
-				"D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
-				"4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
-
-		Card card = new Card().setName("Jane Doe")
-				.setNumber("5100000010001004").setExpiryMonth("12")
-				.setExpiryYear("18").setCvd("123");
-		
-		Address billing = new Address();
-		billing.setName("Jane Doe");
-		billing.setCity("victoria");
-		billing.setProvince("bc");
-		billing.setCountry("ca");
-		billing.setAddressLine1("123 Fake St.");
-		billing.setPostalCode("v9t2g6");
-		billing.setEmailAddress("test@beanstream.com");
-		billing.setPhoneNumber("12501234567");
-		try {
-			ProfileResponse createdProfile = beanstream.profiles().createProfile(card, billing);
-			Assert.assertNotNull("Test failed because it should create the profile and return a valid id",createdProfile.getId());
 		} catch (BeanstreamApiException ex) {
 			System.out.println(BeanstreamResponse.fromException(ex));
 
@@ -328,4 +300,77 @@ public class SampleTransactions {
 		}
 
 	}
+	
+	public void testProfileCrud()  {
+		Gateway beanstream = new Gateway("v1", 300200578,
+				"4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
+				"D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
+				"4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
+
+		String profileId = null;
+		
+		try {
+			Address billing = getTestCardValidAddress();
+			Card card = new Card().setName("John Doe")
+					.setNumber("5100000010001004").setExpiryMonth("12")
+					.setExpiryYear("18").setCvd("123");
+			
+			// test create profile
+			ProfileResponse createdProfile = beanstream.profiles()
+					.createProfile(card, billing);
+			profileId = createdProfile.getId();
+			System.out.println(createdProfile);
+			// test get profile by id
+			PaymentProfile paymentProfile = beanstream.profiles()
+					.getProfileById(profileId);
+			System.out.println(paymentProfile);
+			// update the profile to francais
+			paymentProfile.setLanguage("fr");
+			paymentProfile.setComments("test updating profile sending billing info only");
+			// update profile
+			beanstream.profiles().updateProfile(paymentProfile);
+			
+			
+			// refresh the updated profile
+			paymentProfile = beanstream.profiles().getProfileById(profileId);
+			System.out.println(paymentProfile);
+			// delete the payment profile
+			beanstream.profiles().deleteProfileById(profileId);
+			try {
+				beanstream.profiles().getProfileById(profileId);
+				System.out.println("This profile was deleted, therefore should throw an exception");
+			} catch (BeanstreamApiException e) {
+				profileId = null;
+			}
+
+		} catch (Exception ex) {
+			System.out.println("unexpected exception occur, test can not continue : "
+					+ ex.getMessage());
+		} finally {
+			if (profileId != null) {
+				try {
+					beanstream.profiles()
+							.deleteProfileById(profileId);
+				} catch (BeanstreamApiException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+	
+	private Address getTestCardValidAddress(){
+		Address billing = new Address();
+		billing.setName("JANE DOE");
+		billing.setCity("VICTORIA");
+		billing.setProvince("BC");
+		billing.setCountry("CA");
+		billing.setAddressLine1("123 FAKE ST.");
+		billing.setPostalCode("V9T2G6");
+		billing.setEmailAddress("TEST@BEANSTREAM.COM");
+		billing.setPhoneNumber("12501234567");
+		return billing;
+	}
+	
 }

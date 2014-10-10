@@ -213,17 +213,35 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 			Assert.assertNotNull(
 					"Test failed because it should return a valid card",
 					freshCard);
+			// add a new card
+			Card newCard = getTestCard();
+			newCard.setCvd("123");
+			newCard.setName("JANE DOE");
+			newCard.setNumber("4003050500040005");
+			newCard.setExpiryMonth("01");
+			newCard.setExpiryYear("19");
+			newCard.setType("VISA");
+			newCard.setFunction("DEF");
+			
+			
+			ProfileResponse newCardResp = beanstream.profiles().addCard(profileId, newCard);
+			
+			
 			// update the card expires date
 			freshCard.setExpiryMonth("01");
-			freshCard.setExpiryYear("2030");
-			freshCard.setName("John Doe");
+			freshCard.setExpiryYear("19");
+			freshCard.setName("Pedro Garcia");
+			freshCard.setNumber("4003050500040005");
+			
 			
 			ProfileResponse profileResponse = beanstream.profiles().updateCard(profileId, freshCard);
-			
+			//2659 Douglas Street	V8T 4M3
+	
+//			Address newCardAddr = getAddress("Pedro Garcia", "VICTORIA", "BC", "CA", "2659 Douglas Street", "V8T4M3", "TEST@BEANSTREAM.COM", "12501234567");
 			freshCard = beanstream.profiles().getCard(profileId,
 					freshCard.getId());
 			Assert.assertEquals("the Expiry Month was updated but the change is not reflected", "01",freshCard.getExpiryMonth());
-			Assert.assertEquals("the Expiry Year was updated but the change is not reflected", "2030",freshCard.getExpiryYear());
+			Assert.assertEquals("the Expiry Year was updated but the change is not reflected", "19",freshCard.getExpiryYear());
 			
 		} catch (Exception ex) {
 			Assert.fail("unexpected exception occur, test can not continue : "

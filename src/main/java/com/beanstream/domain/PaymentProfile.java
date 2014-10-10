@@ -71,5 +71,13 @@ public class PaymentProfile {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	@Override
+	public String toString() {
+		return "PaymentProfile [id=" + id + ", card=" + card + ", billing="
+				+ billing + ", custom=" + custom + ", language=" + language
+				+ ", comments=" + comments + ", modifiedDateStr="
+				+ modifiedDateStr + ", lastTransaction=" + lastTransaction
+				+ ", status=" + status + "]";
+	}
 	
 }

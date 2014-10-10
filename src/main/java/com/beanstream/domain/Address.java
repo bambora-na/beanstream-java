@@ -30,29 +30,29 @@ import com.google.gson.annotations.SerializedName;
  * @author bowens
  */
 public class Address {
-    
-    private String name;
 
-    @SerializedName("address_line1")
-    private String addressLine1;
+	private String name;
 
-    @SerializedName("address_line2")
-    private String addressLine2;
+	@SerializedName("address_line1")
+	private String addressLine1;
 
-    private String city;
+	@SerializedName("address_line2")
+	private String addressLine2;
 
-    private String province;
+	private String city;
 
-    private String country;
+	private String province;
 
-    @SerializedName("postal_code")
-    private String postalCode;
+	private String country;
 
-    @SerializedName("phone_number")
-    private String phoneNumber;
+	@SerializedName("postal_code")
+	private String postalCode;
 
-    @SerializedName("email_address")
-    private String emailAddress;
+	@SerializedName("phone_number")
+	private String phoneNumber;
+
+	@SerializedName("email_address")
+	private String emailAddress;
 
 	public String getName() {
 		return name;
@@ -126,6 +126,54 @@ public class Address {
 		this.emailAddress = emailAddress;
 	}
 
+	public static class AddressBuilder {
+		private Address _address = new Address();
+
+		public AddressBuilder name(String name) {
+			_address.setName(name);
+			return this;
+		}
+
+		public AddressBuilder addressLine1(String addressLine1) {
+			_address.setAddressLine1(addressLine1);
+			return this;
+		}
+
+		public AddressBuilder city(String city) {
+			_address.setCity(city);
+			return this;
+		}
+
+		public AddressBuilder province(String province) {
+			_address.setProvince(province);
+			return this;
+		}
+		
+		public AddressBuilder country(String country) {
+			_address.setCountry(country);
+			return this;
+		}
+		
+		public AddressBuilder postalCode(String postalCode) {
+			_address.setPostalCode(postalCode);
+			return this;
+		}
+		
+		public AddressBuilder phoneNumber(String phoneNumber) {
+			_address.setPhoneNumber(phoneNumber);
+			return this;
+		}
+		
+		public AddressBuilder emailAddress(String emailAddress) {
+			_address.setEmailAddress(emailAddress);
+			return this;
+		}
+		
+		public Address build(){
+			return _address;
+		}
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -192,5 +240,4 @@ public class Address {
 		return true;
 	}
 
-    
 }
