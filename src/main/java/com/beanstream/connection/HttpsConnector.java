@@ -89,7 +89,7 @@ public class HttpsConnector {
                 }
                 case put: {
                     StringEntity entity = new StringEntity(json);
-                    http = new HttpPost(url);
+                    http = new HttpPut(url);
                     ((HttpPut) http).setEntity(entity);
                     break;
                 }

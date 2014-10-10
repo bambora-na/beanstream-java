@@ -35,6 +35,18 @@ public abstract class BaseBeanstreamTest {
 		return orderId;
 	}
 	
+	protected Address getTestCardValidAddress(){
+		Address billing = new Address();
+		billing.setName("JANE DOE");
+		billing.setCity("VICTORIA");
+		billing.setProvince("BC");
+		billing.setCountry("CA");
+		billing.setAddressLine1("123 FAKE ST.");
+		billing.setPostalCode("V9T2G6");
+		billing.setEmailAddress("TEST@BEANSTREAM.COM");
+		billing.setPhoneNumber("12501234567");
+		return billing;
+	}
 	protected Address getTestShippingAddress(){
 		return getAddress("Shipping","Miami","FL","US","2564 NW 10TH AVE","33689","client@domain.com","789-325-4565");
 		

@@ -17,6 +17,8 @@ import com.beanstream.responses.ProfileCardsResponse;
 import com.beanstream.responses.ProfileResponse;
 import com.beanstream.util.ProfilesUtils;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public class ProfilesAPI {
 
@@ -72,7 +74,7 @@ public class ProfilesAPI {
 		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion(), profileId);
 
-		String response = connector.ProcessTransaction(HttpMethod.post, url,
+		String response = connector.ProcessTransaction(HttpMethod.get, url,
 				null);
 		return gson.fromJson(response, PaymentProfile.class);
 
@@ -101,13 +103,14 @@ public class ProfilesAPI {
 
 		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion(), profile.getId());
-		// don't send the card in the update request only
-		Card card = profile.getCard();
-		profile.setCard(null);
-		String profileJson = gson.toJson(profile);
-		profile.setCard(card);
-		String response = connector.ProcessTransaction(HttpMethod.delete, url,
-				profileJson);
+		
+		JsonObject req = new JsonObject();
+		req.add("billing", gson.toJsonTree(profile.getBilling(),Address.class));
+		req.add("custom", gson.toJsonTree(profile.getCustom(),CustomFields.class));
+		req.addProperty("language",profile.getLanguage());
+		req.addProperty("comments",profile.getComments());
+		String response = connector.ProcessTransaction(HttpMethod.put, url,
+				req);
 		return gson.fromJson(response, ProfileResponse.class);
 	}
 
@@ -116,7 +119,7 @@ public class ProfilesAPI {
 		String url = BeanstreamUrls.getProfileCardsUrl(config.getPlatform(),
 				config.getVersion(), profileId);
 
-		String response = connector.ProcessTransaction(HttpMethod.post, url,
+		String response = connector.ProcessTransaction(HttpMethod.get, url,
 				null);
 		ProfileCardsResponse pcr = gson.fromJson(response,
 				ProfileCardsResponse.class);
@@ -132,7 +135,7 @@ public class ProfilesAPI {
 		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
 
-		String response = connector.ProcessTransaction(HttpMethod.post, url,
+		String response = connector.ProcessTransaction(HttpMethod.get, url,
 				null);
 		ProfileCardsResponse pcr = gson.fromJson(response,
 				ProfileCardsResponse.class);
@@ -141,7 +144,7 @@ public class ProfilesAPI {
 			card = null;
 		} else {
 			card = pcr.getCards().get(0);
-			card.setId(cardId);
+//			card.setId(cardId);
 		}
 		return card;
 
@@ -149,22 +152,19 @@ public class ProfilesAPI {
 
 	public ProfileResponse updateCard(String profileId, Card card)
 			throws BeanstreamApiException {
+		
 		ProfilesUtils.validateProfileId(profileId);
 		Gateway.assertNotNull(card, "card it to to update is empty");
 		String cardId = card.getId();
 		Gateway.assertNotEmpty(cardId, "card id it to update is empty");
-
 		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
-
 		ProfilesUtils.validateCard(card);
+		
 		// send the card json without id
-		card.setId(null);
-		String cardJson = gson.toJson(card, Card.class);
-		// don't modify the user object because they might re use it
-		card.setId(cardId);
-		String response = connector.ProcessTransaction(HttpMethod.post, url,
-				cardJson);
+		JsonElement _card = gson.toJsonTree(card,Card.class);
+		String response = connector.ProcessTransaction(HttpMethod.put, url,
+				_card);
 		return gson.fromJson(response, ProfileResponse.class);
 
 	}

@@ -34,6 +34,7 @@ import com.google.gson.annotations.SerializedName;
 public class Card implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	@SerializedName("card_id")
 	private String id;
     private String name;
     private String number;
@@ -42,6 +43,8 @@ public class Card implements Serializable{
     @SerializedName("expiry_year")
     private String expiryYear;
     private String cvd;
+    @SerializedName("card_type")
+    private String type;
     private boolean complete = true; // false for pre-authorizations
 
     public String getId() {

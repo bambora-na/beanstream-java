@@ -1,7 +1,5 @@
 package com.beanstream.domain;
 
-import java.util.Date;
-
 import com.google.gson.annotations.SerializedName;
 
 public class PaymentProfile {
@@ -14,7 +12,7 @@ public class PaymentProfile {
 	private String language;
 	private String comments;
 	@SerializedName("modified_date")
-	private Date modifiedDate;
+	private String modifiedDateStr;
 	@SerializedName("last_transaction")
 	private String lastTransaction;
 	private String status;
@@ -55,11 +53,11 @@ public class PaymentProfile {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-	public Date getModifiedDate() {
-		return modifiedDate;
+	public String getModifiedDateStr() {
+		return modifiedDateStr;
 	}
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
+	public void setModifiedDateStr(String modifiedDateStr) {
+		this.modifiedDateStr = modifiedDateStr;
 	}
 	public String getLastTransaction() {
 		return lastTransaction;

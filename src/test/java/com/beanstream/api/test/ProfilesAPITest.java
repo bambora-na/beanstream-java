@@ -1,10 +1,13 @@
 package com.beanstream.api.test;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.beanstream.domain.Address;
 import com.beanstream.domain.Card;
+import com.beanstream.domain.PaymentProfile;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.responses.ProfileResponse;
 
@@ -128,13 +131,109 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 	}
 
 	@Test
-	public void createProfile() throws BeanstreamApiException {
-		Address billing = getTestBillingAddress();
-		Card card = getTestCard();
-		ProfileResponse createdProfile = beanstream.profiles().createProfile(card, billing);
-		Assert.assertNotNull("Test failed because it should create the profile and return a valid id",createdProfile.getId());
-		
+	public void testProfileCrud() throws BeanstreamApiException {
+		String profileId = null;
+		try {
+			Address billing = getTestCardValidAddress();
+			Card card = getTestCard();
+			// test create profile
+			ProfileResponse createdProfile = beanstream.profiles()
+					.createProfile(card, billing);
+			profileId = createdProfile.getId();
+			Assert.assertNotNull(
+					"Test failed because it should create the profile and return a valid id",
+					profileId);
 
+			// test get profile by id
+			PaymentProfile paymentProfile = beanstream.profiles()
+					.getProfileById(profileId);
+			Assert.assertEquals(
+					"billing address assinged does not matches with the one sent at creation time",
+					paymentProfile.getBilling(), billing);
+			Assert.assertNotNull("Credit card was not in the response",
+					paymentProfile.getCard());
+			Assert.assertTrue("The default lenguage should be english","en".equals(paymentProfile.getLanguage()));
+			
+			// update the profile to francais
+			paymentProfile.setLanguage("fr");
+			paymentProfile.setComments("test updating profile sending billing info only");
+			// update profile
+			beanstream.profiles().updateProfile(paymentProfile);
+
+			// refresh the updated profile
+			paymentProfile = beanstream.profiles().getProfileById(profileId);
+			
+			Assert.assertEquals("Language was updated to Francais",
+					paymentProfile.getLanguage(), "fr");
+			
+			// delete the payment profile
+			beanstream.profiles().deleteProfileById(profileId);
+			try {
+				beanstream.profiles().getProfileById(profileId);
+				Assert.fail("This profile was deleted, therefore should throw an exception");
+			} catch (BeanstreamApiException e) {
+				profileId = null;
+			}
+
+		} catch (Exception ex) {
+			Assert.fail("unexpected exception occur, test can not continue : "
+					+ ex.getMessage());
+		} finally {
+			if (profileId != null) {
+				ProfileResponse response = beanstream.profiles()
+						.deleteProfileById(profileId);
+			}
+		}
+
+	}
+
+	@Test
+	public void testProfileCardsCrud() throws BeanstreamApiException {
+		String profileId = null;
+		try {
+			Address billing = getTestBillingAddress();
+			Card card = getTestCard();
+			// test create profile
+			ProfileResponse createdProfile = beanstream.profiles()
+					.createProfile(card, billing);
+			profileId = createdProfile.getId();
+			Assert.assertNotNull(
+					"Test failed because it should create the profile and return a valid id",
+					profileId);
+
+			// test getCards
+			List<Card> profileCards = beanstream.profiles().getCards(profileId);
+			Assert.assertFalse("this profile should have one credit card",
+					profileCards.isEmpty());
+			Card card1 = profileCards.get(0);
+
+			// test getCard
+			Card freshCard = beanstream.profiles().getCard(profileId,
+					card1.getId());
+			Assert.assertNotNull(
+					"Test failed because it should return a valid card",
+					freshCard);
+			// update the card expires date
+			freshCard.setExpiryMonth("01");
+			freshCard.setExpiryYear("2030");
+			freshCard.setName("John Doe");
+			
+			ProfileResponse profileResponse = beanstream.profiles().updateCard(profileId, freshCard);
+			
+			freshCard = beanstream.profiles().getCard(profileId,
+					freshCard.getId());
+			Assert.assertEquals("the Expiry Month was updated but the change is not reflected", "01",freshCard.getExpiryMonth());
+			Assert.assertEquals("the Expiry Year was updated but the change is not reflected", "2030",freshCard.getExpiryYear());
+			
+		} catch (Exception ex) {
+			Assert.fail("unexpected exception occur, test can not continue : "
+					+ ex.getMessage());
+		} finally {
+			if (profileId != null) {
+				ProfileResponse response = beanstream.profiles()
+						.deleteProfileById(profileId);
+			}
+		}
 	}
 
 }
