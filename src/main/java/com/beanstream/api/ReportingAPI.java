@@ -31,6 +31,7 @@ import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.responses.BeanstreamResponse;
 import com.google.gson.Gson;
 import org.apache.http.HttpStatus;
+import java.util.Date;
 
 /**
  * Get a transaction or search for a range of transactions with the Reporting API.
@@ -84,4 +85,47 @@ public class ReportingAPI {
             throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
         }
     }
+    
+   public static boolean isNullOrEmpty(String s)
+   {
+     if (s.trim().length() == 0 || s == null)
+      return true;
+     else
+      return false;
+   }    
+    
+   public List<TransactionRecord> Query(final Date startDate, final Date endDate, final int startRow, final int endRow, final Criteria[] criteriaa) throws BeanstreamApiException
+    {
+     if (endDate == null || startDate == null)
+      throw new IllegalArgumentException("Start Date and End Date cannot be null!");
+     if (endDate.compareTo(startDate)<0)
+      throw new IllegalArgumentException("End Date cannot be less than Start Date!");
+     if (endRow < startRow)
+      throw new IllegalArgumentException("End Row cannot be less than Start Row!");
+     if (endRow - startRow > 1000)
+      throw new IllegalArgumentException("You cannot query more than 1000 rows at a time!");
+
+     String url = BeanstreamUrls.ReportsUrl.replace("{v}", isNullOrEmpty(config.getVersion()) ? "v1" : "v" + config.getVersion())
+     .replace("{p}", isNullOrEmpty(config.getPlatform()) ? "www" : config.getPlatform());
+
+     Object query = new Object()
+     {
+      String name = "Search";
+      Date start_date = startDate;
+      Date end_date = endDate;
+      int start_row = startRow;
+      int end_row = endRow;
+      Criteria[] criteria = criteriaa; 
+     };
+
+     String data = gson.toJson(query);
+
+     System.out.println(data);
+
+     String response = connector.ProcessTransaction(HttpMethod.post, url, query);
+
+     Records records = gson.fromJson(response, Records.class);
+
+     return records.records;
+ }
 }
