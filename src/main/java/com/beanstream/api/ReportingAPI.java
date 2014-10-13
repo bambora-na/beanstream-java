@@ -29,9 +29,11 @@ import com.beanstream.connection.HttpsConnector;
 import com.beanstream.domain.Transaction;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.responses.BeanstreamResponse;
+import com.beanstream.data.Records;
 import com.google.gson.Gson;
 import org.apache.http.HttpStatus;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Get a transaction or search for a range of transactions with the Reporting API.
