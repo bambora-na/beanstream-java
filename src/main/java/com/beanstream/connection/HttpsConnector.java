@@ -67,7 +67,7 @@ public class HttpsConnector {
             // this is a temporary println while SDK is in development
             if (data != null) {
                 Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
-                System.out.println(gsonpp.toJson(data));
+                System.out.println("Request data.....................\n"+gsonpp.toJson(data));
             }
             
             ResponseHandler<BeanstreamResponse> responseHandler = new ResponseHandler<BeanstreamResponse>() {

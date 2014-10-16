@@ -26,14 +26,20 @@ import com.beanstream.Configuration;
 import com.beanstream.connection.BeanstreamUrls;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
-import com.beanstream.domain.Transaction;
-import com.beanstream.exceptions.BeanstreamApiException;
-import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.data.Records;
+import com.beanstream.domain.Transaction;
+import com.beanstream.domain.TransactionRecord;
+import com.beanstream.exceptions.BeanstreamApiException;
+import com.beanstream.requests.Criteria;
+import com.beanstream.requests.QueryFields;
+import com.beanstream.requests.CriteriaSerializer;
+import com.beanstream.responses.BeanstreamResponse;
 import com.google.gson.Gson;
-import org.apache.http.HttpStatus;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import java.util.Date;
 import java.util.List;
+import org.apache.http.HttpStatus;
 
 /**
  * Get a transaction or search for a range of transactions with the Reporting API.
@@ -47,16 +53,16 @@ public class ReportingAPI {
     
     private Configuration config;
     private HttpsConnector connector;
-    private final Gson gson = new Gson();
+    private Gson gson = new Gson();
 
     public ReportingAPI(Configuration config) {
         this.config = config;
-        connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
+        connector = new HttpsConnector(config.getMerchantId(), config.getReportingApiPasscode());
     }
 
     public void setConfig(Configuration config) {
         this.config = config;
-        connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
+        connector = new HttpsConnector(config.getMerchantId(), config.getReportingApiPasscode());
     }
     
     /**
@@ -86,48 +92,39 @@ public class ReportingAPI {
             BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
             throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
         }
-    }
+    }   
     
-   public static boolean isNullOrEmpty(String s)
-   {
-     if (s.trim().length() == 0 || s == null)
-      return true;
-     else
-      return false;
-   }    
-    
-   public List<TransactionRecord> Query(final Date startDate, final Date endDate, final int startRow, final int endRow, final Criteria[] criteriaa) throws BeanstreamApiException
+    public List<TransactionRecord> query(final Date startDate, final Date endDate, final int startRow, final int endRow, final Criteria[] searchCriteria) throws BeanstreamApiException
     {
-     if (endDate == null || startDate == null)
-      throw new IllegalArgumentException("Start Date and End Date cannot be null!");
-     if (endDate.compareTo(startDate)<0)
-      throw new IllegalArgumentException("End Date cannot be less than Start Date!");
-     if (endRow < startRow)
-      throw new IllegalArgumentException("End Row cannot be less than Start Row!");
-     if (endRow - startRow > 1000)
-      throw new IllegalArgumentException("You cannot query more than 1000 rows at a time!");
+        if (endDate == null || startDate == null)
+            throw new IllegalArgumentException("Start Date and End Date cannot be null!");
+        if (endDate.compareTo(startDate)<0)
+            throw new IllegalArgumentException("End Date cannot be less than Start Date!");
+        if (endRow < startRow)
+            throw new IllegalArgumentException("End Row cannot be less than Start Row!");
+        if (endRow - startRow > 1000)
+            throw new IllegalArgumentException("You cannot query more than 1000 rows at a time!");
 
-     String url = BeanstreamUrls.ReportsUrl.replace("{v}", isNullOrEmpty(config.getVersion()) ? "v1" : "v" + config.getVersion())
-     .replace("{p}", isNullOrEmpty(config.getPlatform()) ? "www" : config.getPlatform());
+        String url = BeanstreamUrls.getReportsUrl(config.getPlatform(), config.getVersion());
 
-     Object query = new Object()
-     {
-      String name = "Search";
-      Date start_date = startDate;
-      Date end_date = endDate;
-      int start_row = startRow;
-      int end_row = endRow;
-      Criteria[] criteria = criteriaa; 
-     };
+        JsonObject query = new JsonObject();
+        query.addProperty("name", "Search");
+        query.addProperty("start_date", "2014-10-11T15:30:41.0073938-07:00");
+        query.addProperty("end_date", "2014-10-16T15:30:41.0083938-07:00");
+        query.addProperty("start_row", startRow);
+        query.addProperty("end_row", endRow);
+        //query.add("criteria", searchCriteria);
+        
 
-     String data = gson.toJson(query);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Criteria.class, new CriteriaSerializer());
+        gson = gsonBuilder.create();
+        //String data = gson.toJson(query);
+        //System.out.println("json data:\n"+data);
 
-     System.out.println(data);
+        String response = connector.ProcessTransaction(HttpMethod.post, url, query);
+        Records records = gson.fromJson(response, Records.class);
 
-     String response = connector.ProcessTransaction(HttpMethod.post, url, query);
-
-     Records records = gson.fromJson(response, Records.class);
-
-     return records.records;
- }
+        return records.records;
+    }
 }

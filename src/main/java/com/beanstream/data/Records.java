@@ -5,6 +5,6 @@ import com.beanstream.domain.TransactionRecord;
 
 public class Records
 {
- public List<TransactionRecord> records;
+    public List<TransactionRecord> records;
 
 }

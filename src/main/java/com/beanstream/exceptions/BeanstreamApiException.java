@@ -89,6 +89,8 @@ public class BeanstreamApiException extends Exception {
         int code = response.getCode();
         int category = response.getCategory();
         String message = response.getMessage();
+        String details = response.getDetails();
+        message = message +", details: "+details;
 
         switch (httpStatusCode) {
             case HttpStatus.SC_MOVED_TEMPORARILY: { // 302
