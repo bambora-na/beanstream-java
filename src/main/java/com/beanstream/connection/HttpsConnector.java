@@ -43,14 +43,35 @@ import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Performs the connection to the API.
+ * It will serialize any posted objects into json before submitting.
+ * You can give it a custom GsonBuilder to style the json output to what is required
+ * by the API service.
+ * 
+ * @author bowens
+ */
 public class HttpsConnector {
     
     private final int merchantId;
     private final String apiPasscode;
+    private GsonBuilder gsonBuilder;
 
     public HttpsConnector(int merchantId, String apiPasscode) {
         this.merchantId = merchantId;
         this.apiPasscode = apiPasscode;
+    }
+
+    public void setGsonBuilder(GsonBuilder gsonBuilder) {
+        this.gsonBuilder = gsonBuilder;
+    }
+
+    public GsonBuilder getGsonBuilder() {
+        if (gsonBuilder == null) {
+            gsonBuilder = new GsonBuilder();
+        }
+        
+        return gsonBuilder;
     }
     
     // this should be refactored to to use java naming conventions (start
@@ -61,14 +82,14 @@ public class HttpsConnector {
     
         try {
             
-            Gson gson = new Gson();
+            Gson gson = getGsonBuilder().create();
             String json = data != null ? gson.toJson(data) : null;
             
             // this is a temporary println while SDK is in development
-            if (data != null) {
-                Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
+            /*if (data != null) {
+                Gson gsonpp = getGsonBuilder().setPrettyPrinting().create();
                 System.out.println("Request data.....................\n"+gsonpp.toJson(data));
-            }
+            }*/
             
             ResponseHandler<BeanstreamResponse> responseHandler = new ResponseHandler<BeanstreamResponse>() {
                 @Override

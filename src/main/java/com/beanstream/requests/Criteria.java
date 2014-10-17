@@ -41,7 +41,12 @@ public class Criteria {
     @SerializedName("value")
     private String value;
 
-    
+    public Criteria(QueryFields field, Operators operator, String value) {
+        this.field = field;
+        this.operator = operator;
+        this.value = value;
+    }
+
     
     public QueryFields getField() {
         return field;

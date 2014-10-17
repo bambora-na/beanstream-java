@@ -31,12 +31,15 @@ import com.beanstream.domain.Transaction;
 import com.beanstream.domain.TransactionRecord;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.Criteria;
-import com.beanstream.requests.QueryFields;
 import com.beanstream.requests.CriteriaSerializer;
+import com.beanstream.requests.QueryFields;
+import com.beanstream.requests.SearchQuery;
 import com.beanstream.responses.BeanstreamResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import org.apache.http.HttpStatus;
@@ -53,8 +56,19 @@ public class ReportingAPI {
     
     private Configuration config;
     private HttpsConnector connector;
-    private Gson gson = new Gson();
+    private final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
+    private GsonBuilder getGsonBuilder() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setDateFormat(DATE_FORMAT_STRING); //2014-10-16T15:22:17.815-07:00
+        gsonBuilder.registerTypeAdapter(Criteria.class, new CriteriaSerializer());
+        return gsonBuilder;
+    }
+    
+    private Gson getGson() {
+        return getGsonBuilder().create();
+    }
+    
     public ReportingAPI(Configuration config) {
         this.config = config;
         connector = new HttpsConnector(config.getMerchantId(), config.getReportingApiPasscode());
@@ -80,7 +94,7 @@ public class ReportingAPI {
         // get the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.get, url, null);
         
-        return gson.fromJson(response, Transaction.class);
+        return getGson().fromJson(response, Transaction.class);
     }
     
     
@@ -107,23 +121,14 @@ public class ReportingAPI {
 
         String url = BeanstreamUrls.getReportsUrl(config.getPlatform(), config.getVersion());
 
-        JsonObject query = new JsonObject();
-        query.addProperty("name", "Search");
-        query.addProperty("start_date", "2014-10-11T15:30:41.0073938-07:00");
-        query.addProperty("end_date", "2014-10-16T15:30:41.0083938-07:00");
-        query.addProperty("start_row", startRow);
-        query.addProperty("end_row", endRow);
-        //query.add("criteria", searchCriteria);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_STRING);
+        SearchQuery query = new SearchQuery(dateFormat.format(startDate), dateFormat.format(endDate), startRow, endRow, searchCriteria);
         
-
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Criteria.class, new CriteriaSerializer());
-        gson = gsonBuilder.create();
-        //String data = gson.toJson(query);
-        //System.out.println("json data:\n"+data);
+        connector.setGsonBuilder(getGsonBuilder());
 
         String response = connector.ProcessTransaction(HttpMethod.post, url, query);
-        Records records = gson.fromJson(response, Records.class);
+        System.out.println("Response:\n"+response);
+        Records records = getGson().fromJson(response, Records.class);
 
         return records.records;
     }

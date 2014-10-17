@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 /**
  * Enums are zero-based, yet the fields in the Query search are 1-based. So we have to increment each output value by 1
  * when writing to json.
+ * The Operators also need to be URL encoded.
  * 
  * @author bowens
  */
@@ -46,7 +47,12 @@ public class CriteriaSerializer implements JsonSerializer<Criteria> {
         JsonObject json = new JsonObject();
         json.addProperty("field", criteria.getField().ordinal()+1 ); // increase by 1
         try {
-            json.addProperty("operator", URLEncoder.encode(criteria.getOperator().toString(), "UTF-8") );
+            String operator = criteria.getOperator().toString();
+            if ( operator.equals(Operators.StartWith.toString()) )
+                operator = "START%20WITH"; // add a space
+            else
+                operator = URLEncoder.encode(operator, "UTF-8");
+            json.addProperty("operator",  operator);
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(CriteriaSerializer.class.getName()).log(Level.SEVERE, "Wrong encoding scheme!", ex);
         }

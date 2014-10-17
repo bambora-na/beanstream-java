@@ -11,7 +11,10 @@ import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.CashPaymentRequest;
 import com.beanstream.requests.ChequePaymentRequest;
+import com.beanstream.requests.Criteria;
 import com.beanstream.requests.LegatoTokenRequest;
+import com.beanstream.requests.Operators;
+import com.beanstream.requests.QueryFields;
 import com.beanstream.requests.TokenPaymentRequest;
 import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.responses.LegatoTokenResponse;
@@ -312,33 +315,56 @@ public class SampleTransactions {
 
 	}
 	
-        private void testQueryTransactions() {
-            Gateway beanstream = new Gateway("v1", 300200578,
-				"4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
-				"D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
-				"4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
+    private void testQueryTransactions() {
+        Gateway beanstream = new Gateway("v1", 300200578,
+            "4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
+            "D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
+            "4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
 
 		CardPaymentRequest paymentRequest = new CardPaymentRequest();
 		paymentRequest.setAmount("20.50")
-                                .setMerchantId("300200578")
-				.setOrderNumber(getRandomOrderId("get"));
+                    .setMerchantId("300200578")
+                    .setOrderNumber(getRandomOrderId("get"));
 		paymentRequest.getCard().setName("John Doe")
 				.setNumber("5100000010001004")
-                                .setExpiryMonth("12")
+                .setExpiryMonth("12")
 				.setExpiryYear("18")
-                                .setCvd("123");
+                .setCvd("123");
 
+        paymentRequest = new CardPaymentRequest();
+		paymentRequest.setAmount("20.50")
+                    .setMerchantId("300200578")
+                    .setOrderNumber(getRandomOrderId("get"));
+		paymentRequest.getCard().setName("Bob Doe")
+				.setNumber("5100000010001004")
+                .setExpiryMonth("12")
+				.setExpiryYear("18")
+                .setCvd("123");
+        
 		try {
 			PaymentResponse response = beanstream.payments().makePayment(paymentRequest);
 			if (response.isApproved()) {
-                                
-                                
-                                Calendar cal = Calendar.getInstance();
-                                cal.add(Calendar.DATE, -1);
-                                Date startDate = cal.getTime(); // yesterday
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -1);
+                Date startDate = cal.getTime(); // yesterday
 				Date endDate = new Date(); // today
-                                List<TransactionRecord> query = beanstream.reports().query(startDate, endDate, 1, 100, null);
-                                System.out.println("Query result length = "+query.size());
+                Criteria[] searchFilter = new Criteria[]
+                {
+                    new Criteria(QueryFields.CardOwner, Operators.StartWith, "Bob")
+                };
+                List<TransactionRecord> query = beanstream.reports().query(startDate, endDate, 1, 100, searchFilter);
+                System.out.println("Queried "+query.size()+" items.");
+                
+                // print out the first 10 records
+                int i=0;
+                for (TransactionRecord tr : query) {
+                    System.out.println(tr.getTransactionId()+" from "+tr.getCardOwner()+" -> $"+tr.getAmount());
+                    i++;
+                    if (i > 10)
+                        break;
+                }
+                
+                
 			}
 		} catch (BeanstreamApiException ex) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
@@ -346,7 +372,7 @@ public class SampleTransactions {
                         System.out.println("Error Details: "+ex.getCode()+", "+ ex.getCategory());
 		}
             
-        }
+    }
         
         
 	public void testProfileCrud()  {
