@@ -1,13 +1,5 @@
 package com.beanstream.api.test;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.Assert;
-
 import com.beanstream.Gateway;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
@@ -16,11 +8,15 @@ import com.beanstream.domain.Card;
 import com.beanstream.domain.PaymentProfile;
 import com.beanstream.domain.Token;
 import com.beanstream.domain.Transaction;
+import com.beanstream.domain.TransactionRecord;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.CashPaymentRequest;
 import com.beanstream.requests.ChequePaymentRequest;
+import com.beanstream.requests.Criteria;
 import com.beanstream.requests.LegatoTokenRequest;
+import com.beanstream.requests.Operators;
+import com.beanstream.requests.QueryFields;
 import com.beanstream.requests.TokenPaymentRequest;
 import com.beanstream.responses.BeanstreamResponse;
 import com.beanstream.responses.LegatoTokenResponse;
@@ -28,6 +24,16 @@ import com.beanstream.responses.PaymentResponse;
 import com.beanstream.responses.ProfileResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.Assert;
 
 /* The MIT License (MIT)
  *
@@ -57,16 +63,18 @@ import com.google.gson.GsonBuilder;
  * 
  * @author bowens
  */
-public class SampleTransactions{
+public class SampleTransactions {
 
 	public static void main(String[] args) {
 		SampleTransactions t = new SampleTransactions();
 //		t.testPayment();
+//        t.testTokenPayment();
 //		t.testVoidPayment();
 //		t.testPreAuthorization();
 //		t.testGetTransaction();
-//		t.testProfileCrud();
-		t.testProfileCrudUsingToken();
+//        t.testQueryTransactions();
+        t.testProfileCrud();
+        t.testProfileCrudUsingToken();
 	}
 
 	private final AtomicInteger sequence = new AtomicInteger(1);
@@ -163,8 +171,6 @@ public class SampleTransactions{
 
 		Gateway beanstream = new Gateway("v1", 300200578,
 				"4BaD82D9197b4cc4b70a221911eE9f70");
-		HttpsConnector connector = new HttpsConnector(300200578,
-				"4BaD82D9197b4cc4b70a221911eE9f70");
 
 		/* Test Card Payment */
 		CardPaymentRequest req = new CardPaymentRequest();
@@ -221,7 +227,18 @@ public class SampleTransactions{
 					"An error occurred", ex);
 		}
 
-		/* Test Token Payment */
+		
+
+	}
+        
+        private void testTokenPayment() {
+            
+            Gateway beanstream = new Gateway("v1", 300200578,
+				"4BaD82D9197b4cc4b70a221911eE9f70");
+            HttpsConnector connector = new HttpsConnector(300200578,
+				"4BaD82D9197b4cc4b70a221911eE9f70");
+                
+            /* Test Token Payment */
 		// The first step is to call the Legato service to get a token.
 		// This is normally performed on the client machine, and not on the
 		// server.
@@ -256,7 +273,7 @@ public class SampleTransactions{
 		tokenReq.setAmount("100.00");
 		tokenReq.setMerchantId("300200578");
 		tokenReq.setOrderNumber(getRandomOrderId("token"));
-		tokenReq.getToken().setName("John Doe").setCode(tokenResponse.getCode())
+		tokenReq.getToken().setName("John Doe").setCode(tokenResponse.getToken())
 				.setFunction("12");
 
 		try {
@@ -269,8 +286,7 @@ public class SampleTransactions{
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					"An error occurred", ex);
 		}
-
-	}
+        }
 
 	private void testGetTransaction() {
 
@@ -304,6 +320,66 @@ public class SampleTransactions{
 
 	}
 	
+    private void testQueryTransactions() {
+        Gateway beanstream = new Gateway("v1", 300200578,
+            "4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
+            "D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
+            "4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
+
+		CardPaymentRequest paymentRequest = new CardPaymentRequest();
+		paymentRequest.setAmount("20.50")
+                    .setMerchantId("300200578")
+                    .setOrderNumber(getRandomOrderId("get"));
+		paymentRequest.getCard().setName("John Doe")
+				.setNumber("5100000010001004")
+                .setExpiryMonth("12")
+				.setExpiryYear("18")
+                .setCvd("123");
+
+        paymentRequest = new CardPaymentRequest();
+		paymentRequest.setAmount("20.50")
+                    .setMerchantId("300200578")
+                    .setOrderNumber(getRandomOrderId("get"));
+		paymentRequest.getCard().setName("Bob Doe")
+				.setNumber("5100000010001004")
+                .setExpiryMonth("12")
+				.setExpiryYear("18")
+                .setCvd("123");
+        
+		try {
+			PaymentResponse response = beanstream.payments().makePayment(paymentRequest);
+			if (response.isApproved()) {
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -1);
+                Date startDate = cal.getTime(); // yesterday
+				Date endDate = new Date(); // today
+                Criteria[] searchFilter = new Criteria[]
+                {
+                    new Criteria(QueryFields.CardOwner, Operators.StartWith, "Bob")
+                };
+                List<TransactionRecord> query = beanstream.reports().query(startDate, endDate, 1, 100, searchFilter);
+                System.out.println("Queried "+query.size()+" items.");
+                
+                // print out the first 10 records
+                int i=0;
+                for (TransactionRecord tr : query) {
+                    System.out.println(tr.getTransactionId()+" from "+tr.getCardOwner()+" -> $"+tr.getAmount());
+                    i++;
+                    if (i > 10)
+                        break;
+                }
+                
+                
+			}
+		} catch (BeanstreamApiException ex) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					"An error occurred: "+ex.toString(), ex);
+                        System.out.println("Error Details: "+ex.getCode()+", "+ ex.getCategory());
+		}
+            
+    }
+        
+        
 	public void testProfileCrud()  {
 		Gateway beanstream = new Gateway("v1", 300200578,
 				"4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
@@ -347,7 +423,7 @@ public class SampleTransactions{
 			}
 
 		} catch (Exception ex) {
-			System.out.println("unexpected exception occur, test can not continue : "
+			System.out.println("unexpected exception occurred, test can not continue : "
 					+ ex.getMessage());
 		} finally {
 			if (profileId != null) {
@@ -362,6 +438,7 @@ public class SampleTransactions{
 		}
 
 	}
+	
 	
 	public void testProfileCrudUsingToken()  {
 		Gateway beanstream = new Gateway("v1", 300200578,
@@ -391,7 +468,8 @@ public class SampleTransactions{
 				Logger.getLogger(SampleTransactions.class.getName()).log(
 						Level.SEVERE, null, ex);
 			}
-
+			
+			System.out.println(output);
 			// Parse the output and return a token response to get the token for the
 			// payment request
 			Gson gson = new Gson();
@@ -401,9 +479,11 @@ public class SampleTransactions{
 			// test create profile
 			Token token = new Token("John Doe",tokenResponse.getToken());
 			
+			
 			ProfileResponse createdProfile = beanstream.profiles()
 					.createProfile(token, billing);
 			profileId = createdProfile.getId();
+			System.out.println(profileId);
 			Assert.assertNotNull(
 					"Test failed because it should create the profile and return a valid id",
 					profileId);
