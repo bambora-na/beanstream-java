@@ -3,13 +3,31 @@ package com.beanstream.requests;
 import com.beanstream.domain.Address;
 import com.beanstream.domain.Card;
 import com.beanstream.domain.CustomFields;
+import com.beanstream.domain.Token;
 
 public class ProfileRequest {
+
 	private Card card;
+	private Token token;
 	private Address billing;
 	private CustomFields custom;
 	private String language;
 	private String comments;
+	
+	public ProfileRequest() {
+		super();
+	}
+
+	public ProfileRequest(Card card, Token token, Address billing,
+			CustomFields custom, String language, String comments) {
+		super();
+		this.card = card;
+		this.token = token;
+		this.billing = billing;
+		this.custom = custom;
+		this.language = language;
+		this.comments = comments;
+	}
 
 	public Card getCard() {
 		return card;
@@ -74,5 +92,15 @@ public class ProfileRequest {
 		setComments(comments);
 		return this;
 	}
+
+	public Token getToken() {
+		return token;
+	}
+
+	public void setToken(Token token) {
+		this.token = token;
+	}
+	
+	
 	
 }

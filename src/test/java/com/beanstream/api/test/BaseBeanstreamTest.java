@@ -3,11 +3,19 @@ package com.beanstream.api.test;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.beanstream.Gateway;
+import com.beanstream.connection.HttpMethod;
+import com.beanstream.connection.HttpsConnector;
 import com.beanstream.domain.Address;
 import com.beanstream.domain.Card;
+import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
+import com.beanstream.requests.LegatoTokenRequest;
+import com.beanstream.responses.LegatoTokenResponse;
+import com.google.gson.Gson;
 
 public abstract class BaseBeanstreamTest {
 	protected AtomicInteger sequence = new AtomicInteger(1);
@@ -85,5 +93,29 @@ public abstract class BaseBeanstreamTest {
 	protected Card getTestCard() {
 		return new Card().setName("John Doe").setNumber("5100000010001004")
 				.setExpiryMonth("12").setExpiryYear("18").setCvd("123");
+	}
+
+	protected LegatoTokenResponse tokenizeCard(HttpsConnector connector, String cardNum, String cvd, int expiryMonth, int expiryYear) {
+		LegatoTokenRequest tokenRequest = new LegatoTokenRequest();
+		tokenRequest.number = cardNum;
+		tokenRequest.expiryMonth = expiryMonth;
+		tokenRequest.expiryYear = expiryYear;
+		tokenRequest.cvd = cvd;
+
+		String url = "https://www.beanstream.com/scripts/tokenization/tokens";
+		String output = "";
+		try {
+			output = connector.ProcessTransaction(HttpMethod.post, url,
+					tokenRequest);
+		} catch (BeanstreamApiException ex) {
+			Logger.getLogger(SampleTransactions.class.getName()).log(
+					Level.SEVERE, null, ex);
+		}
+		Gson gson = new Gson();
+		LegatoTokenResponse tokenResponse = gson.fromJson(output,
+				LegatoTokenResponse.class);
+
+		System.out.println("token: " + output);
+		return tokenResponse;
 	}
 }

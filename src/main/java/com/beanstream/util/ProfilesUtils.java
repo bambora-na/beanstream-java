@@ -1,10 +1,14 @@
 package com.beanstream.util;
 
+import org.apache.http.HttpStatus;
+
 import com.beanstream.Gateway;
 import com.beanstream.domain.Address;
 import com.beanstream.domain.Card;
+import com.beanstream.domain.Token;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.ProfileRequest;
+import com.beanstream.responses.BeanstreamResponse;
 
 public class ProfilesUtils {
 
@@ -25,6 +29,15 @@ public class ProfilesUtils {
 				"profile request is not valid because the card expiry month is empty");
 		Gateway.assertNotEmpty(card.getExpiryYear(),
 				"profile request is not valid because the card expiry year is empty");
+	}
+
+	public static void validateToken(Token token) throws BeanstreamApiException {
+		Gateway.assertNotNull(token,
+				"profile request is not valid because the token object is null");
+		Gateway.assertNotEmpty(token.getName(),
+				"profile request is not valid because the name on card (token name) is empty");
+		Gateway.assertNotEmpty(token.getCode(),
+				"profile request is not valid because the token code is empty");
 	}
 
 	public static void validateBillingAddress(Address billing)
@@ -60,7 +73,21 @@ public class ProfilesUtils {
 		Gateway.assertNotNull(profileRequest, "profile request object is null");
 		Card card = profileRequest.getCard();
 		Address billing = profileRequest.getBilling();
-		validateCard(card);
+		Token token = profileRequest.getToken();
+		
+		if (card == null && token == null) {
+			BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid create request, both token and card objects are null");
+            throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
+		}
+		
+		if (token == null) {
+			validateCard(card);
+		}
+		
+		if (card == null) {
+			validateToken(token);
+		}
+
 		validateBillingAddress(billing);
 	}
 }

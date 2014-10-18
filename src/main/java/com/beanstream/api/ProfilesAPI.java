@@ -11,6 +11,7 @@ import com.beanstream.domain.Address;
 import com.beanstream.domain.Card;
 import com.beanstream.domain.CustomFields;
 import com.beanstream.domain.PaymentProfile;
+import com.beanstream.domain.Token;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.ProfileRequest;
 import com.beanstream.responses.ProfileCardsResponse;
@@ -39,56 +40,78 @@ public class ProfilesAPI {
 	}
 
 	/**
-	 * <p>Create a profile with all information sent in the parameters billing, card</p>
-	 * @param card to be default in the profile <b>*Required</b>
-	 * @param billing address of the card holders <b>*Required</b>
+	 * <p>
+	 * Create a profile with all information sent in the parameters billing,
+	 * card
+	 * </p>
+	 * 
+	 * @param card
+	 *            to be default in the profile <b>*Required</b>
+	 * @param billing
+	 *            address of the card holders <b>*Required</b>
 	 * @return profile response of the request
-	 * @throws BeanstreamApiException if any validation or error occur
+	 * @throws BeanstreamApiException
+	 *             if any validation or error occur
 	 */
 	public ProfileResponse createProfile(Card card, Address billing)
 			throws BeanstreamApiException {
-		ProfileRequest request = new ProfileRequest().billing(billing).card(
-				card);
-		return createProfile(request);
+		return createProfile(card, null, billing, null, null, null);
+	}
+
+	public ProfileResponse createProfile(Token token, Address billing)
+			throws BeanstreamApiException {
+		return createProfile(null, token, billing, null, null, null);
 	}
 
 	/**
-	 * <p>Create a profile with all information sent in the parameters like (billing, card, comments, etc.)</p>
-	 * @param card to be default in the profile <b>*Required</b>
-	 * @param billing address of the card holders <b>*Required</b>
-	 * @param custom fields <b>Optional</p>
-	 * @param comments field <b>Optional</p>
-	 * @param language field <b>Optional</p>
+	 * <p>
+	 * Create a profile with all information sent in the parameters like (card,
+	 * billing, custom, language, comments)
+	 * </p>
+	 * 
+	 * @param card
+	 *            to be default in the profile <b>*Required</b>
+	 * @param billing
+	 *            address of the card holders <b>*Required</b>
+	 * @param custom
+	 *            fields <b>Optional</p>
+	 * @param comments
+	 *            field <b>Optional</p>
+	 * @param language
+	 *            field <b>Optional</p>
 	 * @return profile response of the request
-	 * @throws BeanstreamApiException if any validation or error occur
+	 * @throws BeanstreamApiException
+	 *             if any validation or error occur
 	 */
 	public ProfileResponse createProfile(Card card, Address billing,
 			CustomFields custom, String language, String comments)
 			throws BeanstreamApiException {
-		ProfileRequest request = new ProfileRequest().card(card)
-				.billing(billing).language(language).comments(comments)
-				.custom(custom);
-		return createProfile(request);
+		return createProfile(card, null, billing, custom, language, comments);
+	}
+
+	public ProfileResponse createProfile(Token token, Address billing,
+			CustomFields custom, String language, String comments)
+			throws BeanstreamApiException {
+		return createProfile(null, token, billing, custom, language, comments);
 	}
 
 	/**
-	 * <p>Create a profile with all information contained in the ProfileRequest
-	 * object like (billing, card, comments, etc.)</p>
-	 * 
-	 * @param profileRequest to create
-	 * @return profile response of the request
-	 * @throws BeanstreamApiException if any validation or error occur
+	 * @throws BeanstreamApiException
+	 *             if any validation or error occur
 	 */
-	public ProfileResponse createProfile(ProfileRequest profileRequest)
-			throws BeanstreamApiException {
+	private ProfileResponse createProfile(Card card, Token token,
+			Address billing, CustomFields custom, String language,
+			String comments) throws BeanstreamApiException {
 
-		ProfilesUtils.validateProfileRequest(profileRequest);
+		ProfileRequest req = new ProfileRequest(card, token, billing, custom,
+				language, comments);
+		ProfilesUtils.validateProfileRequest(req);
 
 		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion());
 
 		String response = connector.ProcessTransaction(HttpMethod.post, url,
-				profileRequest);
+				req);
 		return gson.fromJson(response, ProfileResponse.class);
 
 	}
@@ -122,7 +145,8 @@ public class ProfilesAPI {
 	 * Delete the profile. You must send and valid profileId
 	 * </p>
 	 * 
-	 * @param the id of the profile to delete
+	 * @param the
+	 *            id of the profile to delete
 	 * @return The profile response if successful, an BeanstreamApiException if
 	 *         not.
 	 **/
@@ -145,7 +169,8 @@ public class ProfilesAPI {
 	 * ProfilesAPI.getProfileById(id)
 	 * </p>
 	 * 
-	 * @param profile object to update
+	 * @param profile
+	 *            object to update
 	 * @return The profile response if successful, an BeanstreamApiException if
 	 *         not.
 	 **/

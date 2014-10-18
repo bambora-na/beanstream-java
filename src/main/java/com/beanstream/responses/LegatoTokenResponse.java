@@ -22,15 +22,49 @@
  */
 package com.beanstream.responses;
 
+
 /**
- * The token response from querying the Legato Tokenization service.
- * The actual token you want is called, surprise: 'token'. Who woulda thought?
+ * The token response from querying the Legato Tokenization service. The actual
+ * token you want is called, surprise: 'token'. Who woulda thought?
  * 
  * @author ctihor
  */
 public class LegatoTokenResponse {
-    public String token;
-    public String code;
-    public String version;
-    public String message;
+
+	private String token;
+	private String code;
+	private String version;
+	private String message;
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

@@ -121,7 +121,7 @@ Step 2 complete the purchase with the final amount
 Payment Profiles allow you to store a customer's card number and other information, such as billing address and shipping address.
 The card number stored on the profile is a multi-use token and is called the ID.
 
-# Create A Profile
+# Create a Profile
 To create a payment profile you must first configure your gateway to use the profiles API key (instead of your Payments API key. Then you can call one of the createProfile methods on the Profiles API class and supply it with the minimun parameters of a Card and a Billing Address:
 
 ```java
@@ -148,6 +148,26 @@ This will return you a ProfileResponse object. In that object you will want to g
 ```java
 profileId = createdProfile.getId();
 ```
+
+# Create a Profile using a Token
+```java
+Gateway beanstream = new Gateway("v1", 300200578,
+                "4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
+                "D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
+                "4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
+
+    Token token = new Token("JANE DOE",your_token_here);
+
+    Address billing = new Address.AddressBuilder().name("JANE DOE").city("VICTORIA")
+                .province("BC").country("CA").addressLine1("123 FAKE ST.")
+                .postalCode("V9T2G6").emailAddress("TEST@BEANSTREAM.COM")
+                .phoneNumber("12501234567").build();
+
+    ProfileResponse createdProfile = beanstream.profiles()
+                .createProfile(card, billing);
+    profileId = createdProfile.getId();
+```
+
 
 # Delete a Profile
 Deleting a profile is very simple, you just need the profile ID and then use the Profiles API as such:

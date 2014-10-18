@@ -1,4 +1,4 @@
-package com.beanstream;
+package com.beanstream.api.test;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,11 +8,13 @@ import java.util.logging.Logger;
 
 import org.junit.Assert;
 
+import com.beanstream.Gateway;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
 import com.beanstream.domain.Address;
 import com.beanstream.domain.Card;
 import com.beanstream.domain.PaymentProfile;
+import com.beanstream.domain.Token;
 import com.beanstream.domain.Transaction;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
@@ -55,7 +57,7 @@ import com.google.gson.GsonBuilder;
  * 
  * @author bowens
  */
-public class SampleTransactions {
+public class SampleTransactions{
 
 	public static void main(String[] args) {
 		SampleTransactions t = new SampleTransactions();
@@ -63,7 +65,8 @@ public class SampleTransactions {
 //		t.testVoidPayment();
 //		t.testPreAuthorization();
 //		t.testGetTransaction();
-		t.testProfileCrud();
+//		t.testProfileCrud();
+		t.testProfileCrudUsingToken();
 	}
 
 	private final AtomicInteger sequence = new AtomicInteger(1);
@@ -253,7 +256,7 @@ public class SampleTransactions {
 		tokenReq.setAmount("100.00");
 		tokenReq.setMerchantId("300200578");
 		tokenReq.setOrderNumber(getRandomOrderId("token"));
-		tokenReq.getToken().setName("John Doe").setCode(tokenResponse.token)
+		tokenReq.getToken().setName("John Doe").setCode(tokenResponse.getCode())
 				.setFunction("12");
 
 		try {
@@ -353,6 +356,98 @@ public class SampleTransactions {
 							.deleteProfileById(profileId);
 				} catch (BeanstreamApiException e) {
 					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+	
+	public void testProfileCrudUsingToken()  {
+		Gateway beanstream = new Gateway("v1", 300200578,
+				"4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
+				"D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
+				"4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
+		HttpsConnector connector = new HttpsConnector(300200578,
+				"4BaD82D9197b4cc4b70a221911eE9f70");
+		
+		String profileId = null;
+		try {
+			
+			
+			Address billing = getTestCardValidAddress();
+			LegatoTokenRequest tokenRequest = new LegatoTokenRequest();
+			tokenRequest.number = "5100000010001004";
+			tokenRequest.expiryMonth = 12;
+			tokenRequest.expiryYear = 18;
+			tokenRequest.cvd = "123";
+
+			String url = "https://www.beanstream.com/scripts/tokenization/tokens";
+			String output = "";
+			try {
+				output = connector.ProcessTransaction(HttpMethod.post, url,
+						tokenRequest);
+			} catch (BeanstreamApiException ex) {
+				Logger.getLogger(SampleTransactions.class.getName()).log(
+						Level.SEVERE, null, ex);
+			}
+
+			// Parse the output and return a token response to get the token for the
+			// payment request
+			Gson gson = new Gson();
+			LegatoTokenResponse tokenResponse = gson.fromJson(output,
+					LegatoTokenResponse.class);
+			
+			// test create profile
+			Token token = new Token("John Doe",tokenResponse.getToken());
+			
+			ProfileResponse createdProfile = beanstream.profiles()
+					.createProfile(token, billing);
+			profileId = createdProfile.getId();
+			Assert.assertNotNull(
+					"Test failed because it should create the profile and return a valid id",
+					profileId);
+
+			// test get profile by id
+			PaymentProfile paymentProfile = beanstream.profiles()
+					.getProfileById(profileId);
+			Assert.assertEquals(
+					"billing address assinged does not matches with the one sent at creation time",
+					paymentProfile.getBilling(), billing);
+			Assert.assertNotNull("Credit card was not in the response",
+					paymentProfile.getCard());
+			Assert.assertTrue("The default lenguage should be english","en".equals(paymentProfile.getLanguage()));
+			
+			// update the profile to francais
+			paymentProfile.setLanguage("fr");
+			paymentProfile.setComments("test updating profile sending billing info only");
+			// update profile
+			beanstream.profiles().updateProfile(paymentProfile);
+
+			// refresh the updated profile
+			paymentProfile = beanstream.profiles().getProfileById(profileId);
+			
+			Assert.assertEquals("Language was updated to Francais",
+					paymentProfile.getLanguage(), "fr");
+			
+			// delete the payment profile
+			beanstream.profiles().deleteProfileById(profileId);
+			try {
+				beanstream.profiles().getProfileById(profileId);
+				Assert.fail("This profile was deleted, therefore should throw an exception");
+			} catch (BeanstreamApiException e) {
+				profileId = null;
+			}
+		} catch (BeanstreamApiException ex) {
+			Assert.fail("Test can not continue, "+ex.getMessage());
+		} catch (Exception ex) {
+			Assert.fail("unexpected exception occur, test can not continue");
+		} finally {
+			if (profileId != null) {
+				try {
+					beanstream.profiles()
+							.deleteProfileById(profileId);
+				} catch (BeanstreamApiException e) {
 					e.printStackTrace();
 				}
 			}

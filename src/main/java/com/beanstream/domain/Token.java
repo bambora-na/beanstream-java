@@ -33,7 +33,18 @@ public class Token {
     private String code;
     private String function;
 
-    public String getName() {
+    
+    public Token() {
+		super();
+	}
+
+	public Token(String name, String code) {
+		super();
+		this.name = name;
+		this.code = code;
+	}
+
+	public String getName() {
         return name;
     }
 

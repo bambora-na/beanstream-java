@@ -5,10 +5,13 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.beanstream.connection.HttpsConnector;
 import com.beanstream.domain.Address;
 import com.beanstream.domain.Card;
 import com.beanstream.domain.PaymentProfile;
+import com.beanstream.domain.Token;
 import com.beanstream.exceptions.BeanstreamApiException;
+import com.beanstream.responses.LegatoTokenResponse;
 import com.beanstream.responses.ProfileResponse;
 
 public class ProfilesAPITest extends BaseBeanstreamTest {
@@ -20,7 +23,8 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 		ProfileResponse createdProfile = null;
 
 		try {
-			createdProfile = beanstream.profiles().createProfile(null, billing);
+			Card nillCard = null;
+			createdProfile = beanstream.profiles().createProfile(nillCard, billing);
 			Assert.fail("Fail test because the card was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -131,7 +135,7 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 	}
 
 	@Test
-	public void testProfileCrud() throws BeanstreamApiException {
+	public void testProfileCrudUsingCard() throws BeanstreamApiException {
 		String profileId = null;
 		try {
 			Address billing = getTestCardValidAddress();
@@ -174,10 +178,10 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 			} catch (BeanstreamApiException e) {
 				profileId = null;
 			}
-
+		} catch (BeanstreamApiException ex) {
+			Assert.fail("Test can not continue, "+ex.getMessage());
 		} catch (Exception ex) {
-			Assert.fail("unexpected exception occur, test can not continue : "
-					+ ex.getMessage());
+			Assert.fail("unexpected exception occur, test can not continue");
 		} finally {
 			if (profileId != null) {
 				ProfileResponse response = beanstream.profiles()
@@ -187,6 +191,69 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 
 	}
 
+	
+	@Test
+	public void testProfileCrudUsingToken() throws BeanstreamApiException {
+		String profileId = null;
+		try {
+			HttpsConnector connector = new HttpsConnector(300200578,
+					"4BaD82D9197b4cc4b70a221911eE9f70");
+			
+			Address billing = getTestCardValidAddress();
+			LegatoTokenResponse tokenResponse = tokenizeCard(connector, "5100000010001004", "123",12, 19);
+			// test create profile
+			Token token = new Token("John Doe",tokenResponse.getToken());
+			
+			ProfileResponse createdProfile = beanstream.profiles()
+					.createProfile(token, billing);
+			profileId = createdProfile.getId();
+			Assert.assertNotNull(
+					"Test failed because it should create the profile and return a valid id",
+					profileId);
+
+			// test get profile by id
+			PaymentProfile paymentProfile = beanstream.profiles()
+					.getProfileById(profileId);
+			Assert.assertEquals(
+					"billing address assinged does not matches with the one sent at creation time",
+					paymentProfile.getBilling(), billing);
+			Assert.assertNotNull("Credit card was not in the response",
+					paymentProfile.getCard());
+			Assert.assertTrue("The default lenguage should be english","en".equals(paymentProfile.getLanguage()));
+			
+			// update the profile to francais
+			paymentProfile.setLanguage("fr");
+			paymentProfile.setComments("test updating profile sending billing info only");
+			// update profile
+			beanstream.profiles().updateProfile(paymentProfile);
+
+			// refresh the updated profile
+			paymentProfile = beanstream.profiles().getProfileById(profileId);
+			
+			Assert.assertEquals("Language was updated to Francais",
+					paymentProfile.getLanguage(), "fr");
+			
+			// delete the payment profile
+			beanstream.profiles().deleteProfileById(profileId);
+			try {
+				beanstream.profiles().getProfileById(profileId);
+				Assert.fail("This profile was deleted, therefore should throw an exception");
+			} catch (BeanstreamApiException e) {
+				profileId = null;
+			}
+		} catch (BeanstreamApiException ex) {
+			Assert.fail("Test can not continue, "+ex.getMessage());
+		} catch (Exception ex) {
+			Assert.fail("unexpected exception occur, test can not continue");
+		} finally {
+			if (profileId != null) {
+				ProfileResponse response = beanstream.profiles()
+						.deleteProfileById(profileId);
+			}
+		}
+
+	}
+	
 	@Test
 	public void testProfileCardsCrud() throws BeanstreamApiException {
 		String profileId = null;
@@ -230,8 +297,8 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 			// update the card expires date
 			freshCard.setExpiryMonth("01");
 			freshCard.setExpiryYear("19");
-			freshCard.setName("Pedro Garcia");
-			freshCard.setNumber("4003050500040005");
+			freshCard.setName("JANE DOE");
+			freshCard.setNumber("4111111111111111");
 			
 			
 			ProfileResponse profileResponse = beanstream.profiles().updateCard(profileId, freshCard);
@@ -242,7 +309,8 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 					freshCard.getId());
 			Assert.assertEquals("the Expiry Month was updated but the change is not reflected", "01",freshCard.getExpiryMonth());
 			Assert.assertEquals("the Expiry Year was updated but the change is not reflected", "19",freshCard.getExpiryYear());
-			
+		} catch (BeanstreamApiException ex) {
+			Assert.fail(ex.getMessage());
 		} catch (Exception ex) {
 			Assert.fail("unexpected exception occur, test can not continue : "
 					+ ex.getMessage());
