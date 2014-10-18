@@ -26,10 +26,22 @@ import com.beanstream.Configuration;
 import com.beanstream.connection.BeanstreamUrls;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
+import com.beanstream.data.Records;
 import com.beanstream.domain.Transaction;
+import com.beanstream.domain.TransactionRecord;
 import com.beanstream.exceptions.BeanstreamApiException;
+import com.beanstream.requests.Criteria;
+import com.beanstream.requests.CriteriaSerializer;
+import com.beanstream.requests.QueryFields;
+import com.beanstream.requests.SearchQuery;
 import com.beanstream.responses.BeanstreamResponse;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import org.apache.http.HttpStatus;
 
 /**
@@ -44,16 +56,27 @@ public class ReportingAPI {
     
     private Configuration config;
     private HttpsConnector connector;
-    private final Gson gson = new Gson();
+    private final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
+    private GsonBuilder getGsonBuilder() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setDateFormat(DATE_FORMAT_STRING); //2014-10-16T15:22:17.815-07:00
+        gsonBuilder.registerTypeAdapter(Criteria.class, new CriteriaSerializer());
+        return gsonBuilder;
+    }
+    
+    private Gson getGson() {
+        return getGsonBuilder().create();
+    }
+    
     public ReportingAPI(Configuration config) {
         this.config = config;
-        connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
+        connector = new HttpsConnector(config.getMerchantId(), config.getReportingApiPasscode());
     }
 
     public void setConfig(Configuration config) {
         this.config = config;
-        connector = new HttpsConnector(config.getMerchantId(), config.getPaymentsApiPasscode());
+        connector = new HttpsConnector(config.getMerchantId(), config.getReportingApiPasscode());
     }
     
     /**
@@ -71,7 +94,7 @@ public class ReportingAPI {
         // get the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.get, url, null);
         
-        return gson.fromJson(response, Transaction.class);
+        return getGson().fromJson(response, Transaction.class);
     }
     
     
@@ -83,5 +106,30 @@ public class ReportingAPI {
             BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
             throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
         }
+    }   
+    
+    public List<TransactionRecord> query(final Date startDate, final Date endDate, final int startRow, final int endRow, final Criteria[] searchCriteria) throws BeanstreamApiException
+    {
+        if (endDate == null || startDate == null)
+            throw new IllegalArgumentException("Start Date and End Date cannot be null!");
+        if (endDate.compareTo(startDate)<0)
+            throw new IllegalArgumentException("End Date cannot be less than Start Date!");
+        if (endRow < startRow)
+            throw new IllegalArgumentException("End Row cannot be less than Start Row!");
+        if (endRow - startRow > 1000)
+            throw new IllegalArgumentException("You cannot query more than 1000 rows at a time!");
+
+        String url = BeanstreamUrls.getReportsUrl(config.getPlatform(), config.getVersion());
+
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_STRING);
+        SearchQuery query = new SearchQuery(dateFormat.format(startDate), dateFormat.format(endDate), startRow, endRow, searchCriteria);
+        
+        connector.setGsonBuilder(getGsonBuilder());
+
+        String response = connector.ProcessTransaction(HttpMethod.post, url, query);
+        System.out.println("Response:\n"+response);
+        Records records = getGson().fromJson(response, Records.class);
+
+        return records.records;
     }
 }

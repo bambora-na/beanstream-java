@@ -43,9 +43,14 @@ public class BeanstreamUrls {
 			+ "/{2}/continue";
 	public static final String ProfileUri = BaseProfilesUrl + "/{id}";
 	public static final String CardsUri = ProfileUri + "/cards";
+        public static final String ReportsUrl =  BaseUrl + "/{1}/reports";
 
 	
 
+        public static String getReportsUrl(String platform, String version) {
+		return MessageFormat.format(BeanstreamUrls.ReportsUrl, platform, version);
+	}
+        
 	public static String getProfilesUrl(String platform, String version) {
 		return MessageFormat.format(BeanstreamUrls.BaseProfilesUrl, platform, version);
 	}
