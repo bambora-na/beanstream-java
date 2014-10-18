@@ -40,7 +40,7 @@ public class ProfilesUtils {
 				"profile request is not valid because the token code is empty");
 	}
 
-	public static void validateBillingAddress(Address billing)
+	public static void validateBillingAddr(Address billing)
 			throws BeanstreamApiException {
 		Gateway.assertNotNull(billing,
 				"profile request is not valid because the billing address object is null");
@@ -68,7 +68,7 @@ public class ProfilesUtils {
 	 * a BeanstreamApiException with a bad request status, if any required
 	 * property is missing
 	 */
-	public static void validateProfileRequest(ProfileRequest profileRequest)
+	public static void validateProfileReq(ProfileRequest profileRequest)
 			throws BeanstreamApiException {
 		Gateway.assertNotNull(profileRequest, "profile request object is null");
 		Card card = profileRequest.getCard();
@@ -88,6 +88,6 @@ public class ProfilesUtils {
 			validateToken(token);
 		}
 
-		validateBillingAddress(billing);
+		validateBillingAddr(billing);
 	}
 }

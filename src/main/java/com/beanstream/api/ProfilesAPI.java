@@ -1,6 +1,29 @@
+/* The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Beanstream Internet Commerce Corp, Digital River, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package com.beanstream.api;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.beanstream.Configuration;
 import com.beanstream.Gateway;
@@ -21,6 +44,19 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+/**
+ * Payment Profiles allow you to store a customer's card number and other
+ * information, such as billing address and shipping address. The card number
+ * stored on the profile is a multi-use token and is called the ID.
+ * 
+ * Profiles can be created with a Credit Card or with a single-use Legato token.
+ * If using a token then the card information needs to be entered each time the
+ * user checks out. However the profile will always save the customer's billing
+ * info.
+ * 
+ * @author Pedro Garcia
+ *
+ */
 public class ProfilesAPI {
 
 	private Configuration config;
@@ -40,48 +76,56 @@ public class ProfilesAPI {
 	}
 
 	/**
-	 * <p>
-	 * Create a profile with all information sent in the parameters billing,
-	 * card
-	 * </p>
+	 * Create a PaymentProfile using a card and a billing address
 	 * 
 	 * @param card
-	 *            to be default in the profile <b>*Required</b>
+	 *            mandatory card, must be a valid card
 	 * @param billing
-	 *            address of the card holders <b>*Required</b>
-	 * @return profile response of the request
+	 *            address of the credit card
+	 * @return a ProfileResonse saying if the profile was created or not and the
+	 *         message
 	 * @throws BeanstreamApiException
-	 *             if any validation or error occur
+	 *             if any validation fails or error occur
 	 */
 	public ProfileResponse createProfile(Card card, Address billing)
 			throws BeanstreamApiException {
 		return createProfile(card, null, billing, null, null, null);
 	}
 
+	/**
+	 * Create a PaymentProfile using a token, billing address
+	 * 
+	 * @param token
+	 *            mandatory token, must contain a valid name and code
+	 * @param billing
+	 *            address of the credit card
+	 * @return a ProfileResonse saying if the profile was created or not and the
+	 *         message
+	 * @throws BeanstreamApiException
+	 *             if any validation fails or error occur
+	 */
 	public ProfileResponse createProfile(Token token, Address billing)
 			throws BeanstreamApiException {
 		return createProfile(null, token, billing, null, null, null);
 	}
 
 	/**
-	 * <p>
-	 * Create a profile with all information sent in the parameters like (card,
-	 * billing, custom, language, comments)
-	 * </p>
+	 * Create a PaymentProfile using a Card, billing address, custom fields,
+	 * language and comments
 	 * 
 	 * @param card
-	 *            to be default in the profile <b>*Required</b>
+	 *            mandatory parameter, must contain a valid card
 	 * @param billing
-	 *            address of the card holders <b>*Required</b>
+	 *            address of the credit card
 	 * @param custom
-	 *            fields <b>Optional</p>
-	 * @param comments
-	 *            field <b>Optional</p>
+	 *            fields to add in the profile
 	 * @param language
-	 *            field <b>Optional</p>
-	 * @return profile response of the request
+	 *            profile language
+	 * @param comments
+	 * @return a ProfileResonse saying if the profile was created or not and the
+	 *         message
 	 * @throws BeanstreamApiException
-	 *             if any validation or error occur
+	 *             if any validation fails or error occur
 	 */
 	public ProfileResponse createProfile(Card card, Address billing,
 			CustomFields custom, String language, String comments)
@@ -89,6 +133,24 @@ public class ProfilesAPI {
 		return createProfile(card, null, billing, custom, language, comments);
 	}
 
+	/**
+	 * Create a PaymentProfile using a token, billing address, custom fields,
+	 * language and comments
+	 * 
+	 * @param token
+	 *            mandatory token, must contain a valid name and code
+	 * @param billing
+	 *            address of the credit card
+	 * @param custom
+	 *            fields to add in the profile
+	 * @param language
+	 *            profile language
+	 * @param comments
+	 * @return a ProfileResonse saying if the profile was created or not and the
+	 *         message
+	 * @throws BeanstreamApiException
+	 *             if any validation fails or error occur
+	 */
 	public ProfileResponse createProfile(Token token, Address billing,
 			CustomFields custom, String language, String comments)
 			throws BeanstreamApiException {
@@ -96,8 +158,26 @@ public class ProfilesAPI {
 	}
 
 	/**
+	 * Create a PaymentProfile using a token or token, billing address, custom
+	 * fields, language and comments you must send either one a token or a card
+	 * 
+	 * @param token
+	 *            mandatory parameter if card object is null, must contain a
+	 *            valid name and code
+	 * @param card
+	 *            mandatory parameter if token object is null, must contain a
+	 *            valid card
+	 * @param billing
+	 *            address of the credit card
+	 * @param custom
+	 *            fields to add in the profile
+	 * @param language
+	 *            profile language
+	 * @param comments
+	 * @return a ProfileResonse saying if the profile was created or not and the
+	 *         message
 	 * @throws BeanstreamApiException
-	 *             if any validation or error occur
+	 *             if any validation fails or error occur
 	 */
 	private ProfileResponse createProfile(Card card, Token token,
 			Address billing, CustomFields custom, String language,
@@ -105,7 +185,7 @@ public class ProfilesAPI {
 
 		ProfileRequest req = new ProfileRequest(card, token, billing, custom,
 				language, comments);
-		ProfilesUtils.validateProfileRequest(req);
+		ProfilesUtils.validateProfileReq(req);
 
 		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion());
@@ -117,16 +197,15 @@ public class ProfilesAPI {
 	}
 
 	/**
-	 * <p>
 	 * Retrieve a profile using the profile's ID. If you want to modify a
 	 * profile you must first retrieve it using this method
-	 * </p>
 	 * 
-	 * @param the
-	 *            id of the profile to retrieve
-	 * @return PaymentProfile if the profile is successfully found.
+	 * @param profileId
+	 *            to search
+	 * @return a PaymentProfile for the given profileId
 	 * @throws BeanstreamApiException
-	 *             if the profile id is not found or any error occur
+	 *             if the profile does not exist or any validation or error
+	 *             occur
 	 */
 	public PaymentProfile getProfileById(String profileId)
 			throws BeanstreamApiException {
@@ -141,14 +220,11 @@ public class ProfilesAPI {
 	}
 
 	/**
-	 * <p>
 	 * Delete the profile. You must send and valid profileId
-	 * </p>
 	 * 
-	 * @param the
-	 *            id of the profile to delete
-	 * @return The profile response if successful, an BeanstreamApiException if
-	 *         not.
+	 * @param profileId
+	 *            of the profile to delete
+	 * @return ProfileResponse if successful, an BeanstreamApiException if not.
 	 **/
 	public ProfileResponse deleteProfileById(String profileId)
 			throws BeanstreamApiException {
@@ -164,23 +240,19 @@ public class ProfilesAPI {
 	}
 
 	/**
-	 * <p>
 	 * Updates the profile. You must first retrieve the profile using
 	 * ProfilesAPI.getProfileById(id)
-	 * </p>
 	 * 
 	 * @param profile
 	 *            object to update
-	 * @return The profile response if successful, an BeanstreamApiException if
-	 *         not.
+	 * @return ProfilePesponse if successful, an BeanstreamApiException if not.
 	 **/
 	public ProfileResponse updateProfile(PaymentProfile profile)
 			throws BeanstreamApiException {
 		Gateway.assertNotNull(profile, "profile to update is null");
 		ProfilesUtils.validateProfileId(profile.getId());
 
-		// validateCard(profile.getCard());
-		ProfilesUtils.validateBillingAddress(profile.getBilling());
+		ProfilesUtils.validateBillingAddr(profile.getBilling());
 
 		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion(), profile.getId());
@@ -196,6 +268,17 @@ public class ProfilesAPI {
 		return gson.fromJson(response, ProfileResponse.class);
 	}
 
+	/**
+	 * Gets the cards contained on this profile. It is possible for a profile
+	 * not to contain any cards if it was created using a Legato token
+	 * (single-use token)
+	 * 
+	 * @param profileId
+	 *            of the profile containing the cards
+	 * @return List<Card> with all the cards for that profile
+	 * @throws BeanstreamApiException
+	 *             if any validation fails or any error occur
+	 */
 	public List<Card> getCards(String profileId) throws BeanstreamApiException {
 		ProfilesUtils.validateProfileId(profileId);
 		String url = BeanstreamUrls.getProfileCardsUrl(config.getPlatform(),
@@ -209,6 +292,15 @@ public class ProfilesAPI {
 
 	}
 
+	/**
+	 * Get a particular card on a profile, Card IDs are their index in
+	 * getCards(), starting a 1 and going up: 1, 2, 3, 4...
+	 * 
+	 * @param profileId
+	 * @param cardId
+	 * @return the Card you are looking for
+	 * @throws BeanstreamApiException
+	 */
 	public Card getCard(String profileId, String cardId)
 			throws BeanstreamApiException {
 
@@ -221,17 +313,20 @@ public class ProfilesAPI {
 				null);
 		ProfileCardsResponse pcr = gson.fromJson(response,
 				ProfileCardsResponse.class);
-		Card card = null;
-		if (pcr.getCards().isEmpty()) {
-			card = null;
-		} else {
-			card = pcr.getCards().get(0);
-			// card.setId(cardId);
-		}
-		return card;
+		Optional<Card> card = pcr.getCards().stream().findFirst();
+		return card.orElse(null);
 
 	}
 
+	/**
+	 * Updates the profile. You must first retrieve the profile using
+	 * ProfilesAPI.GetProfile(id)
+	 * 
+	 * @param profileId
+	 * @param card
+	 * @return
+	 * @throws BeanstreamApiException
+	 */
 	public ProfileResponse updateCard(String profileId, Card card)
 			throws BeanstreamApiException {
 
@@ -251,6 +346,18 @@ public class ProfilesAPI {
 
 	}
 
+	/**
+	 * Add a new card to the profile. It gets appended to the end of the list of
+	 * cards. Make sure your Merchant account can support more cards. The
+	 * default amount is 1. You can change this limit in the online Members area
+	 * for Merchants located at: https://www.beanstream.com/admin/sDefault.asp
+	 * and heading to Configuration -> Payment Profile Configuration
+	 * 
+	 * @param profileId
+	 * @param card
+	 * @return ProfileResponse
+	 * @throws BeanstreamApiException
+	 */
 	public ProfileResponse addCard(String profileId, Card card)
 			throws BeanstreamApiException {
 		ProfilesUtils.validateProfileId(profileId);
@@ -264,6 +371,15 @@ public class ProfilesAPI {
 
 	}
 
+	/**
+	 * Removes the card from the profile. Card IDs are their index in
+	 * getCards(), starting a 1 and going up: 1, 2, 3, 4...
+	 * 
+	 * @param profileId
+	 * @param cardId
+	 * @return ProfileResponse
+	 * @throws BeanstreamApiException
+	 */
 	public ProfileResponse removeCard(String profileId, String cardId)
 			throws BeanstreamApiException {
 		ProfilesUtils.validateProfileId(profileId);
