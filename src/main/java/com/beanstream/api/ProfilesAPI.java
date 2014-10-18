@@ -23,7 +23,6 @@
 package com.beanstream.api;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.beanstream.Configuration;
 import com.beanstream.Gateway;
@@ -313,8 +312,13 @@ public class ProfilesAPI {
 				null);
 		ProfileCardsResponse pcr = gson.fromJson(response,
 				ProfileCardsResponse.class);
-		Optional<Card> card = pcr.getCards().stream().findFirst();
-		return card.orElse(null);
+
+		Card card = null;
+		if (!pcr.getCards().isEmpty()) {
+			card = pcr.getCards().get(0);
+			card.setId(cardId);
+		}
+		return card;
 
 	}
 
