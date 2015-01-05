@@ -69,11 +69,11 @@ public class BeanstreamResponse {
                     .build();
         }
         
-        String contentType = httpEntity.getContentType().getValue();
-        MediaType responseType = MediaType.parse(contentType);
+        String contentType = httpEntity.getContentType() != null ? httpEntity.getContentType().getValue() : null;
+        MediaType responseType = contentType != null ? MediaType.parse(contentType) : null;
 
         // If the payload isn't json, or we got a 2XX response, just populate the responseBody field with the payload
-        if (responseType != MediaType.JSON_UTF_8 || (httpStatusCode >= 200 && httpStatusCode < 300)) {
+        if (responseType == null || responseType != MediaType.JSON_UTF_8 || (httpStatusCode >= 200 && httpStatusCode < 300)) {
             return new BeanstreamResponseBuilder()
                     .withHttpStatusCode(httpStatusCode)
                     .withResponseBody(jsonPayload)

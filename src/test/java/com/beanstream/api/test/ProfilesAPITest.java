@@ -283,12 +283,10 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 			// add a new card
 			Card newCard = getTestCard();
 			newCard.setCvd("123");
-			newCard.setName("JANE DOE");
-			newCard.setNumber("4003050500040005");
+			newCard.setName("John Doe");
+			newCard.setNumber("4030000010001234");
 			newCard.setExpiryMonth("01");
 			newCard.setExpiryYear("19");
-			newCard.setType("VISA");
-			newCard.setFunction("DEF");
 			
 			
 			ProfileResponse newCardResp = beanstream.profiles().addCard(profileId, newCard);
@@ -297,8 +295,6 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 			// update the card expires date
 			freshCard.setExpiryMonth("01");
 			freshCard.setExpiryYear("19");
-			freshCard.setName("JANE DOE");
-			freshCard.setNumber("4111111111111111");
 			
 			
 			ProfileResponse profileResponse = beanstream.profiles().updateCard(profileId, freshCard);

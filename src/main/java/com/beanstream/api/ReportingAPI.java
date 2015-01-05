@@ -32,13 +32,10 @@ import com.beanstream.domain.TransactionRecord;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.Criteria;
 import com.beanstream.requests.CriteriaSerializer;
-import com.beanstream.requests.QueryFields;
 import com.beanstream.requests.SearchQuery;
 import com.beanstream.responses.BeanstreamResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -90,6 +87,7 @@ public class ReportingAPI {
         assertNotEmpty(paymentId, "invalid paymentId");
         
         String url = BeanstreamUrls.getPaymentUrl(config.getPlatform(), config.getVersion(), paymentId);
+        connector.setApiPasscode(config.getPaymentsApiPasscode());
         
         // get the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.get, url, null);
@@ -100,7 +98,7 @@ public class ReportingAPI {
     
     private void assertNotEmpty(String value, String errorMessage)
             throws BeanstreamApiException {
-        // could use StringUtils.assertNotNull();
+        
         if (value == null || value.trim().isEmpty()) {
             // TODO - do we need to supply category and code ids here?
             BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
@@ -108,7 +106,7 @@ public class ReportingAPI {
         }
     }   
     
-    public List<TransactionRecord> query(final Date startDate, final Date endDate, final int startRow, final int endRow, final Criteria[] searchCriteria) throws BeanstreamApiException
+    public List<TransactionRecord> query(final Date startDate, final Date endDate, final int startRow, final int endRow, Criteria[] searchCriteria) throws BeanstreamApiException
     {
         if (endDate == null || startDate == null)
             throw new IllegalArgumentException("Start Date and End Date cannot be null!");
@@ -119,6 +117,9 @@ public class ReportingAPI {
         if (endRow - startRow > 1000)
             throw new IllegalArgumentException("You cannot query more than 1000 rows at a time!");
 
+        if (searchCriteria == null)
+            searchCriteria = new Criteria[]{};
+        
         String url = BeanstreamUrls.getReportsUrl(config.getPlatform(), config.getVersion());
 
         final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_STRING);
@@ -127,7 +128,7 @@ public class ReportingAPI {
         connector.setGsonBuilder(getGsonBuilder());
 
         String response = connector.ProcessTransaction(HttpMethod.post, url, query);
-        System.out.println("Response:\n"+response);
+        //System.out.println("Response:\n"+response);
         Records records = getGson().fromJson(response, Records.class);
 
         return records.records;

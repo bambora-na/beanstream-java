@@ -40,7 +40,7 @@ public class TransactionRecord
     @SerializedName("trn_order_number") private String orderNumber;
     @SerializedName("trn_payment_method") private String paymentMethod;
     @SerializedName("trn_comments") private String comments;
-    @SerializedName("trn_masked_card") private int maskedMard;
+    @SerializedName("trn_masked_card") private String maskedCard;
     @SerializedName("trn_amount") private double amount;
     @SerializedName("trn_returns") private double returns;
     @SerializedName("trn_completions") private double completions;
@@ -125,11 +125,11 @@ public class TransactionRecord
     public void setComments(String comments)
     { this.comments=comments; }
 
-    public int getMaskedMard()
-    { return maskedMard; }
+    public String getMaskedCard()
+    { return maskedCard; }
 
-    public void setMaskedMard(int maskedMard)
-    { this.maskedMard=maskedMard; }
+    public void setMaskedCard(String maskedCard)
+    { this.maskedCard=maskedCard; }
 
     public double getAmount()
     { return amount; }

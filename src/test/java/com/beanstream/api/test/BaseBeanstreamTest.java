@@ -78,11 +78,9 @@ public abstract class BaseBeanstreamTest {
 
 	}
 
-	protected CardPaymentRequest getCreditCardPaymentRequest(String orderId,
-			String merchantId, String amount) {
+	protected CardPaymentRequest getCreditCardPaymentRequest(String orderId, String amount) {
 		CardPaymentRequest paymentRequest = new CardPaymentRequest();
 		paymentRequest.setAmount(amount);
-		paymentRequest.setMerchantId(merchantId);
 		paymentRequest.setOrderNumber(orderId);
 		paymentRequest.getCard().setName("John Doe")
 				.setNumber("5100000010001004").setExpiryMonth("12")

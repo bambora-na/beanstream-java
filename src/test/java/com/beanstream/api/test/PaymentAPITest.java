@@ -16,7 +16,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 	@Test
 	public void preAuth() throws BeanstreamApiException {
 		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
-				getRandomOrderId("GAS"), "300200578", "120.00");
+				getRandomOrderId("GAS"), "120.00");
 		PaymentResponse response = beanstream.payments()
 				.preAuth(paymentRequest);
 
@@ -32,7 +32,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 	@Test
 	public void preAuthCompletionGreaterAmount() throws BeanstreamApiException {
 		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
-				getRandomOrderId("GAS"), "300200578", "120.00");
+				getRandomOrderId("GAS"), "120.00");
 		PaymentResponse response = beanstream.payments()
 				.preAuth(paymentRequest);
 		try {
@@ -45,19 +45,9 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 				}
 			}
 		} catch (BeanstreamApiException ex) {
-            BeanstreamResponse gatewayResp = new BeanstreamResponseBuilder()
-                    .withCode(208)
-                    .withCategory(2)
-                    .withMessage("Completion greater than remaining reserve amount.")
-                    .withHttpStatusCode(400)
-                    .build();
-            Assert.assertEquals(
-					"This auth completion should be not be approved because a lower amount has been pre authorized",
-					ex.getHttpStatusCode(), 400);
-			Assert.assertEquals(
-					"This auth completion should be not be approved because a lower amount has been pre authorized",
-					BeanstreamResponse.fromException(ex),
-					gatewayResp);
+                    Assert.assertEquals("Http status code did not match expected.", 400, ex.getHttpStatusCode());
+                    Assert.assertEquals("Error category did not match expected", 2, ex.getCategory());
+                    Assert.assertEquals("Error code did not match expected", 208, ex.getCode());
 		}
 	}
 
@@ -65,7 +55,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 	public void preAuthCompletionDifferentOrderNumber()
 			throws BeanstreamApiException {
 		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
-				getRandomOrderId("GAS"), "300200578", "120.00");
+				getRandomOrderId("GAS"), "120.00");
 		PaymentResponse response = beanstream.payments()
 				.preAuth(paymentRequest);
 
@@ -83,7 +73,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 	public void voidPayment() throws BeanstreamApiException {
 
 		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
-				getRandomOrderId("PEDRO"), "300200578", "90.00");
+				getRandomOrderId("PEDRO"),  "90.00");
 
 		PaymentResponse response = beanstream.payments().makePayment(
 				paymentRequest);
@@ -92,7 +82,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 			Assert.assertTrue("void payment response is not VP",
 					"VP".equals(response.type));
 		} else {
-			Assert.fail("Test can not be executed cause the payment api could not approved the test payment");
+			Assert.fail("Test can not be executed cause the payment api could not approve the test payment");
 		}
 	}
 
@@ -109,7 +99,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 	@Test(expected = BeanstreamApiException.class)
 	public void invalidAmountVoidPayment() throws BeanstreamApiException {
 		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
-				getRandomOrderId("PEDRO"), "300200578", "90.00");
+				getRandomOrderId("PEDRO"),  "90.00");
 
 		PaymentResponse response = null;
 		try {
@@ -129,7 +119,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 	public void Return() throws BeanstreamApiException {
 
 		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
-				getRandomOrderId("PEDRO"), "300200578", "90.00");
+				getRandomOrderId("PEDRO"),  "90.00");
 
 		PaymentResponse response = beanstream.payments().makePayment(
 				paymentRequest);

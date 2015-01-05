@@ -54,7 +54,7 @@ import java.util.logging.Logger;
 public class HttpsConnector {
     
     private final int merchantId;
-    private final String apiPasscode;
+    private String apiPasscode;
     private GsonBuilder gsonBuilder;
 
     public HttpsConnector(int merchantId, String apiPasscode) {
@@ -72,6 +72,10 @@ public class HttpsConnector {
         }
         
         return gsonBuilder;
+    }
+
+    public void setApiPasscode(String apiPasscode) {
+        this.apiPasscode = apiPasscode;
     }
     
     // this should be refactored to to use java naming conventions (start

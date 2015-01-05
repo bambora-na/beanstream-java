@@ -315,8 +315,11 @@ public class ProfilesAPI {
 
 		Card card = null;
 		if (!pcr.getCards().isEmpty()) {
-			card = pcr.getCards().get(0);
-			card.setId(cardId);
+                    int cid = new Integer(cardId) -1;
+                    if (cid < 0 || cid > pcr.getCards().size())
+                        throw new IllegalArgumentException("Card ID was larger than the number of cards on the profile!");
+                    card = pcr.getCards().get(cid);
+                    card.setId(cardId);
 		}
 		return card;
 
@@ -340,10 +343,15 @@ public class ProfilesAPI {
 		Gateway.assertNotEmpty(cardId, "card id it to update is empty");
 		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
-		ProfilesUtils.validateCard(card);
-
+                
+                if (card.getNumber().contains("X") || card.getNumber().contains("x"))
+                    card.setNumber(null);
+                card.setType(null);
+                card.setFunction(null);
+                CardWrapper cw = new CardWrapper(card);
+                
 		// send the card json without id
-		JsonElement _card = gson.toJsonTree(card, Card.class);
+		JsonElement _card = gson.toJsonTree(cw, CardWrapper.class);
 		String response = connector.ProcessTransaction(HttpMethod.put, url,
 				_card);
 		return gson.fromJson(response, ProfileResponse.class);
@@ -369,12 +377,29 @@ public class ProfilesAPI {
 				config.getVersion(), profileId);
 
 		ProfilesUtils.validateCard(card);
-		String response = connector.ProcessTransaction(HttpMethod.post, url,
-				card);
+                
+                CardWrapper cw = new CardWrapper(card);
+		String response = connector.ProcessTransaction(HttpMethod.post, url, cw);
 		return gson.fromJson(response, ProfileResponse.class);
 
 	}
 
+        private class CardWrapper {
+            private Card card;
+
+            private CardWrapper(Card card) {
+                this.card = card;
+            }
+
+            public Card getCard() {
+                return card;
+            }
+
+            public void setCard(Card card) {
+                this.card = card;
+            }
+            
+        }
 	/**
 	 * Removes the card from the profile. Card IDs are their index in
 	 * getCards(), starting a 1 and going up: 1, 2, 3, 4...
