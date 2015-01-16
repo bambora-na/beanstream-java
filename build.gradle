@@ -1,6 +1,6 @@
-apply plugin: 'java'
-sourceCompatibility = '1.7'
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+import org.gradle.api.XmlProvider
+import org.gradle.api.artifacts.maven.MavenDeployment
 
 // NetBeans will automatically add "run" and "debug" tasks relying on the
 // "mainClass" property. You may however define the property prior executing
@@ -13,38 +13,163 @@ if (!hasProperty('mainClass')) {
     ext.mainClass = 'com.beanstream.api.test.SampleTransactions'
 }
 
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'osgi'
+
+
+sourceCompatibility = '1.7'
+group = "com.beanstream.api"
+version = "1.0.0-SNAPSHOT"
+
+
+
 repositories {
     mavenCentral()
-    
 }
-
-
-apply plugin: 'maven'
-
-
-group = "com.beanstream.api"
-version = "1.0.0"
-
-jar {
-    
-}
-
-task createPom << {
-    pom {
-        project {
-            
-        }
-    }.writeTo("$buildDir/pom.xml")
-}
-
-artifacts {
-    archives jar
-}
-
 
 dependencies {
-    compile group: 'junit', name: 'junit', version: '4.10'
+    compile 'junit:junit:4.10'
     compile 'com.google.code.gson:gson:2.3'
     compile 'org.apache.httpcomponents:httpclient:4.3.5'
     compile group: 'com.google.guava', name: 'guava', version: '14.+'
+}
+
+jar.doFirst {
+  manifest {
+    attributes(
+        "Manifest-Version"       : "1.0",
+        "Created-By"             : "Beanstream",
+        "Specification-Title"    : "Beanstream Java SDK",
+        "Specification-Version"  : version,
+        "Specification-Vendor"   : "Beanstream",
+        "Implementation-Title"   : "Beanstream Java SDK",
+        "Implementation-Version" : version,
+        "Implementation-Vendor"  : "Beanstream"
+    )
+  }
+}
+
+task distJar(type: Jar) {
+    dependsOn jar
+}
+
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from tasks.javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+/*artifacts {
+    archives distJar
+    archives sourcesJar
+    archives javadocJar
+}*/
+
+signing {
+    sign configurations.archives
+}
+
+
+// start artifactory ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'maven-publish'
+
+buildscript {
+    repositories {
+        maven {
+            url 'http://localhost:8080/artifactory/plugins-release'
+            credentials {
+                username = "${artifactoryUsername}"
+                password = "${artifactoryPassword}"
+            }
+            name = "maven-main-cache"
+        }
+    }
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1"
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"
+    publish {
+        repository {
+            repoKey = 'libs-snapshot-local'
+            username = "${artifactoryUsername}"
+            password = "${artifactoryPassword}"
+            maven = true
+        }
+        defaults {
+            publications ('mavenJava')
+        }
+    }
+}
+
+// end artifactory ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+repositories {
+    flatDir {
+        name "fileRepo"
+        dirs "build/repo"
+    }
+}
+
+
+uploadArchives {
+    repositories {
+        
+        add project.repositories.fileRepo
+        
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            
+            
+            // SNAPSHOT
+            repository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+            
+            // RELEASE
+            //repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+            //  authentication(userName: sonatypeUsername, password: sonatypePassword)
+            //}
+            
+            pom.project {
+                name 'Beanstream API SDK'
+                description 'A library (SDK) for connecting to the Beanstream APIs'
+                url 'http://developer.beanstream.com'
+                packaging 'jar'
+
+                licenses {
+                    license {
+                        name 'The MIT License (MIT)'
+                        url 'http://opensource.org/licenses/MIT'
+                        distribution 'repo'
+                    }
+                }
+
+                scm {
+                    url 'https://github.com/Beanstream-DRWP/beanstream-java'
+                }
+                
+            }
+        }
+    }
 }
