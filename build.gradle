@@ -66,63 +66,9 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
 }
 
-/*artifacts {
-    archives distJar
-    archives sourcesJar
-    archives javadocJar
-}*/
-
 signing {
     sign configurations.archives
 }
-
-
-// start artifactory ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-
-apply plugin: 'com.jfrog.artifactory'
-apply plugin: 'maven-publish'
-
-buildscript {
-    repositories {
-        maven {
-            url 'http://localhost:8080/artifactory/plugins-release'
-            credentials {
-                username = "${artifactoryUsername}"
-                password = "${artifactoryPassword}"
-            }
-            name = "maven-main-cache"
-        }
-    }
-    dependencies {
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1"
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
-
-
-artifactory {
-    contextUrl = "${artifactory_contextUrl}"
-    publish {
-        repository {
-            repoKey = 'libs-snapshot-local'
-            username = "${artifactoryUsername}"
-            password = "${artifactoryPassword}"
-            maven = true
-        }
-        defaults {
-            publications ('mavenJava')
-        }
-    }
-}
-
-// end artifactory ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 repositories {
     flatDir {
@@ -173,3 +119,53 @@ uploadArchives {
         }
     }
 }
+
+
+
+// start artifactory ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+/*apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'maven-publish'
+
+buildscript {
+    repositories {
+        maven {
+            url 'http://localhost:8080/artifactory/plugins-release'
+            credentials {
+                username = "${artifactoryUsername}"
+                password = "${artifactoryPassword}"
+            }
+            name = "maven-main-cache"
+        }
+    }
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1"
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"
+    publish {
+        repository {
+            repoKey = 'libs-snapshot-local'
+            username = "${artifactoryUsername}"
+            password = "${artifactoryPassword}"
+            maven = true
+        }
+        defaults {
+            publications ('mavenJava')
+        }
+    }
+}*/
+
+// end artifactory ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
