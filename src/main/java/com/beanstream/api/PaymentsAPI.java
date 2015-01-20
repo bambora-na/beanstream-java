@@ -45,6 +45,8 @@ import org.apache.http.HttpStatus;
 
 
 import static com.beanstream.connection.BeanstreamUrls.*;
+import com.beanstream.requests.ProfilePaymentRequest;
+import com.beanstream.requests.ProfilePaymentRequestData;
 
 /**
  * The entry point for processing payments.
@@ -105,11 +107,34 @@ public class PaymentsAPI {
      * @param paymentRequest the payment request including a token
      * @return PaymentResponse the result of the payment transaction
      * @throws BeanstreamApiException as a result of a business logic validation
-     * or any other error @see
+     * or any other error
      */
     public PaymentResponse makePayment(TokenPaymentRequest paymentRequest) throws BeanstreamApiException {
         paymentRequest.setMerchantId("" + config.getMerchantId());
-        paymentRequest.getToken().setComplete(true); // false for pre-auth
+        paymentRequest.getToken().setComplete(true); // true to make the payment
+
+        // build the URL
+        String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
+
+        // process the transaction using the REST API
+        String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
+
+        // parse the output and return a PaymentResponse
+        return gson.fromJson(response, PaymentResponse.class);
+    }
+    
+    /**
+     * Make a tokenized payment with a Payment Profile. This payment must include a token that was previously
+     * returned from the Payment Profile.
+     *
+     * @param paymentRequest the payment request including a token
+     * @return PaymentResponse the result of the payment transaction
+     * @throws BeanstreamApiException as a result of a business logic validation
+     * or any other error
+     */
+    public PaymentResponse makePayment(ProfilePaymentRequest paymentRequest) throws BeanstreamApiException {
+        paymentRequest.setMerchantId("" + config.getMerchantId());
+        paymentRequest.getProfile().setComplete(true); // true to make the payment
 
         // build the URL
         String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
@@ -226,6 +251,40 @@ public class PaymentsAPI {
         }
 
         paymentRequest.getCard().setComplete(false);
+
+        String preAuthUrl = getPaymentUrl(config.getPlatform(),
+                config.getVersion());
+
+        String response = connector.ProcessTransaction(HttpMethod.post,
+                preAuthUrl, paymentRequest);
+        return gson.fromJson(response, PaymentResponse.class);
+    }
+    
+    /**
+     * <p>
+     * Pre-authorize a payment. Use this if you want to know if a customer has
+     * sufficient funds before processing a payment. A real-world example of
+     * this is pre-authorizing at the gas pump for $100 before you fill up, then
+     * end up only using $60 of gas; the customer is only charged $60. The final
+     * payment is used with preAuthCompletion() method.
+     * </p>
+     *
+     * @param paymentRequest payment request to pre authorize with a valid
+     * amount
+     * @return a PaymentResponse pre-approved containing the paymentId you will
+     * need to complete the transaction.
+     * @throws BeanstreamApiException if any validation fail or error occur
+     */
+    public PaymentResponse preAuth(ProfilePaymentRequest paymentRequest)
+            throws BeanstreamApiException {
+
+        if (paymentRequest == null || paymentRequest.getProfile() == null) {
+            // TODO - do we need to supply category and code ids here?
+            BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
+            throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
+        }
+
+        paymentRequest.getProfile().setComplete(false);
 
         String preAuthUrl = getPaymentUrl(config.getPlatform(),
                 config.getVersion());

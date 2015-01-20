@@ -16,6 +16,8 @@ import com.beanstream.requests.ChequePaymentRequest;
 import com.beanstream.requests.Criteria;
 import com.beanstream.requests.LegatoTokenRequest;
 import com.beanstream.requests.Operators;
+import com.beanstream.requests.ProfilePaymentRequest;
+import com.beanstream.requests.ProfilePaymentRequestData;
 import com.beanstream.requests.QueryFields;
 import com.beanstream.requests.TokenPaymentRequest;
 import com.beanstream.responses.BeanstreamResponse;
@@ -540,6 +542,50 @@ public class SampleTransactions {
 
     }
 
+    @Test
+    public void testMakePaymentsWithProfile() {
+        Gateway beanstream = new Gateway("v1", 300200578,
+                "4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
+                "D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
+                "4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
+        
+        Address billing = getTestCardValidAddress();
+        Card card = new Card().setName("JANE DOE")
+            .setNumber("5100000010001004")
+            .setExpiryMonth("12")
+            .setExpiryYear("18")
+            .setCvd("123");
+        
+        try {
+            ProfileResponse profile = beanstream.profiles().createProfile(card, billing);
+            
+            ProfilePaymentRequest paymentRequest = new ProfilePaymentRequest()
+                .setProfile(new ProfilePaymentRequestData()
+                    .setCardId(1)
+                    .setCustomerCode(profile.getId()));
+            paymentRequest.setAmount("13");
+            
+            // make a regular payment
+            PaymentResponse result = beanstream.payments().makePayment(paymentRequest);
+            Assert.assertNotNull(result);
+            
+            // run a pre-auth
+            paymentRequest.setAmount("100");
+            result = beanstream.payments().preAuth(paymentRequest);
+            Assert.assertNotNull(result);
+            Assert.assertTrue("PA".equals(result.type));
+            
+            // complete the pre-auth
+            result = beanstream.payments().preAuthCompletion(result.id, 100, null);
+            Assert.assertNotNull(result);
+            Assert.assertTrue("PAC".equals(result.type));
+            
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
     private Address getTestCardValidAddress() {
         Address billing = new Address();
         billing.setName("JANE DOE");
