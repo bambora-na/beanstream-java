@@ -563,14 +563,16 @@ public class SampleTransactions {
                 .setProfile(new ProfilePaymentRequestData()
                     .setCardId(1)
                     .setCustomerCode(profile.getId()));
-            paymentRequest.setAmount("13");
+            paymentRequest.setAmount("13")
+                .setOrderNumber(getRandomOrderId("TEST"));
             
             // make a regular payment
             PaymentResponse result = beanstream.payments().makePayment(paymentRequest);
             Assert.assertNotNull(result);
             
             // run a pre-auth
-            paymentRequest.setAmount("100");
+            paymentRequest.setAmount("100")
+                .setOrderNumber(getRandomOrderId("TEST"));
             result = beanstream.payments().preAuth(paymentRequest);
             Assert.assertNotNull(result);
             Assert.assertTrue("PA".equals(result.type));
