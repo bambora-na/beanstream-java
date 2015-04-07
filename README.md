@@ -30,14 +30,15 @@ Next you can create the Card Payment Request, which is a payment using a credit 
 
 ```java
 CardPaymentRequest req = new CardPaymentRequest();
-	req.setAmount( "100.00" );
-	req.setMerchant_id( "300200578" );
-	req.setOrder_number( "402" );
-	req.getCard().setName( "John Doe" )
-		.setNumber( "5100000010001004" )
-		.setExpiry_month( "12" )
-		.setExpiry_year( "18" )
-		.setCvd( "123" );
+	req.setAmount("100.00")
+	.setMerchantId("300200578")
+	.setOrderNumber("myOrderNumber_00003");
+	req.getCard()
+			.setName("John Doe")
+			.setNumber("5100000010001004")
+			.setExpiryMonth("12")
+			.setExpiryYear("18")
+			.setCvd("123");
 
 try {
             
@@ -63,19 +64,10 @@ String paymentId = ....;
 double amount = ....;
 
 try {
-	
 	PaymentResponse response = beanstream.payments().voidPayment(paymentId, amount);
 	// void payment success, your response contains the payment transaction but witht he type 'VP'
 } catch (BeanstreamApiException ex) {
-	// void payment request failed, handle exception here
-	if(ex.getHttpStatusCode()==400) { // bad request
-		BeanstreamResponse resp = new BeanstreamResponse(ex.getResponseMessage());
-		// resp.code
-		// resp.category
-		// resp.message
-		// resp.reference
-	}
-	//
+	// handle any errors
 }	
 ```
 
@@ -87,33 +79,25 @@ A real-world example of  this is pre-authorizing at the gas pump for $100 before
 Step 1 do the pre authorization
 ```java
 
-		CardPaymentRequest paymentRequest = ...;
+CardPaymentRequest paymentRequest = ...;
 
-		try {
-			PaymentResponse response = beanstream.payments()
-				.preAuth(paymentRequest);
+try {
+	PaymentResponse response = beanstream.payments().preAuth(paymentRequest);
 
-		} catch (BeanstreamApiException ex) {
-			BeanstreamResponse response = new BeanstreamResponse(ex.getResponseMessage());
-			//response.code response code from beanstream
-			//response.category category of the response code
-			//response.message description of the response code
-		}
+} catch (BeanstreamApiException ex) {
+	// handle any errors
+}
 
 ```
 
 Step 2 complete the purchase with the final amount
 
 ```java
-		try{
-			PaymentResponse authResp = beanstream.payments()
-						.preAuthCompletion(preAuthorizedPaymentId, finalAmount ,order_number);
-		} catch (BeanstreamApiException ex) {
-			BeanstreamResponse response = new BeanstreamResponse(ex.getResponseMessage());
-			//response.code response code from beanstream
-			//response.category category of the response code
-			//response.message description of the response code
-		}
+try{
+	PaymentResponse authResp = beanstream.payments().preAuthCompletion(preAuthorizedPaymentId, finalAmount, order_number); // order_number is optional
+} catch (BeanstreamApiException ex) {
+	// handle any errors
+}
 ```
 
 # API Payment Profiles
@@ -130,17 +114,25 @@ Gateway beanstream = new Gateway("v1", 300200578,
 				"D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
 				"4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
 
-	Card card = new Card().setName("John Doe")
-					.setNumber("5100000010001004").setExpiryMonth("12")
-					.setExpiryYear("18").setCvd("123");
+Card card = new Card()
+	.setName("John Doe")
+	.setNumber("5100000010001004")
+	.setExpiryMonth("12")
+	.setExpiryYear("18")
+	.setCvd("123");
 
-	Address billing = new Address.AddressBuilder().name("JANE DOE").city("VICTORIA")
-				.province("BC").country("CA").addressLine1("123 FAKE ST.")
-				.postalCode("V9T2G6").emailAddress("TEST@BEANSTREAM.COM")
-				.phoneNumber("12501234567").build();
+Address billing = new Address.AddressBuilder()
+	.name("JANE DOE")
+	.city("VICTORIA")
+	.province("BC")
+	.country("CA")
+	.addressLine1("123 FAKE ST.")
+	.postalCode("V9T2G6")
+	.emailAddress("TEST@BEANSTREAM.COM")
+	.phoneNumber("12501234567")
+	.build();
 
-	ProfileResponse createdProfile = beanstream.profiles()
-					.createProfile(card, billing);
+ProfileResponse createdProfile = beanstream.profiles().createProfile(card, billing);
 ```
 
 This will return you a ProfileResponse object. In that object you will want to get the Id; this is the identifier that you will use to retrieve the payment profiles later on and is the Id you want to save in your database and load when the user signs into their account.
@@ -156,16 +148,21 @@ Gateway beanstream = new Gateway("v1", 300200578,
                 "D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
                 "4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
 
-    Token token = new Token("JANE DOE",your_token_here);
+Token token = new Token("JANE DOE","your_token_here");
 
-    Address billing = new Address.AddressBuilder().name("JANE DOE").city("VICTORIA")
-                .province("BC").country("CA").addressLine1("123 FAKE ST.")
-                .postalCode("V9T2G6").emailAddress("TEST@BEANSTREAM.COM")
-                .phoneNumber("12501234567").build();
+Address billing = new Address.AddressBuilder()
+	.name("JANE DOE")
+	.city("VICTORIA")
+	.province("BC")
+	.country("CA")
+	.addressLine1("123 FAKE ST.")
+	.postalCode("V9T2G6")
+	.emailAddress("TEST@BEANSTREAM.COM")
+	.phoneNumber("12501234567")
+	.build();
 
-    ProfileResponse createdProfile = beanstream.profiles()
-                .createProfile(card, billing);
-    profileId = createdProfile.getId();
+ProfileResponse createdProfile = beanstream.profiles().createProfile(token, billing);
+String profileId = createdProfile.getId();
 ```
 
 
