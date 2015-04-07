@@ -66,12 +66,14 @@ public class PaymentsAPI {
         this.config = config;
         connector = new HttpsConnector(config.getMerchantId(),
                 config.getPaymentsApiPasscode());
+        connector.setCustomHttpClient(config.getCustomHttpClient());
     }
-
+    
     public void setConfig(Configuration config) {
         this.config = config;
         connector = new HttpsConnector(config.getMerchantId(),
                 config.getPaymentsApiPasscode());
+        connector.setCustomHttpClient(config.getCustomHttpClient());
     }
 
     /**

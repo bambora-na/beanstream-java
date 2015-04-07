@@ -69,11 +69,13 @@ public class ReportingAPI {
     public ReportingAPI(Configuration config) {
         this.config = config;
         connector = new HttpsConnector(config.getMerchantId(), config.getReportingApiPasscode());
+        connector.setCustomHttpClient(config.getCustomHttpClient());
     }
 
     public void setConfig(Configuration config) {
         this.config = config;
         connector = new HttpsConnector(config.getMerchantId(), config.getReportingApiPasscode());
+        connector.setCustomHttpClient(config.getCustomHttpClient());
     }
     
     /**

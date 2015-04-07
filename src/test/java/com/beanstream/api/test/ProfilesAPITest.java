@@ -295,6 +295,7 @@ public class ProfilesAPITest extends BaseBeanstreamTest {
 			// update the card expires date
 			freshCard.setExpiryMonth("01");
 			freshCard.setExpiryYear("19");
+                        freshCard.setName("Bob Two");
 			
 			
 			ProfileResponse profileResponse = beanstream.profiles().updateCard(profileId, freshCard);

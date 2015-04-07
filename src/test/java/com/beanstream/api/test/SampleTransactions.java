@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClients;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -180,11 +183,15 @@ public class SampleTransactions {
 
         /* Test Card Payment */
         CardPaymentRequest req = new CardPaymentRequest();
-        req.setAmount("100.00");
-        req.setMerchantId("300200578");
-        req.setOrderNumber(getRandomOrderId("test"));
-        req.getCard().setName("John Doe").setNumber("5100000010001004")
-                .setExpiryMonth("12").setExpiryYear("18").setCvd("123");
+        req.setAmount("100.00")
+        .setMerchantId("300200578")
+        .setOrderNumber(getRandomOrderId("test"));
+        req.getCard()
+                .setName("John Doe")
+                .setNumber("5100000010001004")
+                .setExpiryMonth("12")
+                .setExpiryYear("18")
+                .setCvd("123");
 
         try {
 
@@ -423,6 +430,20 @@ public class SampleTransactions {
             // refresh the updated profile
             paymentProfile = beanstream.profiles().getProfileById(profileId);
             System.out.println(paymentProfile);
+            
+            // add a new card
+            Card newCard = new Card()
+                .setCvd("123")
+                .setName("Tester Doe")
+                .setNumber("4030000010001234")
+                .setExpiryMonth("01")
+                .setExpiryYear("19");
+            ProfileResponse newCardResp = beanstream.profiles().addCard(profileId, newCard);
+            System.out.println(newCardResp);
+            
+            // get all cards
+            List<Card> profileCards = beanstream.profiles().getCards(profileId);
+            
             // delete the payment profile
             beanstream.profiles().deleteProfileById(profileId);
             try {
@@ -586,6 +607,48 @@ public class SampleTransactions {
             Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+    }
+    
+    @Test
+    public void TestCustomConnectionParameters() {
+        RequestConfig reqC = RequestConfig.custom()
+                .setSocketTimeout(10) // 1/100 of a second in miliseconds
+                .setConnectTimeout(10) // 1/100 of a second in miliseconds
+            .build();
+        HttpClient client = HttpClients.custom()
+                .setDefaultRequestConfig(reqC)
+            .build();
+        
+        Gateway beanstream = new Gateway("v1", 300200578,
+                "4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
+                "D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
+                "4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
+        
+        beanstream.setCustomHttpsClient(client);
+        
+        
+        // this should time out
+        CardPaymentRequest req = new CardPaymentRequest();
+        req.setAmount("100.00")
+        .setMerchantId("300200578")
+        .setOrderNumber(getRandomOrderId("test"));
+        req.getCard()
+                .setName("John Doe")
+                .setNumber("5100000010001004")
+                .setExpiryMonth("12")
+                .setExpiryYear("18")
+                .setCvd("123");
+        
+        boolean timedOut = false;
+        try {
+
+            PaymentResponse response = beanstream.payments().makePayment(req);
+
+        } catch (BeanstreamApiException ex) {
+            if ("Connection error".equalsIgnoreCase( ex.getMessage()) )
+                timedOut = true;
+        }
+        Assert.assertTrue("Message should have timed out. If it didn't, then maybe it just happened really fast", timedOut);
     }
     
     private Address getTestCardValidAddress() {

@@ -5,8 +5,10 @@ import org.apache.http.HttpStatus;
 import com.beanstream.api.PaymentsAPI;
 import com.beanstream.api.ProfilesAPI;
 import com.beanstream.api.ReportingAPI;
+import com.beanstream.connection.HttpsConnector;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.responses.BeanstreamResponse;
+import org.apache.http.client.HttpClient;
 
 /* The MIT License (MIT)
  *
@@ -71,6 +73,15 @@ public class Gateway {
 		this.config = config;
 	}
 
+        /**
+         * This allows you to specify your own HttpClient with its own connection
+         * parameters such as connection timeouts.
+         * @param httpClient 
+         */
+        public void setCustomHttpsClient(HttpClient httpClient) {
+            this.config.setCustomHttpClient(httpClient);
+        }
+        
 	/**
 	 * Process payments, pre-auth's, void payments, return payments. Handle
 	 * credit cards, cash, cheque, and tokenized payments.

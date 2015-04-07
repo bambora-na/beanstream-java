@@ -22,6 +22,9 @@
  */
 package com.beanstream;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+
 /**
  * Holds the configuration for connecting to the REST API. It holds the API version,
  * the merchant ID, and the API keys.
@@ -36,9 +39,11 @@ public class Configuration {
     private String version = "v1";
     private String platform = "www";
 
+    private HttpClient customHttpClient;
+    
     public Configuration() {
     }
-
+    
     public Configuration(int merchantId, String paymentsApiPasscode) {
         this.merchantId = merchantId;
         this.paymentsApiPasscode = paymentsApiPasscode;
@@ -96,6 +101,14 @@ public class Configuration {
     public Configuration setPlatform(String platform) {
         this.platform = platform;
         return this;
+    }
+
+    public void setCustomHttpClient(HttpClient customHttpClient) {
+        this.customHttpClient = customHttpClient;
+    }
+
+    public HttpClient getCustomHttpClient() {
+        return customHttpClient;
     }
     
     

@@ -66,12 +66,14 @@ public class ProfilesAPI {
 		this.config = config;
 		connector = new HttpsConnector(config.getMerchantId(),
 				config.getProfilesApiPasscode());
+                connector.setCustomHttpClient(config.getCustomHttpClient());
 	}
 
 	public void setConfig(Configuration config) {
 		this.config = config;
 		connector = new HttpsConnector(config.getMerchantId(),
 				config.getProfilesApiPasscode());
+                connector.setCustomHttpClient(config.getCustomHttpClient());
 	}
 
 	/**
@@ -338,9 +340,9 @@ public class ProfilesAPI {
 			throws BeanstreamApiException {
 
 		ProfilesUtils.validateProfileId(profileId);
-		Gateway.assertNotNull(card, "card it to to update is empty");
+		Gateway.assertNotNull(card, "card is is null");
 		String cardId = card.getId();
-		Gateway.assertNotEmpty(cardId, "card id it to update is empty");
+		Gateway.assertNotEmpty(cardId, "card Id is empty");
 		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
                 

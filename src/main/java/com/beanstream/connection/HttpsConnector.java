@@ -42,6 +42,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.ConnectionConfig;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
  * Performs the connection to the API.
@@ -56,10 +60,15 @@ public class HttpsConnector {
     private final int merchantId;
     private String apiPasscode;
     private GsonBuilder gsonBuilder;
+    private HttpClient customHttpClient;
 
     public HttpsConnector(int merchantId, String apiPasscode) {
         this.merchantId = merchantId;
         this.apiPasscode = apiPasscode;
+    }
+
+    public void setCustomHttpClient(HttpClient customHttpClient) {
+        this.customHttpClient = customHttpClient;
     }
 
     public void setGsonBuilder(GsonBuilder gsonBuilder) {
@@ -148,7 +157,11 @@ public class HttpsConnector {
     private BeanstreamResponse process(HttpUriRequest http,
                 ResponseHandler<BeanstreamResponse> responseHandler) throws IOException {
         
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpClient httpclient;
+        if (customHttpClient != null)
+            httpclient = customHttpClient;
+        else
+            httpclient = HttpClients.createDefault();
         String auth = Base64.encode((merchantId + ":" + apiPasscode).getBytes());
         
         http.addHeader("Content-Type", "application/json");
