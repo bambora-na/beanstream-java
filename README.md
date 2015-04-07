@@ -189,3 +189,23 @@ beanstream.profiles().updateProfile(paymentProfile);
 ```
 
 for more information please check the class in src/test ProfilesAPITest.class so you can see more example and run the automatic test.
+
+# Connection Timeouts
+You can customize connection timeouts, and anything else with the connections by supplying a custom HttpClient to the Gateway object:
+
+```java
+RequestConfig reqC = RequestConfig.custom()
+		.setSocketTimeout(1000) // 1 second in miliseconds
+		.setConnectTimeout(1000) // 1 second in miliseconds
+	.build();
+HttpClient client = HttpClients.custom()
+		.setDefaultRequestConfig(reqC)
+	.build();
+
+Gateway beanstream = new Gateway("v1", YOUR_MERCHANT_ID,
+		"YOUR_PAYMENTS_API_PASSCODE", // payments API passcode
+		"YOUR_PROFILES_API_PASSCODE", // profiles API passcode
+		"YOUR_REPORTING_API_PASSCODE");// reporting API passcode
+
+beanstream.setCustomHttpsClient(client);
+```
