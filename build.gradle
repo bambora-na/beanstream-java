@@ -78,6 +78,9 @@ repositories {
 }
 
 
+def sonatype_un = hasProperty('sonatypeUsername') ? sonatypeUsername : System.getenv('sonatypeUsername')
+def sonatype_pw = hasProperty('sonatypePassword') ? sonatypePassword : System.getenv('sonatypePassword')
+
 uploadArchives {
     repositories {
         
