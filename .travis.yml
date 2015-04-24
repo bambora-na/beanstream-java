@@ -1,6 +1,6 @@
 language: java
-script: "./gradle assemble -x signArchives"
-after_script: "./gradle check -x signArchives"
+install: "./gradle assemble -x signArchives"
+script: "./gradle check -x signArchives"
 jdk:
   - openjdk7
   - oraclejdk7
