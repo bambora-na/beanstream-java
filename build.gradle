@@ -92,7 +92,7 @@ uploadArchives {
             
             // SNAPSHOT
             repository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-              authentication(userName: sonatypeUsername, password: sonatypePassword)
+              authentication(userName: sonatype_un, password: sonatype_pw)
             }
             
             // RELEASE
