@@ -1,4 +1,5 @@
 language: java
+script: gradle assemble -x signArchives
 jdk:
   - openjdk7
   - oraclejdk7
