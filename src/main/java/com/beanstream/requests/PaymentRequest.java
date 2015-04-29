@@ -76,6 +76,11 @@ public abstract class PaymentRequest {
         this.amount = amount;
         return this;
     }
+    
+    public PaymentRequest setAmount(double amount) {
+        this.amount = ""+amount;
+        return this;
+    }
 
     public String getLanguage() {
         return language;

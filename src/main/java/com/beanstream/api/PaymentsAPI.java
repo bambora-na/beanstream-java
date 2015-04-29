@@ -295,6 +295,37 @@ public class PaymentsAPI {
                 preAuthUrl, paymentRequest);
         return gson.fromJson(response, PaymentResponse.class);
     }
+    
+    /**
+     * <p>
+     * Pre-authorize a token payment. Use this if you want to know if a customer has
+     * sufficient funds before processing a payment. A real-world example of
+     * this is pre-authorizing at the gas pump for $100 before you fill up, then
+     * end up only using $60 of gas; the customer is only charged $60. The final
+     * payment is used with preAuthCompletion() method.
+     * </p>
+     *
+     * @param paymentRequest payment request to pre authorize with a valid
+     * amount
+     * @return a PaymentResponse pre-approved containing the paymentId you will
+     * need to complete the transaction.
+     * @throws BeanstreamApiException if any validation fail or error occur
+     */
+    public PaymentResponse preAuth(TokenPaymentRequest paymentRequest)
+            throws BeanstreamApiException {
+
+        if (paymentRequest == null || paymentRequest.getToken() == null) {
+            BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
+            throw BeanstreamApiException.getMappedException(HttpStatus.SC_BAD_REQUEST, response);
+        }
+
+        paymentRequest.getToken().setComplete(false);
+
+        String preAuthUrl = getPaymentUrl(config.getPlatform(), config.getVersion());
+
+        String response = connector.ProcessTransaction(HttpMethod.post, preAuthUrl, paymentRequest);
+        return gson.fromJson(response, PaymentResponse.class);
+    }
 
     /**
      * Push the actual payment through after a pre-authorization.
