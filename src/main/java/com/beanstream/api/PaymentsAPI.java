@@ -367,21 +367,17 @@ public class PaymentsAPI {
      * @return the PaymentResponse for the final transaction
      * @throws BeanstreamApiException
      */
-    public PaymentResponse Return(String paymentId, double amount,
-            String orderNumber) throws BeanstreamApiException {
+    public PaymentResponse returnPayment(String paymentId, double amount) throws BeanstreamApiException {
 
     	Gateway.assertNotEmpty(paymentId, "Invalid Payment Id");
 
-        String returnPaymentUrl = getReturnUrl(
-                config.getPlatform(), config.getVersion(), paymentId);
+        String returnPaymentUrl = getReturnUrl(config.getPlatform(), config.getVersion(), paymentId);
 
         ReturnRequest returnRequest = new ReturnRequest();
         returnRequest.setMerchantId( String.valueOf(config.getMerchantId()) );
         returnRequest.setAmount( amount );
-        returnRequest.setOrderNumber( orderNumber );
         
-        String response = connector.ProcessTransaction(HttpMethod.post,
-                returnPaymentUrl, returnRequest);
+        String response = connector.ProcessTransaction(HttpMethod.post, returnPaymentUrl, returnRequest);
 
         return gson.fromJson(response, PaymentResponse.class);
 

@@ -115,26 +115,24 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 		}
 	}
         
-        @Test()
+    @Test()
 	public void Return() throws BeanstreamApiException {
 
 		CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
 				getRandomOrderId("PEDRO"),  "90.00");
 
-		PaymentResponse response = beanstream.payments().makePayment(
-				paymentRequest);
+		PaymentResponse response = beanstream.payments().makePayment(paymentRequest);
                 
 		if (response.isApproved()) {
-			response = beanstream.payments().Return(response.id, 90.0,response.orderNumber);
-			Assert.assertTrue("void payment response is not R",
-					"R".equals(response.type));
+			response = beanstream.payments().returnPayment(response.id, 90.0);
+			Assert.assertTrue("void payment response is not R", "R".equals(response.type));
                         
 		} else {
 			Assert.fail("Test can not be executed cause the payment api could not approved the test payment");
 		}
 	}
 
-        @Test()
+    @Test()
 	public void unreferencedCardReturn() throws BeanstreamApiException {
 
             UnreferencedCardReturnRequest unrefCardReturnRequest = new UnreferencedCardReturnRequest();

@@ -112,7 +112,6 @@ public class SampleTransactions {
 
         CardPaymentRequest paymentRequest = new CardPaymentRequest();
         paymentRequest.setAmount(90.00);
-        paymentRequest.setMerchantId("300200578");
         paymentRequest.setOrderNumber(getRandomOrderId("PEDRO"));
         paymentRequest.getCard()
                 .setName("John Doe")
@@ -144,6 +143,43 @@ public class SampleTransactions {
     }
     
     @Test
+    public void testReturnPayment() {
+
+        Gateway beanstream = new Gateway("v1", 300200578,
+                "4BaD82D9197b4cc4b70a221911eE9f70");
+
+        CardPaymentRequest paymentRequest = new CardPaymentRequest();
+        paymentRequest.setAmount(70.00);
+        paymentRequest.setOrderNumber(getRandomOrderId("PEDRO"));
+        paymentRequest.getCard()
+                .setName("John Doe")
+                .setNumber("5100000010001004")
+                .setExpiryMonth("12")
+                .setExpiryYear("18")
+                .setCvd("123");
+
+        try {
+            PaymentResponse response = beanstream.payments().makePayment(paymentRequest);
+            if (response.isApproved()) {
+                Gson gsonpp = new GsonBuilder().setPrettyPrinting().create();
+                System.out.println("Your Payment has been approved response: \n"+ gsonpp.toJson(response));
+
+                response = beanstream.payments().returnPayment(response.id, 70.00);
+
+                if ("R".equals(response.type)) {
+                    System.out.println("The payment was retuned");
+
+                } else {
+                    System.out.println("The payment was not returned");
+                }
+            }
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "An error occurred", ex);
+        }
+
+    }
+    
+    @Test
     public void testPreAuthorization() {
 
         Gateway beanstream = new Gateway("v1", 300200578,
@@ -151,7 +187,6 @@ public class SampleTransactions {
 
         CardPaymentRequest paymentRequest = new CardPaymentRequest();
         paymentRequest.setAmount(90.00);
-        paymentRequest.setMerchantId("300200578");
         paymentRequest.setOrderNumber(getRandomOrderId("GAS"));
         paymentRequest.getCard()
                 .setName("John Doe")
@@ -184,8 +219,7 @@ public class SampleTransactions {
         /* Test Card Payment */
         CardPaymentRequest req = new CardPaymentRequest();
         req.setAmount(100.00)
-        .setMerchantId("300200578")
-        .setOrderNumber(getRandomOrderId("test"));
+            .setOrderNumber(getRandomOrderId("test"));
         req.getCard()
                 .setName("John Doe")
                 .setNumber("5100000010001004")
@@ -205,7 +239,6 @@ public class SampleTransactions {
         /* Test Cash Payment */
         CashPaymentRequest cashReq = new CashPaymentRequest();
         cashReq.setAmount(123.45);
-        cashReq.setMerchantId("300200578");
         cashReq.setOrderNumber(getRandomOrderId("cash"));
 
         try {
@@ -220,7 +253,6 @@ public class SampleTransactions {
         /* Test Cheque Payment */
         ChequePaymentRequest chequeReq = new ChequePaymentRequest();
         chequeReq.setAmount(668.99);
-        chequeReq.setMerchantId("300200578");
         chequeReq.setOrderNumber(getRandomOrderId("cheque"));
 
         try {
@@ -272,7 +304,6 @@ public class SampleTransactions {
 
         TokenPaymentRequest tokenReq = new TokenPaymentRequest();
         tokenReq.setAmount(100.00);
-        tokenReq.setMerchantId("300200578");
         tokenReq.setOrderNumber(getRandomOrderId("token"));
         tokenReq.getToken()
                 .setName("John Doe")
@@ -326,7 +357,6 @@ public class SampleTransactions {
 
         CardPaymentRequest paymentRequest = new CardPaymentRequest();
         paymentRequest.setAmount(30.00)
-                .setMerchantId("300200578")
                 .setOrderNumber(getRandomOrderId("get"));
         paymentRequest.getCard()
                 .setName("John Doe")
@@ -358,7 +388,6 @@ public class SampleTransactions {
 
         CardPaymentRequest paymentRequest = new CardPaymentRequest();
         paymentRequest.setAmount(20.50)
-                .setMerchantId("300200578")
                 .setOrderNumber(getRandomOrderId("get"));
         paymentRequest.getCard().setName("John Doe")
                 .setNumber("5100000010001004")
@@ -368,7 +397,6 @@ public class SampleTransactions {
 
         paymentRequest = new CardPaymentRequest();
         paymentRequest.setAmount(20.50)
-                .setMerchantId("300200578")
                 .setOrderNumber(getRandomOrderId("get"));
         paymentRequest.getCard().setName("Bob Doe")
                 .setNumber("5100000010001004")
@@ -639,8 +667,7 @@ public class SampleTransactions {
         // this should time out
         CardPaymentRequest req = new CardPaymentRequest();
         req.setAmount(100.00)
-        .setMerchantId("300200578")
-        .setOrderNumber(getRandomOrderId("test"));
+            .setOrderNumber(getRandomOrderId("test"));
         req.getCard()
                 .setName("John Doe")
                 .setNumber("5100000010001004")
