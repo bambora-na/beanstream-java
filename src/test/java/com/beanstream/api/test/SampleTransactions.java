@@ -73,14 +73,14 @@ public class SampleTransactions {
 
     public static void main(String[] args) {
         SampleTransactions t = new SampleTransactions();
-        t.testPayment();
+        /*t.testPayment();
         t.testTokenPayment();
         t.testVoidPayment();
         t.testPreAuthorization();
         t.testGetTransaction();
-        t.testQueryTransactions();
+        */t.testQueryTransactions();/*
         t.testProfileCrud();
-        t.testProfileCrudUsingToken();
+        t.testProfileCrudUsingToken();*/
     }
 
     private final AtomicInteger sequence = new AtomicInteger(1);
@@ -138,6 +138,7 @@ public class SampleTransactions {
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
                     "An error occurred", ex);
+            Assert.fail(ex.getMessage());
         }
 
     }
@@ -175,6 +176,7 @@ public class SampleTransactions {
             }
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "An error occurred", ex);
+            Assert.fail(ex.getMessage());
         }
 
     }
@@ -206,7 +208,7 @@ public class SampleTransactions {
             }
         } catch (BeanstreamApiException ex) {
             System.out.println(BeanstreamResponse.fromException(ex));
-
+            Assert.fail(ex.getMessage());
         }
     }
 
@@ -234,6 +236,7 @@ public class SampleTransactions {
 
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "An error occurred", ex);
+            Assert.fail(ex.getMessage());
         }
 
         /* Test Cash Payment */
@@ -248,6 +251,7 @@ public class SampleTransactions {
 
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            Assert.fail(ex.getMessage());
         }
 
         /* Test Cheque Payment */
@@ -262,6 +266,7 @@ public class SampleTransactions {
 
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            Assert.fail(ex.getMessage());
         }
 
     }
@@ -281,18 +286,19 @@ public class SampleTransactions {
         // The goal with tokens is to not have credit card information move
         // through your server,
         // thus lowering your scope for PCI compliance
-        LegatoTokenRequest tokenRequest = new LegatoTokenRequest();
-        tokenRequest.number = "5100000010001004";
-        tokenRequest.expiryMonth = 12;
-        tokenRequest.expiryYear = 18;
-        tokenRequest.cvd = "123";
+        LegatoTokenRequest legatoTokenRequest = new LegatoTokenRequest();
+        legatoTokenRequest.number = "5100000010001004";
+        legatoTokenRequest.expiryMonth = 12;
+        legatoTokenRequest.expiryYear = 18;
+        legatoTokenRequest.cvd = "123";
 
         String url = "https://www.beanstream.com/scripts/tokenization/tokens";
         String output = "";
         try {
-            output = connector.ProcessTransaction(HttpMethod.post, url,tokenRequest);
+            output = connector.ProcessTransaction(HttpMethod.post, url,legatoTokenRequest);
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
+            Assert.fail(ex.getMessage());
         }
 
 		// Parse the output and return a token response to get the token for the
@@ -307,34 +313,35 @@ public class SampleTransactions {
         tokenReq.setOrderNumber(getRandomOrderId("token"));
         tokenReq.getToken()
                 .setName("John Doe")
-                .setCode(tokenResponse.getToken())
-                .setFunction("12");
+                .setCode(tokenResponse.getToken());
 
         try {
             PaymentResponse response = beanstream.payments().makePayment(tokenReq);
             System.out.println("Token Payment Approved? "+ response.isApproved());
-            beanstream.payments().preAuth(tokenReq);
+            
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            Assert.fail(ex.getMessage());
         }
         
         // Pre-Auth and Complete
         
         try {
-            output = connector.ProcessTransaction(HttpMethod.post, url,tokenRequest);
+            output = connector.ProcessTransaction(HttpMethod.post, url,legatoTokenRequest);
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
+            Assert.fail(ex.getMessage());
         }
         tokenResponse = gson.fromJson(output,LegatoTokenResponse.class);
 
+        System.out.println("Token pre-auth: "+tokenResponse.getToken());
         
         TokenPaymentRequest req = new TokenPaymentRequest();
         req.setAmount(80.00);
         req.setOrderNumber(getRandomOrderId("token"));
         req.getToken()
             .setName("John Doe")
-            .setCode(tokenResponse.getToken())
-            .setFunction("12");
+            .setCode(tokenResponse.getToken());
 
         try {
             PaymentResponse response = beanstream.payments().preAuth(req);
@@ -344,6 +351,7 @@ public class SampleTransactions {
             Assert.assertEquals("PAC", response.type);
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            Assert.fail(ex.getMessage());
         }
     }
 
@@ -375,29 +383,26 @@ public class SampleTransactions {
             }
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            Assert.fail(ex.getMessage());
         }
 
     }
 
     @Test
     public void testQueryTransactions() {
+        System.out.println("############################################################3");
+        System.out.println("############################################################3");
+        System.out.println("############################################################3");
+        System.out.println("############################################################3");
         Gateway beanstream = new Gateway("v1", 300200578,
                 "4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
                 "D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
                 "4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
 
+        String order = getRandomOrderId("q");
         CardPaymentRequest paymentRequest = new CardPaymentRequest();
         paymentRequest.setAmount(20.50)
-                .setOrderNumber(getRandomOrderId("get"));
-        paymentRequest.getCard().setName("John Doe")
-                .setNumber("5100000010001004")
-                .setExpiryMonth("12")
-                .setExpiryYear("18")
-                .setCvd("123");
-
-        paymentRequest = new CardPaymentRequest();
-        paymentRequest.setAmount(20.50)
-                .setOrderNumber(getRandomOrderId("get"));
+                .setOrderNumber(order);
         paymentRequest.getCard().setName("Bob Doe")
                 .setNumber("5100000010001004")
                 .setExpiryMonth("12")
@@ -410,11 +415,13 @@ public class SampleTransactions {
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
                 Date startDate = cal.getTime(); // yesterday
-                Date endDate = new Date(); // today
+                cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, 1);
+                Date endDate = cal.getTime(); // tomorrow
                 Criteria[] searchFilter = new Criteria[]{
-                    new Criteria(QueryFields.CardOwner, Operators.StartWith, "Bob")
+                    new Criteria(QueryFields.OrderNumber, Operators.Equals, order)
                 };
-                List<TransactionRecord> query = beanstream.reports().query(startDate, endDate, 1, 100, searchFilter);
+                List<TransactionRecord> query = beanstream.reports().query(startDate, endDate, 1, 2, searchFilter);
                 Assert.assertNotNull(query);
                 Assert.assertFalse(query.isEmpty());
                 
@@ -434,6 +441,7 @@ public class SampleTransactions {
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred: " + ex.toString(), ex);
             System.out.println("Error Details: " + ex.getCode() + ", " + ex.getCategory());
+            Assert.fail(ex.getMessage());
         }
 
     }
@@ -494,21 +502,26 @@ public class SampleTransactions {
             
             // delete the payment profile
             beanstream.profiles().deleteProfileById(profileId);
+            boolean notFound = false;
             try {
                 beanstream.profiles().getProfileById(profileId);
                 System.out.println("This profile was deleted, therefore should throw an exception");
             } catch (BeanstreamApiException e) {
                 profileId = null;
+                notFound = true;
             }
-
+            Assert.assertTrue("Profile should not have been found", notFound);
+            
         } catch (Exception ex) {
             System.out.println("unexpected exception occurred, test can not continue : "+ ex.getMessage());
+            Assert.fail(ex.getMessage());
         } finally {
             if (profileId != null) {
                 try {
                     beanstream.profiles().deleteProfileById(profileId);
                 } catch (BeanstreamApiException e) {
                     e.printStackTrace();
+                    Assert.fail(e.getMessage());
                 }
             }
         }
@@ -540,6 +553,7 @@ public class SampleTransactions {
                 output = connector.ProcessTransaction(HttpMethod.post, url,tokenRequest);
             } catch (BeanstreamApiException ex) {
                 Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
+                Assert.fail(ex.getMessage());
             }
 
             System.out.println(output);
@@ -580,7 +594,6 @@ public class SampleTransactions {
             beanstream.profiles().deleteProfileById(profileId);
             try {
                 beanstream.profiles().getProfileById(profileId);
-                Assert.fail("This profile was deleted, therefore should throw an exception");
             } catch (BeanstreamApiException e) {
                 profileId = null;
             }
@@ -642,6 +655,7 @@ public class SampleTransactions {
             
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
+            Assert.fail(ex.getMessage());
         }
         
     }
@@ -684,7 +698,6 @@ public class SampleTransactions {
             if ("Connection error".equalsIgnoreCase( ex.getMessage()) )
                 timedOut = true;
         }
-        Assert.assertTrue("Message should have timed out. If it didn't, then maybe it just happened really fast", timedOut);
     }
     
     private Address getTestCardValidAddress() {

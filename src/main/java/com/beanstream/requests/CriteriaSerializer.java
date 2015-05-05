@@ -50,8 +50,17 @@ public class CriteriaSerializer implements JsonSerializer<Criteria> {
             String operator = criteria.getOperator().toString();
             if ( operator.equals(Operators.StartWith.toString()) )
                 operator = "START%20WITH"; // add a space
-            else
-                operator = URLEncoder.encode(operator, "UTF-8");
+            else if ( operator.equals(Operators.Equals.toString()) )
+                operator = URLEncoder.encode("=", "UTF-8");
+            else if ( operator.equals(Operators.GreaterThan.toString()) )
+                operator = URLEncoder.encode(">", "UTF-8");
+            else if ( operator.equals(Operators.GreaterThanEqual.toString()) )
+                operator = URLEncoder.encode("=>", "UTF-8");
+            else if ( operator.equals(Operators.LessThan.toString()) )
+                operator = URLEncoder.encode("<", "UTF-8");
+            else if ( operator.equals(Operators.LessThanEqual.toString()) )
+                operator = URLEncoder.encode("<=", "UTF-8");
+            
             json.addProperty("operator",  operator);
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(CriteriaSerializer.class.getName()).log(Level.SEVERE, "Wrong encoding scheme!", ex);
