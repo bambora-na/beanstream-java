@@ -33,9 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Enums are zero-based, yet the fields in the Query search are 1-based. So we have to increment each output value by 1
- * when writing to json.
- * The Operators also need to be URL encoded.
+ * The Operators are translated from the enum and URL encoded.
  * 
  * @author bowens
  */
@@ -55,7 +53,7 @@ public class CriteriaSerializer implements JsonSerializer<Criteria> {
             else if ( operator.equals(Operators.GreaterThan.toString()) )
                 operator = URLEncoder.encode(">", "UTF-8");
             else if ( operator.equals(Operators.GreaterThanEqual.toString()) )
-                operator = URLEncoder.encode("=>", "UTF-8");
+                operator = URLEncoder.encode(">=", "UTF-8");
             else if ( operator.equals(Operators.LessThan.toString()) )
                 operator = URLEncoder.encode("<", "UTF-8");
             else if ( operator.equals(Operators.LessThanEqual.toString()) )
