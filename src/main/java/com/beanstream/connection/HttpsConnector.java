@@ -162,7 +162,9 @@ public class HttpsConnector {
             httpclient = customHttpClient;
         else
             httpclient = HttpClients.createDefault();
-        String auth = Base64.encode((merchantId + ":" + apiPasscode).getBytes());
+        // Remove newlines from base64 since they can bork the header.
+        // Some base64 encoders will append a newline to the end
+        String auth = Base64.encode((merchantId + ":" + apiPasscode).trim().getBytes());
         
         http.addHeader("Content-Type", "application/json");
         http.addHeader("Authorization", "Passcode " + auth);
