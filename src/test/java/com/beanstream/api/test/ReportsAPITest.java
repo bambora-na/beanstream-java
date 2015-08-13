@@ -30,6 +30,7 @@ import com.beanstream.requests.Criteria;
 import com.beanstream.requests.Operators;
 import com.beanstream.requests.QueryFields;
 import com.beanstream.responses.PaymentResponse;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -53,17 +54,22 @@ public class ReportsAPITest extends BaseBeanstreamTest {
             Assert.assertNotNull("Payment was null, cannot proceed with test", payment);
             Assert.assertNotNull("Payment had no ID, cannot proceed with test", payment.id);
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE, -1);
+            cal.add(Calendar.DAY_OF_MONTH, -1);
             Date startDate = cal.getTime(); // yesterday
             Date endDate = new Date(); // today
 
             List<TransactionRecord> query = beanstream.reports().query(startDate, endDate, 1, 100, null);
+            for (TransactionRecord tr : query) {
+                Assert.assertNotNull(tr.getDateTime());
+            }
             Assert.assertNotNull(query);
             Assert.assertFalse("The transaction list should not be empty.", query.isEmpty());
                 
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(ReportsAPITest.class.getName()).log(Level.SEVERE, "Error accessing Beanstream API", ex);
             Assert.assertTrue("Unexpected Exception", false);
+        } catch (ParseException ex) {
+            Assert.assertTrue("Unexpected Date format Exception "+ex.getMessage(), false);
         }
     }
     
@@ -78,7 +84,7 @@ public class ReportsAPITest extends BaseBeanstreamTest {
             Assert.assertNotNull("Payment was null, cannot proceed with test", payment);
             Assert.assertNotNull("Payment had no ID, cannot proceed with test", payment.id);
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE, -1);
+            cal.add(Calendar.DAY_OF_MONTH, -1);
             Date startDate = cal.getTime(); // yesterday
             Date endDate = new Date(); // today
             Criteria[] searchFilter = new Criteria[]{

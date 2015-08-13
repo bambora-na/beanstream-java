@@ -127,6 +127,25 @@ public class BeanstreamApiException extends Exception {
     public int getCategory() {
         return category;
     }
+    
+    /**
+     * If this exception was cause by user input ie. invalid card number or declines.
+     * Returns false for all other errors that were not caused by user input, such
+     * as network timeouts, message formatting, etc.
+     * @return true if the error was caused by user input or a decline.
+     */
+    public boolean isUserError() {
+        return false;
+    }
+    
+    /**
+     * This message should be displayed to the card holder.
+     * Overwritten in some sublcass exceptions.
+     * @return a simple string message that can be displayed to the card holder.
+     */
+    public String getUserFacingMessage() {
+        return "There was an error processing your request. Please try again or use a different card.";
+    }
 
     @Override
     public String getMessage() {

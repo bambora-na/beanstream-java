@@ -78,7 +78,7 @@ public class SampleTransactions {
         t.testVoidPayment();
         t.testPreAuthorization();
         t.testGetTransaction();
-        */t.testQueryTransactions();/*
+        t.testQueryTransactions();
         t.testProfileCrud();
         t.testProfileCrudUsingToken();*/
     }
@@ -102,6 +102,149 @@ public class SampleTransactions {
             orderId = orderId.substring(0, 29);
         }
         return orderId;
+    }
+    
+    
+    @Test
+    public void testPayment() {
+
+        Gateway beanstream = new Gateway("v1", 300200578,
+                "4BaD82D9197b4cc4b70a221911eE9f70");
+
+        /* Test Card Payment */
+        CardPaymentRequest req = new CardPaymentRequest();
+        req.setAmount(100.00)
+            .setOrderNumber(getRandomOrderId("test"));
+        req.getCard()
+                .setName("John Doe")
+                .setNumber("5100000010001004")
+                .setExpiryMonth("12")
+                .setExpiryYear("18")
+                .setCvd("123");
+
+        try {
+
+            PaymentResponse response = beanstream.payments().makePayment(req);
+            System.out.println("Card Payment Approved? "+ response.isApproved());
+
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "An error occurred", ex);
+            Assert.fail(ex.getMessage());
+        }
+
+        /* Test Cash Payment */
+        CashPaymentRequest cashReq = new CashPaymentRequest();
+        cashReq.setAmount(123.45);
+        cashReq.setOrderNumber(getRandomOrderId("cash"));
+
+        try {
+
+            PaymentResponse response = beanstream.payments().makePayment(cashReq);
+            System.out.println("Cash Payment Approved? "+ response.isApproved());
+
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            Assert.fail(ex.getMessage());
+        }
+
+        /* Test Cheque Payment */
+        ChequePaymentRequest chequeReq = new ChequePaymentRequest();
+        chequeReq.setAmount(668.99);
+        chequeReq.setOrderNumber(getRandomOrderId("cheque"));
+
+        try {
+
+            PaymentResponse response = beanstream.payments().makePayment(chequeReq);
+            System.out.println("Cheque Payment Approved? "+ response.isApproved());
+
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            Assert.fail(ex.getMessage());
+        }
+    }
+    
+    @Test
+    public void testTokenPayment() {
+
+        Gateway beanstream = new Gateway("v1", 300200578,
+                "4BaD82D9197b4cc4b70a221911eE9f70");
+        HttpsConnector connector = new HttpsConnector(300200578,
+                "4BaD82D9197b4cc4b70a221911eE9f70");
+
+        /* Test Token Payment */
+		// The first step is to call the Legato service to get a token.
+        // This is normally performed on the client machine, and not on the
+        // server.
+        // The goal with tokens is to not have credit card information move
+        // through your server,
+        // thus lowering your scope for PCI compliance
+        LegatoTokenRequest legatoTokenRequest = new LegatoTokenRequest();
+        legatoTokenRequest.number = "5100000010001004";
+        legatoTokenRequest.expiryMonth = 12;
+        legatoTokenRequest.expiryYear = 18;
+        legatoTokenRequest.cvd = "123";
+
+        String url = "https://www.beanstream.com/scripts/tokenization/tokens";
+        String output = "";
+        try {
+            output = connector.ProcessTransaction(HttpMethod.post, url,legatoTokenRequest);
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
+            Assert.fail(ex.getMessage());
+        }
+
+		// Parse the output and return a token response to get the token for the
+        // payment request
+        Gson gson = new Gson();
+        LegatoTokenResponse tokenResponse = gson.fromJson(output,LegatoTokenResponse.class);
+
+        System.out.println("token: " + output);
+
+        TokenPaymentRequest tokenReq = new TokenPaymentRequest();
+        tokenReq.setAmount(100.00);
+        tokenReq.setOrderNumber(getRandomOrderId("token"));
+        tokenReq.getToken()
+                .setName("John Doe")
+                .setCode(tokenResponse.getToken());
+
+        try {
+            PaymentResponse response = beanstream.payments().makePayment(tokenReq);
+            System.out.println("Token Payment Approved? "+ response.isApproved());
+            
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            Assert.fail(ex.getMessage());
+        }
+        
+        // Pre-Auth and Complete
+        
+        try {
+            output = connector.ProcessTransaction(HttpMethod.post, url,legatoTokenRequest);
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
+            Assert.fail(ex.getMessage());
+        }
+        tokenResponse = gson.fromJson(output,LegatoTokenResponse.class);
+
+        System.out.println("Token pre-auth: "+tokenResponse.getToken());
+        
+        TokenPaymentRequest req = new TokenPaymentRequest();
+        req.setAmount(80.00);
+        req.setOrderNumber(getRandomOrderId("token"));
+        req.getToken()
+            .setName("John Doe")
+            .setCode(tokenResponse.getToken());
+
+        try {
+            PaymentResponse response = beanstream.payments().preAuth(req);
+            System.out.println("Token Payment Approved? "+ response.isApproved());
+            response = beanstream.payments().preAuthCompletion(response.id, 55.30);
+            Assert.assertTrue(response.isApproved());
+            Assert.assertEquals("PAC", response.type);
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            Assert.fail(ex.getMessage());
+        }
     }
     
     @Test
@@ -199,30 +342,20 @@ public class SampleTransactions {
 
         try {
             PaymentResponse response = beanstream.payments().preAuth(paymentRequest);
-            if (response.isApproved()) {
-
-                PaymentResponse authResp = beanstream.payments().preAuthCompletion(response.id, 43.50, null);
-                if (!authResp.isApproved()) {
-                    Assert.fail("This auth completion should be approved because a greater amount has been pre authorized");
-                }
+            PaymentResponse authResp = beanstream.payments().preAuthCompletion(response.id, 43.50);
+            if (!authResp.isApproved()) {
+                Assert.fail("This auth completion should be approved because a greater amount has been pre authorized");
             }
         } catch (BeanstreamApiException ex) {
             System.out.println(BeanstreamResponse.fromException(ex));
             Assert.fail(ex.getMessage());
         }
-    }
-
-    @Test
-    public void testPayment() {
-
-        Gateway beanstream = new Gateway("v1", 300200578,
-                "4BaD82D9197b4cc4b70a221911eE9f70");
-
-        /* Test Card Payment */
-        CardPaymentRequest req = new CardPaymentRequest();
-        req.setAmount(100.00)
-            .setOrderNumber(getRandomOrderId("test"));
-        req.getCard()
+        
+        // Pre-auth and complete again but supply PaymentRequest details in the complete
+        CardPaymentRequest paymentRequest2 = new CardPaymentRequest();
+        paymentRequest2.setAmount(30.00);
+        paymentRequest2.setOrderNumber(getRandomOrderId("Pumpkins"));
+        paymentRequest2.getCard()
                 .setName("John Doe")
                 .setNumber("5100000010001004")
                 .setExpiryMonth("12")
@@ -230,127 +363,15 @@ public class SampleTransactions {
                 .setCvd("123");
 
         try {
-
-            PaymentResponse response = beanstream.payments().makePayment(req);
-            System.out.println("Card Payment Approved? "+ response.isApproved());
-
-        } catch (BeanstreamApiException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "An error occurred", ex);
-            Assert.fail(ex.getMessage());
-        }
-
-        /* Test Cash Payment */
-        CashPaymentRequest cashReq = new CashPaymentRequest();
-        cashReq.setAmount(123.45);
-        cashReq.setOrderNumber(getRandomOrderId("cash"));
-
-        try {
-
-            PaymentResponse response = beanstream.payments().makePayment(cashReq);
-            System.out.println("Cash Payment Approved? "+ response.isApproved());
-
-        } catch (BeanstreamApiException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
-            Assert.fail(ex.getMessage());
-        }
-
-        /* Test Cheque Payment */
-        ChequePaymentRequest chequeReq = new ChequePaymentRequest();
-        chequeReq.setAmount(668.99);
-        chequeReq.setOrderNumber(getRandomOrderId("cheque"));
-
-        try {
-
-            PaymentResponse response = beanstream.payments().makePayment(chequeReq);
-            System.out.println("Cheque Payment Approved? "+ response.isApproved());
-
-        } catch (BeanstreamApiException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
-            Assert.fail(ex.getMessage());
-        }
-
-    }
-
-    @Test
-    public void testTokenPayment() {
-
-        Gateway beanstream = new Gateway("v1", 300200578,
-                "4BaD82D9197b4cc4b70a221911eE9f70");
-        HttpsConnector connector = new HttpsConnector(300200578,
-                "4BaD82D9197b4cc4b70a221911eE9f70");
-
-        /* Test Token Payment */
-		// The first step is to call the Legato service to get a token.
-        // This is normally performed on the client machine, and not on the
-        // server.
-        // The goal with tokens is to not have credit card information move
-        // through your server,
-        // thus lowering your scope for PCI compliance
-        LegatoTokenRequest legatoTokenRequest = new LegatoTokenRequest();
-        legatoTokenRequest.number = "5100000010001004";
-        legatoTokenRequest.expiryMonth = 12;
-        legatoTokenRequest.expiryYear = 18;
-        legatoTokenRequest.cvd = "123";
-
-        String url = "https://www.beanstream.com/scripts/tokenization/tokens";
-        String output = "";
-        try {
-            output = connector.ProcessTransaction(HttpMethod.post, url,legatoTokenRequest);
-        } catch (BeanstreamApiException ex) {
-            Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
-            Assert.fail(ex.getMessage());
-        }
-
-		// Parse the output and return a token response to get the token for the
-        // payment request
-        Gson gson = new Gson();
-        LegatoTokenResponse tokenResponse = gson.fromJson(output,LegatoTokenResponse.class);
-
-        System.out.println("token: " + output);
-
-        TokenPaymentRequest tokenReq = new TokenPaymentRequest();
-        tokenReq.setAmount(100.00);
-        tokenReq.setOrderNumber(getRandomOrderId("token"));
-        tokenReq.getToken()
-                .setName("John Doe")
-                .setCode(tokenResponse.getToken());
-
-        try {
-            PaymentResponse response = beanstream.payments().makePayment(tokenReq);
-            System.out.println("Token Payment Approved? "+ response.isApproved());
+            PaymentResponse response = beanstream.payments().preAuth(paymentRequest2);
+            paymentRequest2.setAmount(4.00);
+            PaymentResponse authResp = beanstream.payments().preAuthCompletion(response.id, paymentRequest2);
+            if (!authResp.isApproved()) {
+                Assert.fail("This auth completion should be approved because a greater amount has been pre authorized");
+            }
             
         } catch (BeanstreamApiException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
-            Assert.fail(ex.getMessage());
-        }
-        
-        // Pre-Auth and Complete
-        
-        try {
-            output = connector.ProcessTransaction(HttpMethod.post, url,legatoTokenRequest);
-        } catch (BeanstreamApiException ex) {
-            Logger.getLogger(SampleTransactions.class.getName()).log(Level.SEVERE, null, ex);
-            Assert.fail(ex.getMessage());
-        }
-        tokenResponse = gson.fromJson(output,LegatoTokenResponse.class);
-
-        System.out.println("Token pre-auth: "+tokenResponse.getToken());
-        
-        TokenPaymentRequest req = new TokenPaymentRequest();
-        req.setAmount(80.00);
-        req.setOrderNumber(getRandomOrderId("token"));
-        req.getToken()
-            .setName("John Doe")
-            .setCode(tokenResponse.getToken());
-
-        try {
-            PaymentResponse response = beanstream.payments().preAuth(req);
-            System.out.println("Token Payment Approved? "+ response.isApproved());
-            response = beanstream.payments().preAuthCompletion(response.id, 55.30, response.orderNumber);
-            Assert.assertTrue(response.isApproved());
-            Assert.assertEquals("PAC", response.type);
-        } catch (BeanstreamApiException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
+            System.out.println(BeanstreamResponse.fromException(ex));
             Assert.fail(ex.getMessage());
         }
     }
@@ -413,10 +434,10 @@ public class SampleTransactions {
             PaymentResponse response = beanstream.payments().makePayment(paymentRequest);
             if (response.isApproved()) {
                 Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.DATE, -1);
+                cal.add(Calendar.DAY_OF_MONTH, -1);
                 Date startDate = cal.getTime(); // yesterday
                 cal = Calendar.getInstance();
-                cal.add(Calendar.DATE, 1);
+                cal.add(Calendar.DAY_OF_MONTH, 1);
                 Date endDate = cal.getTime(); // tomorrow
                 Criteria[] searchFilter = new Criteria[]{
                     new Criteria(QueryFields.OrderNumber, Operators.Equals, order)
@@ -499,6 +520,14 @@ public class SampleTransactions {
             List<Card> profileCards = beanstream.profiles().getCards(profileId);
             Assert.assertNotNull(profileCards);
             Assert.assertEquals("Number of cards not expected.", 2, profileCards.size());
+            
+            // update card
+            Card cardUpdated = beanstream.profiles().getCard(profileId, "1");
+            cardUpdated.setExpiryMonth("04");
+            beanstream.profiles().updateCard(profileId, cardUpdated);
+            
+            // delete card
+            ProfileResponse result = beanstream.profiles().removeCard(profileId, "2");
             
             // delete the payment profile
             beanstream.profiles().deleteProfileById(profileId);
@@ -649,7 +678,7 @@ public class SampleTransactions {
             Assert.assertTrue("PA".equals(result.type));
             
             // complete the pre-auth
-            result = beanstream.payments().preAuthCompletion(result.id, 100, null);
+            result = beanstream.payments().preAuthCompletion(result.id, 100);
             Assert.assertNotNull(result);
             Assert.assertTrue("PAC".equals(result.type));
             

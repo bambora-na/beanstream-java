@@ -19,4 +19,22 @@ public class InvalidRequestException extends BeanstreamApiException {
     public InvalidRequestException(int code, int category, String message, int httpStatusCode) {
         super(code, category, message, httpStatusCode);
     }
+    
+    @Override
+    public boolean isUserError() {
+        if (getCategory() == 1)
+            return true;
+        else if (getCategory() == 3 && getCode() == 52)
+            return true;
+        else
+            return false;
+    }
+    
+    @Override
+    public String getUserFacingMessage() {
+        if (isUserError())
+            return getMessage();
+        else
+            return super.getUserFacingMessage();
+    }
 }

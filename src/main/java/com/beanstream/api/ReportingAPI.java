@@ -130,7 +130,7 @@ public class ReportingAPI {
         connector.setGsonBuilder(getGsonBuilder());
 
         String response = connector.ProcessTransaction(HttpMethod.post, url, query);
-        //System.out.println("Response:\n"+response);
+        System.out.println("Response:\n"+response);
         Records records = getGson().fromJson(response, Records.class);
 
         return records.records;

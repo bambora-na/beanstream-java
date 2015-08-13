@@ -24,6 +24,8 @@
 package com.beanstream.domain;
 
 import com.google.gson.annotations.SerializedName;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -35,7 +37,8 @@ public class TransactionRecord
 {
     @SerializedName("row_id") private int rowId;
     @SerializedName("trn_id") private int transactionId;
-    @SerializedName("trn_date_time") private Date dateTime;
+    @SerializedName("trn_date_time") private String dateTimeStr;
+    private Date dateTime;
     @SerializedName("trn_type") private String type;
     @SerializedName("trn_order_number") private String orderNumber;
     @SerializedName("trn_payment_method") private String paymentMethod;
@@ -79,6 +82,7 @@ public class TransactionRecord
     @SerializedName("ref2") private String ref2;
     @SerializedName("ref3") private String ref3;
     @SerializedName("ref4") private String ref4;
+    @SerializedName("ref5") private String ref5;
     @SerializedName("product_name") private String productName;
     @SerializedName("product_id") private String productId;
     @SerializedName("customer_code") private String customerCode;
@@ -95,8 +99,19 @@ public class TransactionRecord
     public void setTransactionId(int transactionId)
     { this.transactionId=transactionId; }
 
-    public Date getDateTime()
-    { return dateTime; }
+    public String getDateTimeStr()
+    { return dateTimeStr; }
+
+    public void setDateTimeStr(String dateTime)
+    { this.dateTimeStr=dateTime; }
+    
+    public Date getDateTime() throws ParseException { 
+        if (dateTime == null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+            dateTime = sdf.parse(dateTimeStr);
+        }
+        return dateTime; 
+    }
 
     public void setDateTime(Date dateTime)
     { this.dateTime=dateTime; }
@@ -358,6 +373,12 @@ public class TransactionRecord
 
     public void setRef4(String ref4)
     { this.ref4=ref4; }
+
+    public String getRef5()
+    { return ref5;}
+
+    public void setRef5(String ref5) 
+    { this.ref5 = ref5; }
 
     public String getProductName()
     { return productName; }

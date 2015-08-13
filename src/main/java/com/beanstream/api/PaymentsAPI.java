@@ -45,8 +45,8 @@ import org.apache.http.HttpStatus;
 
 
 import static com.beanstream.connection.BeanstreamUrls.*;
+import com.beanstream.requests.PaymentRequest;
 import com.beanstream.requests.ProfilePaymentRequest;
-import com.beanstream.requests.ProfilePaymentRequestData;
 
 /**
  * The entry point for processing payments.
@@ -55,7 +55,6 @@ import com.beanstream.requests.ProfilePaymentRequestData;
  */
 public class PaymentsAPI {
 
-    private static final String ORDER_NUMBER_PARAM = "order_number";
     private static final String AMOUNT_PARAM = "amount";
     private static final String MERCHANT_ID_PARAM = "merchant_id";
     private Configuration config;
@@ -78,6 +77,8 @@ public class PaymentsAPI {
 
     /**
      * Make a credit card payment. This payment must include credit card data.
+     * An Approved request will return a PaymentResponse. If the request fails in
+     * any way, even a card Decline, then an exception will be thrown.
      *
      * @author Chris Tihor
      * @param paymentRequest the payment request including a credit card data
@@ -329,15 +330,14 @@ public class PaymentsAPI {
 
     /**
      * Push the actual payment through after a pre-authorization.
-     *
+     * Convenience method if you don't want to supply the whole PaymentRequest.
+     * 
      * @param paymentId of the pre-authorized transaction
      * @param amount final amount to be charged
-     * @param orderNumber optional order number of the transaction
      * @return the PaymentResponse for the final transaction
      * @throws BeanstreamApiException
      */
-    public PaymentResponse preAuthCompletion(String paymentId, double amount,
-            String orderNumber) throws BeanstreamApiException {
+    public PaymentResponse preAuthCompletion(String paymentId, double amount) throws BeanstreamApiException {
 
     	Gateway.assertNotEmpty(paymentId, "Invalid Payment Id");
 
@@ -348,9 +348,7 @@ public class PaymentsAPI {
         authorizeRequest.addProperty(MERCHANT_ID_PARAM,
                 String.valueOf(config.getMerchantId()));
         authorizeRequest.addProperty(AMOUNT_PARAM, String.valueOf(amount));
-        if (orderNumber != null) {
-            authorizeRequest.addProperty(ORDER_NUMBER_PARAM, orderNumber);
-        }
+        
         String response = connector.ProcessTransaction(HttpMethod.post,
                 authorizePaymentUrl, authorizeRequest);
 
@@ -359,11 +357,28 @@ public class PaymentsAPI {
     }
 
     /**
+     * Push the actual payment through after a pre-authorization.
+     * You can supply the PaymentRequest to set any fields you did not set in the pre-auth.
+     * @param paymentId to complete
+     * @param request that will be saved
+     * @return PaymentResponse
+     * @throws BeanstreamApiException if the transaction was declined 
+     */
+    public PaymentResponse preAuthCompletion(String paymentId, PaymentRequest request) throws BeanstreamApiException {
+
+    	Gateway.assertNotEmpty(paymentId, "Invalid Payment Id");
+        String authorizePaymentUrl = getPreAuthCompletionsUrl(
+                config.getPlatform(), config.getVersion(), paymentId);
+        
+        String response = connector.ProcessTransaction(HttpMethod.post, authorizePaymentUrl, request);
+        return gson.fromJson(response, PaymentResponse.class);
+    }
+    
+    /**
      * Return a previous payment made through Beanstream.
      *
      * @param paymentId payment transaction id to return
      * @param amount final amount to be returned
-     * @param orderNumber optional order number of the transaction
      * @return the PaymentResponse for the final transaction
      * @throws BeanstreamApiException
      */

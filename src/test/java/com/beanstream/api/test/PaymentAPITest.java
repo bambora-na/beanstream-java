@@ -7,8 +7,6 @@ import org.junit.Test;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.UnreferencedCardReturnRequest;
-import com.beanstream.responses.BeanstreamResponse;
-import com.beanstream.responses.BeanstreamResponseBuilder;
 import com.beanstream.responses.PaymentResponse;
 
 public class PaymentAPITest extends BaseBeanstreamTest{
@@ -22,7 +20,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 
 		if (response.isApproved()) {
 			PaymentResponse authResp = beanstream.payments().preAuthCompletion(
-					response.id, 43.50, null);
+					response.id, 43.50);
 			if (!authResp.isApproved()) {
 				Assert.fail("This auth completion should be approved because a greater amount has been pre authorized");
 			}
@@ -38,8 +36,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 		try {
 			if (response.isApproved()) {
 				PaymentResponse authResp = beanstream.payments()
-						.preAuthCompletion(response.id, 200,
-								response.orderNumber);
+						.preAuthCompletion(response.id, 200);
 				if (authResp.isApproved()) {
 					Assert.fail("This auth completion should be not be approved because a lower amount has been pre authorized");
 				}
@@ -60,8 +57,7 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 				.preAuth(paymentRequest);
 
 		if (response.isApproved()) {
-			PaymentResponse authResp = beanstream.payments().preAuthCompletion(
-					response.id, 120.00, response.orderNumber + 1);
+			PaymentResponse authResp = beanstream.payments().preAuthCompletion(response.id, 120.00);
 			if (!authResp.isApproved()) {
 				Assert.fail("This auth completion should be not be approved because the order number is diffrent than the pre-authorized one");
 			}
