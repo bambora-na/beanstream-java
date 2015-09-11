@@ -16,6 +16,36 @@ The project uses [Gradle](http://www.gradle.org/) to build the project. If you a
 
 With the gradle plugin installed you can open the java project by navigating to File->Open Project and locating the java project. 
 
+## Gradle
+```
+repositories {
+  maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+dependencies {
+  compile("com.beanstream.api:beanstream:1.0.0-SNAPSHOT") {changing=true}
+}
+```
+
+## Maven
+```xml
+<repositories>
+  <repository>
+    <id>snapshots-repo</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    <releases><enabled>false</enabled></releases>
+    <snapshots><enabled>true</enabled></snapshots>
+  </repository>
+</repositories>
+
+<dependencies>
+  <dependency>
+	<groupId>com.beanstream.api</groupId>
+	<artifactId>beanstream</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+  </dependency>
+</dependencies>
+```
+
 # Beanstream list of response codes/categories description
 please see the detailed list of codes/categories description here http://support.beanstream.com/docs/response-message-codes-descriptions.htm.
 
