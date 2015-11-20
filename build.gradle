@@ -34,7 +34,7 @@ dependencies {
     compile 'junit:junit:4.10'
     compile 'com.google.code.gson:gson:2.3'
     compile 'org.apache.httpcomponents:httpclient:4.3.5'
-    compile group: 'com.google.guava', name: 'guava', version: '14.+'
+    compile group: 'com.google.guava', name: 'guava', version: '14.0'
 }
 
 jar.doFirst {
@@ -63,7 +63,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 
 signing {
@@ -105,6 +111,24 @@ uploadArchives {
                 description 'A library (SDK) for connecting to the Beanstream APIs'
                 url 'http://developer.beanstream.com'
                 packaging 'jar'
+                developers  {
+                    developer {
+                        id 'Brent Owens'
+                        name 'Brent Owens'
+                    }
+                    developer {
+                        id 'Pedro Garcia'
+                        name 'Pedro Garcia'
+                    }
+                    developer {
+                        id 'Chris Tihor'
+                        name 'Chris Tihor'
+                    }
+                    developer {
+                        id 'Michael Sanchez'
+                        name 'Michael Sanchez'
+                    }
+                }
 
                 licenses {
                     license {
