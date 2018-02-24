@@ -276,7 +276,7 @@ public class ProfilesAPI {
 	 * 
 	 * @param profileId
 	 *            of the profile containing the cards
-	 * @return List<Card> with all the cards for that profile
+	 * @return List&lt;Card&gt; with all the cards for that profile
 	 * @throws BeanstreamApiException
 	 *             if any validation fails or any error occur
 	 */
@@ -365,7 +365,7 @@ public class ProfilesAPI {
 	 * cards. Make sure your Merchant account can support more cards. The
 	 * default amount is 1. You can change this limit in the online Members area
 	 * for Merchants located at: https://www.beanstream.com/admin/sDefault.asp
-	 * and heading to Configuration -> Payment Profile Configuration
+	 * and heading to Configuration -&gt; Payment Profile Configuration
 	 * 
 	 * @param profileId
 	 * @param card
