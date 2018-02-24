@@ -117,7 +117,7 @@ public class ReportsAPITest extends BaseBeanstreamTest {
             
             Transaction transaction = beanstream.reports().getTransaction(payment.id);
             Assert.assertNotNull(transaction);
-            Assert.assertEquals("Amounts did not match", "90.0", transaction.getAmount());
+            Assert.assertEquals("Amounts did not match", "90.00", transaction.getAmount());
             
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(ReportsAPITest.class.getName()).log(Level.SEVERE, "Error accessing Beanstream API "+ex.getCode()+", "+ex.getCategory()+", "+ex.getMessage(), ex);

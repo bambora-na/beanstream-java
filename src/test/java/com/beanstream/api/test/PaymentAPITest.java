@@ -42,8 +42,8 @@ public class PaymentAPITest extends BaseBeanstreamTest{
 				}
 			}
 		} catch (BeanstreamApiException ex) {
-                    Assert.assertEquals("Http status code did not match expected.", 400, ex.getHttpStatusCode());
-                    Assert.assertEquals("Error category did not match expected", 2, ex.getCategory());
+                    Assert.assertEquals("Http status code did not match expected.", 402, ex.getHttpStatusCode());
+                    Assert.assertEquals("Completion greater than remaining reserve amount., details: ", 2, ex.getCategory());
                     Assert.assertEquals("Error code did not match expected", 208, ex.getCode());
 		}
 	}

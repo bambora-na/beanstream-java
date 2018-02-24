@@ -23,29 +23,31 @@
 
 package com.beanstream.connection;
 
-import com.beanstream.exceptions.BeanstreamApiException;
-import com.beanstream.responses.BeanstreamResponse;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.*;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-
-import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.config.ConnectionConfig;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+
+import com.beanstream.exceptions.BeanstreamApiException;
+import com.beanstream.responses.BeanstreamResponse;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Performs the connection to the API.
@@ -164,7 +166,7 @@ public class HttpsConnector {
             httpclient = HttpClients.createDefault();
         // Remove newlines from base64 since they can bork the header.
         // Some base64 encoders will append a newline to the end
-        String auth = Base64.encode((merchantId + ":" + apiPasscode).trim().getBytes());
+        String auth = Base64.encodeBase64String((merchantId + ":" + apiPasscode).trim().getBytes());
         
         http.addHeader("Content-Type", "application/json");
         http.addHeader("Authorization", "Passcode " + auth);
