@@ -141,7 +141,7 @@ public class HttpsConnector {
 
             BeanstreamResponse bsRes = process(http, responseHandler);
             int httpStatus = bsRes.getHttpStatusCode();
-            if (httpStatus >= 200 && httpStatus < 300) {
+            if ((httpStatus >= 200 && httpStatus < 300) || httpStatus == 302 /* interac payment */) {
                 return bsRes.getResponseBody();
             } else {
                 throw mappedException(httpStatus, bsRes);

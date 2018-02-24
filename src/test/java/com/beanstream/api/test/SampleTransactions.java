@@ -1,5 +1,19 @@
 package com.beanstream.api.test;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClients;
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.beanstream.Gateway;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
@@ -14,6 +28,7 @@ import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.CashPaymentRequest;
 import com.beanstream.requests.ChequePaymentRequest;
 import com.beanstream.requests.Criteria;
+import com.beanstream.requests.InteracPaymentRequest;
 import com.beanstream.requests.LegatoTokenRequest;
 import com.beanstream.requests.Operators;
 import com.beanstream.requests.ProfilePaymentRequest;
@@ -21,26 +36,13 @@ import com.beanstream.requests.ProfilePaymentRequestData;
 import com.beanstream.requests.QueryFields;
 import com.beanstream.requests.TokenPaymentRequest;
 import com.beanstream.responses.BeanstreamResponse;
+import com.beanstream.responses.InteracPaymentResponse;
 import com.beanstream.responses.LegatoTokenResponse;
 import com.beanstream.responses.PaymentResponse;
 import com.beanstream.responses.ProfileResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClients;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 /* The MIT License (MIT)
  *
@@ -73,8 +75,8 @@ public class SampleTransactions {
 
     public static void main(String[] args) {
         SampleTransactions t = new SampleTransactions();
-        /*t.testPayment();
-        t.testTokenPayment();
+        t.testPayment();
+        /*t.testTokenPayment();
         t.testVoidPayment();
         t.testPreAuthorization();
         t.testGetTransaction();
@@ -129,6 +131,26 @@ public class SampleTransactions {
 
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "An error occurred", ex);
+            Assert.fail(ex.getMessage());
+        }
+
+        /* Test Interac Payment Request Initialization */
+        InteracPaymentRequest interacReq = new InteracPaymentRequest();
+        interacReq.setAmount(123.45);
+        interacReq.setOrderNumber(getRandomOrderId("interac"));
+        
+        try {
+
+        	InteracPaymentResponse response = beanstream.payments().interacPayment(interacReq);
+            Assert.assertNotNull( "Merchant data is missing", response.merchantData );
+            System.out.println("Merchant data:\n"+ response.merchantData);
+            Assert.assertNotNull( "Redirect link is missing", response.links );
+            Assert.assertEquals( "Redirect link is missing", 1, response.links.length );
+            System.out.println("Redirect link to complete payment: "+response.links[0].getHref());
+            Assert.assertNotNull( "HTML form is missing", response.contents );
+            System.out.println("Interac Form to submit:\n"+ response.contents);
+        } catch (BeanstreamApiException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"An error occurred", ex);
             Assert.fail(ex.getMessage());
         }
 

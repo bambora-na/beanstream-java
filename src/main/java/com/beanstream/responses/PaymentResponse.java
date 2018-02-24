@@ -55,6 +55,9 @@ public class PaymentResponse {
 
     public CardResponse card;
 
+    @SerializedName("interac_online")
+    public InteracOnline interacOnline;
+
     public Link[] links;
     
     public boolean isApproved() {

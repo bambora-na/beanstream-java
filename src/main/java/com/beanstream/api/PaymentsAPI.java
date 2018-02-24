@@ -22,6 +22,17 @@
  */
 package com.beanstream.api;
 
+import static com.beanstream.connection.BeanstreamUrls.getPaymentUrl;
+import static com.beanstream.connection.BeanstreamUrls.getPreAuthCompletionsUrl;
+import static com.beanstream.connection.BeanstreamUrls.getReturnUrl;
+import static com.beanstream.connection.BeanstreamUrls.getUnreferencedReturnUrl;
+import static com.beanstream.connection.BeanstreamUrls.getVoidPaymentUrl;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import org.apache.http.HttpStatus;
+
 import com.beanstream.Configuration;
 import com.beanstream.Gateway;
 import com.beanstream.connection.BeanstreamUrls;
@@ -31,22 +42,18 @@ import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.requests.CardPaymentRequest;
 import com.beanstream.requests.CashPaymentRequest;
 import com.beanstream.requests.ChequePaymentRequest;
-import com.beanstream.requests.TokenPaymentRequest;
+import com.beanstream.requests.InteracPaymentRequest;
+import com.beanstream.requests.PaymentRequest;
+import com.beanstream.requests.ProfilePaymentRequest;
 import com.beanstream.requests.ReturnRequest;
+import com.beanstream.requests.TokenPaymentRequest;
 import com.beanstream.requests.UnreferencedCardReturnRequest;
 import com.beanstream.requests.UnreferencedSwipeReturnRequest;
 import com.beanstream.responses.BeanstreamResponse;
+import com.beanstream.responses.InteracPaymentResponse;
 import com.beanstream.responses.PaymentResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import org.apache.http.HttpStatus;
-
-
-
-import static com.beanstream.connection.BeanstreamUrls.*;
-import com.beanstream.requests.PaymentRequest;
-import com.beanstream.requests.ProfilePaymentRequest;
 
 /**
  * The entry point for processing payments.
@@ -149,6 +156,54 @@ public class PaymentsAPI {
         return gson.fromJson(response, PaymentResponse.class);
     }
 
+    /**
+     * Make an interac payment request.
+     *
+     * @author ilya
+     * @param paymentRequest the interac payment request
+     * @return InteracPaymentResponse the result of the interac payment request
+     * @throws BeanstreamApiException as a result of a business logic validation
+     * or any other error @see
+     */
+    public InteracPaymentResponse interacPayment(InteracPaymentRequest paymentRequest) throws BeanstreamApiException {
+
+        // build the URL
+        String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
+
+        // process the transaction using the REST API
+        String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
+
+        // parse the output and return a InteracPaymentResponse
+        InteracPaymentResponse res = gson.fromJson(response, InteracPaymentResponse.class);
+        try {
+        	// contents is URL-encoded for some reason
+        	res.contents = URLDecoder.decode( res.contents, "UTF-8" );
+        } catch (UnsupportedEncodingException e) {}
+        return res;
+    }
+    
+    /**
+     * Complete the interac payment.
+     *
+     * @author ilya
+     * @param merchantData - this value should be stored in session while client is redirected to financial institution website
+     * @param paymentRequest the interac payment request should have InteracResponse object populated (important!)
+     * @return PaymentResponse the result of the interac payment transaction
+     * @throws BeanstreamApiException as a result of a business logic validation
+     * or any other error @see
+     */
+    public PaymentResponse interacPaymentCompletion(String merchantData, InteracPaymentRequest paymentRequest) throws BeanstreamApiException {
+
+        // build the URL
+        String url = BeanstreamUrls.getPaymentContinuationsUrl( config.getPlatform(), config.getVersion(), merchantData);
+
+        // process the transaction using the REST API
+        String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
+
+        // parse the output and return a PaymentResponse
+        return gson.fromJson(response, PaymentResponse.class);
+    }
+    
     /**
      * Make a cash payment.
      *

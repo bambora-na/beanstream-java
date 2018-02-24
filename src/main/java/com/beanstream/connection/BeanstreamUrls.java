@@ -101,4 +101,11 @@ public class BeanstreamUrls {
 		return MessageFormat.format(BeanstreamUrls.GetPaymentUrl, platform,
 				version, paymentId);
 	}
+
+	public static String getPaymentContinuationsUrl(String platform,
+			String version, String merchantData) {
+		return MessageFormat.format(ContinuationsUrl, platform, version,
+				merchantData);
+	}
+
 }
