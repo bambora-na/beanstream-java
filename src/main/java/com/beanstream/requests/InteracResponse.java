@@ -29,32 +29,46 @@ import com.google.gson.annotations.SerializedName;
  * @author ilya
  */
 public class InteracResponse {
+	private String funded;
+	
     @SerializedName("idebit_track2")
-    public String idebitTrack2;
+    private String idebitTrack2;
 
     @SerializedName("idebit_isslang")
-    public String idebitIsslang;
+    private String idebitIsslang;
 
     @SerializedName("idebit_version")
-    public String idebitVersion;
+    private String idebitVersion;
 
     @SerializedName("idebit_issconf")
-    public String idebitIssconf;
+    private String idebitIssconf;
 
     @SerializedName("idebit_issname")
-    public String idebitIssname;
+    private String idebitIssname;
 
     @SerializedName("idebit_amount")
-    public String idebitAmount;
+    private String idebitAmount;
 
     @SerializedName("idebit_invoice")
-    public String idebitInvoice;
+    private String idebitInvoice;
+
+	public String getFunded() {
+		return funded;
+	}
+
+	public void setFunded( String funded ) {
+        if (funded != null && funded.length() > 20)
+            throw new IllegalArgumentException("Funded cannot be longer than 20 characters!");
+		this.funded = funded;
+	}
 
 	public String getIdebitTrack2() {
 		return idebitTrack2;
 	}
 
 	public void setIdebitTrack2( String idebitTrack2 ) {
+        if (idebitTrack2 != null && idebitTrack2.length() > 256)
+            throw new IllegalArgumentException("IdebitTrack2 cannot be longer than 256 characters!");
 		this.idebitTrack2 = idebitTrack2;
 	}
 
@@ -63,6 +77,8 @@ public class InteracResponse {
 	}
 
 	public void setIdebitIsslang( String idebitIsslang ) {
+        if (idebitIsslang != null && idebitIsslang.length() > 2)
+            throw new IllegalArgumentException("IdebitIsslang cannot be longer than 2 characters!");
 		this.idebitIsslang = idebitIsslang;
 	}
 
@@ -71,6 +87,8 @@ public class InteracResponse {
 	}
 
 	public void setIdebitVersion( String idebitVersion ) {
+        if (idebitVersion != null && idebitVersion.length() > 1)
+            throw new IllegalArgumentException("IdebitVersion cannot be longer than 1 character!");
 		this.idebitVersion = idebitVersion;
 	}
 
@@ -79,6 +97,8 @@ public class InteracResponse {
 	}
 
 	public void setIdebitIssconf( String idebitIssconf ) {
+        if (idebitIssconf != null && idebitIssconf.length() > 32)
+            throw new IllegalArgumentException("IdebitIssconf cannot be longer than 32 characters!");
 		this.idebitIssconf = idebitIssconf;
 	}
 
@@ -87,6 +107,8 @@ public class InteracResponse {
 	}
 
 	public void setIdebitIssname( String idebitIssname ) {
+        if (idebitIssname != null && idebitIssname.length() > 32)
+            throw new IllegalArgumentException("IdebitIssname cannot be longer than 32 characters!");
 		this.idebitIssname = idebitIssname;
 	}
 
@@ -95,6 +117,8 @@ public class InteracResponse {
 	}
 
 	public void setIdebitAmount( String idebitAmount ) {
+        if (idebitAmount != null && idebitAmount.length() > 9)
+            throw new IllegalArgumentException("IdebitAmount cannot be longer than 9 characters!");
 		this.idebitAmount = idebitAmount;
 	}
 
@@ -103,6 +127,8 @@ public class InteracResponse {
 	}
 
 	public void setIdebitInvoice( String idebitInvoice ) {
+        if (idebitInvoice != null && idebitInvoice.length() > 20)
+            throw new IllegalArgumentException("IdebitInvoice cannot be longer than 20 characters!");
 		this.idebitInvoice = idebitInvoice;
 	}
 }
