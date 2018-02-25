@@ -49,4 +49,60 @@ public class InteracResponse {
 
     @SerializedName("idebit_invoice")
     public String idebitInvoice;
+
+	public String getIdebitTrack2() {
+		return idebitTrack2;
+	}
+
+	public void setIdebitTrack2( String idebitTrack2 ) {
+		this.idebitTrack2 = idebitTrack2;
+	}
+
+	public String getIdebitIsslang() {
+		return idebitIsslang;
+	}
+
+	public void setIdebitIsslang( String idebitIsslang ) {
+		this.idebitIsslang = idebitIsslang;
+	}
+
+	public String getIdebitVersion() {
+		return idebitVersion;
+	}
+
+	public void setIdebitVersion( String idebitVersion ) {
+		this.idebitVersion = idebitVersion;
+	}
+
+	public String getIdebitIssconf() {
+		return idebitIssconf;
+	}
+
+	public void setIdebitIssconf( String idebitIssconf ) {
+		this.idebitIssconf = idebitIssconf;
+	}
+
+	public String getIdebitIssname() {
+		return idebitIssname;
+	}
+
+	public void setIdebitIssname( String idebitIssname ) {
+		this.idebitIssname = idebitIssname;
+	}
+
+	public String getIdebitAmount() {
+		return idebitAmount;
+	}
+
+	public void setIdebitAmount( String idebitAmount ) {
+		this.idebitAmount = idebitAmount;
+	}
+
+	public String getIdebitInvoice() {
+		return idebitInvoice;
+	}
+
+	public void setIdebitInvoice( String idebitInvoice ) {
+		this.idebitInvoice = idebitInvoice;
+	}
 }
