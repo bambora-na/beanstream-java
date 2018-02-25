@@ -31,8 +31,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class InteracOnline {
     @SerializedName("idebit_issconf")
-    private String idebitIssconf;
+    public String idebitIssconf;
 
     @SerializedName("idebit_issname")
-    private String idebitIssname;
+    public String idebitIssname;
 }
