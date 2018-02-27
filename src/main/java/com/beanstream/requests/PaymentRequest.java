@@ -119,6 +119,8 @@ public abstract class PaymentRequest {
     }
 
     public Address getBilling() {
+    	if (billing==null)
+    		billing = new Address();
         return billing;
     }
 
@@ -127,6 +129,8 @@ public abstract class PaymentRequest {
     }
 
     public Address getShipping() {
+    	if (shipping==null)
+    		shipping = new Address();
         return shipping;
     }
 
@@ -135,6 +139,8 @@ public abstract class PaymentRequest {
     }
 
     public CustomFields getCustom() {
+    	if (custom==null)
+    		custom = new CustomFields();
         return custom;
     }
 
