@@ -1,13 +1,13 @@
-# Beanstream Java SDK[![Build Status](https://travis-ci.org/Beanstream-DRWP/beanstream-java.svg?branch=master)](https://travis-ci.org/Beanstream-DRWP/beanstream-java)
+# Bambora Java SDK[![Build Status](https://travis-ci.org/Beanstream-DRWP/beanstream-java.svg?branch=master)](https://travis-ci.org/Beanstream-DRWP/beanstream-java)
 
 
-Integration with Beanstream’s payments gateway is a simple, flexible solution.
+Integration with Bambora payments gateway is a simple, flexible solution.
 
 You can choose between a straightforward payment requiring very few parameters; or, you can customize a feature-rich integration.
 
 To assist as a centralized record of all your sales, we also accept cash and cheque transactions.
 
-For very detailed information on the Payments API, look at the Beanstream developer portal's [documentation](http://developer.beanstream.com/documentation/take-payments/purchases-pre-authorizations/).
+For very detailed information on the Payments API, look at the Bambora [developer portal](https://dev.na.bambora.com/docs/references/payment_SDKs/take_payments/).
 
 # Setup
 Once you have cloned the repository you will need to load the project in your favourite IDE (NetBeans, Eclipse, etc.)
@@ -15,6 +15,9 @@ Once you have cloned the repository you will need to load the project in your fa
 The project uses [Gradle](http://www.gradle.org/) to build the project. If you are using Netbeans it is very easy to install the Gradle plugin. Just navigate to Tools->Plugins, click on the Available Plugins tab and locate the 'Gradle Support' plugin. Click the Install button.
 
 With the gradle plugin installed you can open the java project by navigating to File->Open Project and locating the java project. 
+
+## TLS 1.2 support
+For testing instructions with our TLS1.2-only server, please refer to our [developer portal](https://dev.na.bambora.com/docs/references/payment_SDKs/support_tls12/#java-sdk)
 
 ## Gradle
 ```
@@ -46,8 +49,8 @@ dependencies {
 </dependencies>
 ```
 
-# Beanstream list of response codes/categories description
-please see the detailed list of codes/categories description here http://support.beanstream.com/docs/response-message-codes-descriptions.htm.
+# Bambora list of response codes/categories description
+Please see the detailed list of codes/categories description [here](https://help.na.bambora.com/hc/en-us/articles/115013189148-Response-Message-Codes-and-Descriptions)
 
 # Make a Payment
 Before you begin making purchases, you need to create a Beanstream API object. It holds your user credentials and provides access to the various APIs.
@@ -86,8 +89,8 @@ To void a payment you will need a valid paymentId and the amount, and a Beanstre
 
 
 As with makePayment using your configured Beanstream API instance (Gateway object instance) call the voidPayment method of the PaymentAPI.
-if  the voidPayment is success you won't have any exception, if no you need to handle the exception.
-you can get a list of all Beanstream response codes at http://support.beanstream.com/docs/response-message-codes-descriptions.htm.
+If  the voidPayment is success you won't have any exception, if no you need to handle the exception.
+
 
 ```java
 String paymentId = ....;
