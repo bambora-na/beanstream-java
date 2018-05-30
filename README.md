@@ -98,7 +98,7 @@ double amount = ....;
 
 try {
 	PaymentResponse response = beanstream.payments().voidPayment(paymentId, amount);
-	// void payment success, your response contains the payment transaction but witht he type 'VP'
+	// void payment success, your response contains the payment transaction but with the type 'VP'
 } catch (BeanstreamApiException ex) {
 	// handle any errors
 }	
@@ -139,7 +139,7 @@ Payment Profiles allow you to store a customer's card number and other informati
 The card number stored on the profile is a multi-use token and is called the ID.
 
 # Create a Profile
-To create a payment profile you must first configure your gateway to use the profiles API key (instead of your Payments API key. Then you can call one of the createProfile methods on the Profiles API class and supply it with the minimun parameters of a Card and a Billing Address:
+To create a payment profile you must first configure your gateway to use the profiles API key (instead of your Payments API key. Then you can call one of the createProfile methods on the Profiles API class and supply it with the minimum parameters of a Card and a Billing Address:
 
 ```java
 Gateway beanstream = new Gateway("v1", 300200578,
@@ -228,8 +228,8 @@ You can customize connection timeouts, and anything else with the connections by
 
 ```java
 RequestConfig reqC = RequestConfig.custom()
-		.setSocketTimeout(1000) // 1 second in miliseconds
-		.setConnectTimeout(1000) // 1 second in miliseconds
+		.setSocketTimeout(1000) // 1 second in milliseconds
+		.setConnectTimeout(1000) // 1 second in milliseconds
 	.build();
 HttpClient client = HttpClients.custom()
 		.setDefaultRequestConfig(reqC)

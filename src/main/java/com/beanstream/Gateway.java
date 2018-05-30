@@ -76,7 +76,7 @@ public class Gateway {
         /**
          * This allows you to specify your own HttpClient with its own connection
          * parameters such as connection timeouts.
-         * @param httpClient 
+         * @param httpClient custom http client
          */
         public void setCustomHttpsClient(HttpClient httpClient) {
             this.config.setCustomHttpClient(httpClient);

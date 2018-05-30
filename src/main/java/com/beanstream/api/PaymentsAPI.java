@@ -335,7 +335,7 @@ public class PaymentsAPI {
      * @param paymentId of the pre-authorized transaction
      * @param amount final amount to be charged
      * @return the PaymentResponse for the final transaction
-     * @throws BeanstreamApiException
+     * @throws BeanstreamApiException when not successful
      */
     public PaymentResponse preAuthCompletion(String paymentId, double amount) throws BeanstreamApiException {
 
@@ -380,7 +380,7 @@ public class PaymentsAPI {
      * @param paymentId payment transaction id to return
      * @param amount final amount to be returned
      * @return the PaymentResponse for the final transaction
-     * @throws BeanstreamApiException
+     * @throws BeanstreamApiException when not successful
      */
     public PaymentResponse returnPayment(String paymentId, double amount) throws BeanstreamApiException {
 
@@ -405,7 +405,7 @@ public class PaymentsAPI {
      *
      * @param returnRequest of the UnreferencedCardReturnRequest
      * @return the PaymentResponse for the final transaction
-     * @throws BeanstreamApiException
+     * @throws BeanstreamApiException when not successful
      */
     public PaymentResponse unreferencedReturn(UnreferencedCardReturnRequest returnRequest) throws BeanstreamApiException {
 
@@ -427,7 +427,7 @@ public class PaymentsAPI {
      *
      * @param returnRequest of the UnreferencedSwipeReturnRequest
      * @return the PaymentResponse for the final transaction
-     * @throws BeanstreamApiException
+     * @throws BeanstreamApiException when not successful
      */
     public PaymentResponse unreferencedReturn(UnreferencedSwipeReturnRequest returnRequest) throws BeanstreamApiException {
 

@@ -83,7 +83,7 @@ public class ProfilesAPI {
 	 *            mandatory card, must be a valid card
 	 * @param billing
 	 *            address of the credit card
-	 * @return a ProfileResonse saying if the profile was created or not and the
+	 * @return a ProfileResponse saying if the profile was created or not and the
 	 *         message
 	 * @throws BeanstreamApiException
 	 *             if any validation fails or error occur
@@ -100,7 +100,7 @@ public class ProfilesAPI {
 	 *            mandatory token, must contain a valid name and code
 	 * @param billing
 	 *            address of the credit card
-	 * @return a ProfileResonse saying if the profile was created or not and the
+	 * @return a ProfileResponse saying if the profile was created or not and the
 	 *         message
 	 * @throws BeanstreamApiException
 	 *             if any validation fails or error occur
@@ -122,8 +122,8 @@ public class ProfilesAPI {
 	 *            fields to add in the profile
 	 * @param language
 	 *            profile language
-	 * @param comments
-	 * @return a ProfileResonse saying if the profile was created or not and the
+	 * @param comments comments that a user would like to attach to the Payment Profile
+	 * @return a ProfileResponse saying if the profile was created or not and the
 	 *         message
 	 * @throws BeanstreamApiException
 	 *             if any validation fails or error occur
@@ -146,8 +146,8 @@ public class ProfilesAPI {
 	 *            fields to add in the profile
 	 * @param language
 	 *            profile language
-	 * @param comments
-	 * @return a ProfileResonse saying if the profile was created or not and the
+	 * @param comments comments that a user would like to attach to the Payment Profile
+	 * @return a ProfileResponse saying if the profile was created or not and the
 	 *         message
 	 * @throws BeanstreamApiException
 	 *             if any validation fails or error occur
@@ -174,8 +174,8 @@ public class ProfilesAPI {
 	 *            fields to add in the profile
 	 * @param language
 	 *            profile language
-	 * @param comments
-	 * @return a ProfileResonse saying if the profile was created or not and the
+	 * @param comments comments that a user would like to attach to the Payment Profile
+	 * @return a ProfileResponse saying if the profile was created or not and the
 	 *         message
 	 * @throws BeanstreamApiException
 	 *             if any validation fails or error occur
@@ -246,7 +246,7 @@ public class ProfilesAPI {
 	 * 
 	 * @param profile
 	 *            object to update
-	 * @return ProfilePesponse if successful, an BeanstreamApiException if not.
+	 * @return ProfileResponse if successful, an BeanstreamApiException if not.
 	 **/
 	public ProfileResponse updateProfile(PaymentProfile profile)
 			throws BeanstreamApiException {
@@ -276,7 +276,7 @@ public class ProfilesAPI {
 	 * 
 	 * @param profileId
 	 *            of the profile containing the cards
-	 * @return List<Card> with all the cards for that profile
+	 * @return List with all the cards for that profile
 	 * @throws BeanstreamApiException
 	 *             if any validation fails or any error occur
 	 */
@@ -297,10 +297,10 @@ public class ProfilesAPI {
 	 * Get a particular card on a profile, Card IDs are their index in
 	 * getCards(), starting a 1 and going up: 1, 2, 3, 4...
 	 * 
-	 * @param profileId
-	 * @param cardId
+	 * @param profileId The profile id
+	 * @param cardId The card id
 	 * @return the Card you are looking for
-	 * @throws BeanstreamApiException
+	 * @throws BeanstreamApiException when not successful
 	 */
 	public Card getCard(String profileId, String cardId)
 			throws BeanstreamApiException {
@@ -331,10 +331,10 @@ public class ProfilesAPI {
 	 * Updates the profile. You must first retrieve the profile using
 	 * ProfilesAPI.GetProfile(id)
 	 * 
-	 * @param profileId
-	 * @param card
-	 * @return
-	 * @throws BeanstreamApiException
+	 * @param profileId the profile id
+	 * @param card the card to update
+	 * @return ProfileResponse
+	 * @throws BeanstreamApiException when not successful
 	 */
 	public ProfileResponse updateCard(String profileId, Card card)
 			throws BeanstreamApiException {
@@ -365,12 +365,12 @@ public class ProfilesAPI {
 	 * cards. Make sure your Merchant account can support more cards. The
 	 * default amount is 1. You can change this limit in the online Members area
 	 * for Merchants located at: https://www.beanstream.com/admin/sDefault.asp
-	 * and heading to Configuration -> Payment Profile Configuration
+	 * and heading to Configuration : Payment Profile Configuration
 	 * 
-	 * @param profileId
-	 * @param card
+	 * @param profileId The profile id.
+	 * @param card The card to add.
 	 * @return ProfileResponse
-	 * @throws BeanstreamApiException
+	 * @throws BeanstreamApiException when not successful
 	 */
 	public ProfileResponse addCard(String profileId, Card card)
 			throws BeanstreamApiException {
@@ -406,10 +406,10 @@ public class ProfilesAPI {
 	 * Removes the card from the profile. Card IDs are their index in
 	 * getCards(), starting a 1 and going up: 1, 2, 3, 4...
 	 * 
-	 * @param profileId
-	 * @param cardId
+	 * @param profileId the profile id
+	 * @param cardId the card id
 	 * @return ProfileResponse
-	 * @throws BeanstreamApiException
+	 * @throws BeanstreamApiException when not successful
 	 */
 	public ProfileResponse removeCard(String profileId, String cardId)
 			throws BeanstreamApiException {

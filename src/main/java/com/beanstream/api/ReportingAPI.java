@@ -80,9 +80,9 @@ public class ReportingAPI {
     
     /**
      * Get a single transaction
-     * @param paymentId
-     * @return
-     * @throws BeanstreamApiException 
+     * @param paymentId Transaction ID of payment
+     * @return Transaction
+     * @throws BeanstreamApiException when not successful
      */
     public Transaction getTransaction(String paymentId) throws BeanstreamApiException {
         
