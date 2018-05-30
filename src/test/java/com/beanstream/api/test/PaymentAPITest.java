@@ -18,14 +18,14 @@ public class PaymentAPITest extends BasePaymentsTest {
     @Test
     public void preAuthCompletion_IsApproved_WhenHigherAmountWasPreAuthorized() throws BeanstreamApiException {
         //Arrange
-        double authAmount = 120.00;
+        double authAmount = 120;
         double completeAmount = 43.50;
 
         CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(getRandomOrderId("GAS"), authAmount);
-        PaymentResponse authResponse = beanstream.payments().preAuth(paymentRequest);
+        PaymentResponse authResponse = gateway.payments().preAuth(paymentRequest);
 
         //Act
-        PaymentResponse completeResponse = beanstream.payments().preAuthCompletion(authResponse.id, completeAmount);
+        PaymentResponse completeResponse = gateway.payments().preAuthCompletion(authResponse.id, completeAmount);
 
         //Assert
         Assert.assertTrue(completeResponse.isApproved());
@@ -35,11 +35,11 @@ public class PaymentAPITest extends BasePaymentsTest {
     @Test
     public void preAuthCompletion_IsNotApproved_WhenLowerAmountHasBeenPreAuthorized() throws BeanstreamApiException {
         //Arrange
-        double authAmount = 120.00;
+        double authAmount = 120;
         double completeAmount = 200;
 
         CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(getRandomOrderId("GAS"), authAmount);
-        PaymentResponse authResponse = beanstream.payments().preAuth(paymentRequest);
+        PaymentResponse authResponse = gateway.payments().preAuth(paymentRequest);
 
         //Act
         exceptionRule.expect(BeanstreamApiException.class);
@@ -47,7 +47,7 @@ public class PaymentAPITest extends BasePaymentsTest {
         exceptionRule.expect(hasProperty("category", is(2)));
         exceptionRule.expect(hasProperty("code", is(208)));
 
-        PaymentResponse completeResponse = beanstream.payments().preAuthCompletion(authResponse.id, completeAmount);
+        PaymentResponse completeResponse = gateway.payments().preAuthCompletion(authResponse.id, completeAmount);
 
         //Assert
         Assert.assertFalse(completeResponse.isApproved());
@@ -56,15 +56,15 @@ public class PaymentAPITest extends BasePaymentsTest {
     @Test()
     public void preAuthCompletion_IsNotApproved_WhenOrderNumberIsDifferentFromPreAuthorization() throws BeanstreamApiException {
         //Arrange
-        double authAmount = 120.00;
+        double authAmount = 120;
         double completeAmount = authAmount;
 
 
         CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(getRandomOrderId("GAS"), authAmount);
-        PaymentResponse authResponse = beanstream.payments().preAuth(paymentRequest);
+        PaymentResponse authResponse = gateway.payments().preAuth(paymentRequest);
 
         //Act
-        PaymentResponse completeResponse = beanstream.payments().preAuthCompletion(authResponse.id, completeAmount);
+        PaymentResponse completeResponse = gateway.payments().preAuthCompletion(authResponse.id, completeAmount);
 
         //Assert
         Assert.assertTrue(completeResponse.isApproved());
@@ -76,10 +76,10 @@ public class PaymentAPITest extends BasePaymentsTest {
         CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
                 getRandomOrderId("PEDRO"), "90.00");
 
-        PaymentResponse response = beanstream.payments().makePayment(
+        PaymentResponse response = gateway.payments().makePayment(
                 paymentRequest);
         if (response.isApproved()) {
-            response = beanstream.payments().voidPayment(response.id, 90.00);
+            response = gateway.payments().voidPayment(response.id, 90.00);
             Assert.assertTrue("void payment response is not VP",
                     "VP".equals(response.type));
         } else {
@@ -89,12 +89,12 @@ public class PaymentAPITest extends BasePaymentsTest {
 
     @Test(expected = BeanstreamApiException.class)
     public void invalidPaymentIdVoidPayment() throws BeanstreamApiException {
-        beanstream.payments().voidPayment("-1", 90.00d);
+        gateway.payments().voidPayment("-1", 90.00d);
     }
 
     @Test(expected = BeanstreamApiException.class)
     public void emptyPaymentIdVoidPayment() throws BeanstreamApiException {
-        beanstream.payments().voidPayment("", 90.00d);
+        gateway.payments().voidPayment("", 90.00d);
     }
 
     @Test(expected = BeanstreamApiException.class)
@@ -104,12 +104,12 @@ public class PaymentAPITest extends BasePaymentsTest {
 
         PaymentResponse response = null;
         try {
-            response = beanstream.payments().makePayment(paymentRequest);
+            response = gateway.payments().makePayment(paymentRequest);
         } catch (BeanstreamApiException ex) {
             // not testing makePayment operation, so ignore this
         }
         if (response != null && response.isApproved()) {
-            response = beanstream.payments().voidPayment(response.id, 0.00);
+            response = gateway.payments().voidPayment(response.id, 0.00);
             Assert.fail("invalid transaction amount expected (BeanstreamApiException)");
         } else {
             Assert.fail("Test can not be executed cause the payment api could not approved the test payment");
@@ -122,10 +122,10 @@ public class PaymentAPITest extends BasePaymentsTest {
         CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
                 getRandomOrderId("PEDRO"), "90.00");
 
-        PaymentResponse response = beanstream.payments().makePayment(paymentRequest);
+        PaymentResponse response = gateway.payments().makePayment(paymentRequest);
 
         if (response.isApproved()) {
-            response = beanstream.payments().returnPayment(response.id, 90.0);
+            response = gateway.payments().returnPayment(response.id, 90.0);
             Assert.assertTrue("void payment response is not R", "R".equals(response.type));
 
         } else {
@@ -145,7 +145,7 @@ public class PaymentAPITest extends BasePaymentsTest {
         unrefCardReturnRequest.setMerchantId("300200578");
         unrefCardReturnRequest.setOrderNumber(getRandomOrderId("GAS"));
 
-        //PaymentResponse response = beanstream.payments().unreferencedReturn(unrefCardReturnRequest);
+        //PaymentResponse response = gateway.payments().unreferencedReturn(unrefCardReturnRequest);
         //if ( !response.isApproved()) {
         //        Assert.fail("Unreferenced Return is not approved");
         //}

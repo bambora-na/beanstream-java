@@ -50,7 +50,7 @@ public class ReportsAPITest extends BasePaymentsTest {
         CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
 				getRandomOrderId("TEST_QUERY"), "12.34");
         try {
-            PaymentResponse payment = beanstream.payments().makePayment(paymentRequest);
+            PaymentResponse payment = gateway.payments().makePayment(paymentRequest);
             Assert.assertNotNull("Payment was null, cannot proceed with test", payment);
             Assert.assertNotNull("Payment had no ID, cannot proceed with test", payment.id);
             Calendar cal = Calendar.getInstance();
@@ -58,7 +58,7 @@ public class ReportsAPITest extends BasePaymentsTest {
             Date startDate = cal.getTime(); // yesterday
             Date endDate = new Date(); // today
 
-            List<TransactionRecord> query = beanstream.reports().query(startDate, endDate, 1, 100, null);
+            List<TransactionRecord> query = gateway.reports().query(startDate, endDate, 1, 100, null);
             for (TransactionRecord tr : query) {
                 Assert.assertNotNull(tr.getDateTime());
             }
@@ -80,7 +80,7 @@ public class ReportsAPITest extends BasePaymentsTest {
         paymentRequest.getCard().setName("Sideshow Bob");
         
         try {
-            PaymentResponse payment = beanstream.payments().makePayment(paymentRequest);
+            PaymentResponse payment = gateway.payments().makePayment(paymentRequest);
             Assert.assertNotNull("Payment was null, cannot proceed with test", payment);
             Assert.assertNotNull("Payment had no ID, cannot proceed with test", payment.id);
             Calendar cal = Calendar.getInstance();
@@ -90,7 +90,7 @@ public class ReportsAPITest extends BasePaymentsTest {
             Criteria[] searchFilter = new Criteria[]{
                 new Criteria(QueryFields.CardOwner, Operators.StartWith, "Sideshow")
             };
-            List<TransactionRecord> results = beanstream.reports().query(startDate, endDate, 1, 100, searchFilter);
+            List<TransactionRecord> results = gateway.reports().query(startDate, endDate, 1, 100, searchFilter);
             Assert.assertNotNull(results);
             Assert.assertFalse("The transaction list should not be empty.", results.isEmpty());
             boolean foundIt = false;
@@ -111,13 +111,13 @@ public class ReportsAPITest extends BasePaymentsTest {
         CardPaymentRequest paymentRequest = getCreditCardPaymentRequest(
 				getRandomOrderId("TEST"), "90.00");
         try {
-            PaymentResponse payment = beanstream.payments().makePayment(paymentRequest);
+            PaymentResponse payment = gateway.payments().makePayment(paymentRequest);
             Assert.assertNotNull("Payment was null, cannot proceed with test", payment);
             Assert.assertNotNull("Payment had no ID, cannot proceed with test", payment.id);
             
-            Transaction transaction = beanstream.reports().getTransaction(payment.id);
+            Transaction transaction = gateway.reports().getTransaction(payment.id);
             Assert.assertNotNull(transaction);
-            Assert.assertEquals("Amounts did not match", "90.0", transaction.getAmount());
+            Assert.assertEquals("Amounts did not match", "90.00", transaction.getAmount());
             
         } catch (BeanstreamApiException ex) {
             Logger.getLogger(ReportsAPITest.class.getName()).log(Level.SEVERE, "Error accessing Beanstream API "+ex.getCode()+", "+ex.getCategory()+", "+ex.getMessage(), ex);

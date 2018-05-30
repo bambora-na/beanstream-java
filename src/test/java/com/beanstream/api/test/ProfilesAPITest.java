@@ -24,7 +24,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 
 		try {
 			Card nillCard = null;
-			createdProfile = beanstream.profiles().createProfile(nillCard, billing);
+			createdProfile = gateway.profiles().createProfile(nillCard, billing);
 			Assert.fail("Fail test because the card was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -32,7 +32,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 
 		try {
 			card.setName(null);
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the card name was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -41,7 +41,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 		try {
 			card.setName("Jhon Garcia");
 			card.setNumber("");
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the card number was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -50,7 +50,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 		try {
 			card.setNumber("5100000010001004");
 			card.setExpiryYear("");
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the card expiry year was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -59,7 +59,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 		try {
 			card.setExpiryYear("2018");
 			card.setExpiryMonth(null);
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the card expiry month was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -73,7 +73,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 		ProfileResponse createdProfile = null;
 
 		try {
-			createdProfile = beanstream.profiles().createProfile(card, null);
+			createdProfile = gateway.profiles().createProfile(card, null);
 			Assert.fail("Fail test because the billing address was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -81,7 +81,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 
 		try {
 			billing.setAddressLine1(null);
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the billing address line 1 was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -90,7 +90,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 		try {
 			billing.setAddressLine1("12635 NW 98TH ST");
 			billing.setCity(null);
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the billing address city was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -99,7 +99,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 		try {
 			billing.setCity("Miami");
 			billing.setCountry(null);
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the billing address country was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -108,7 +108,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 		try {
 			billing.setCountry("US");
 			billing.setEmailAddress(null);
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the billing address email was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -117,7 +117,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 		try {
 			billing.setEmailAddress("pagarciaortega@gmail.com");
 			billing.setPhoneNumber(null);
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the billing address phone number was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -126,7 +126,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 		try {
 			billing.setPhoneNumber("786-241-8879");
 			billing.setProvince(null);
-			createdProfile = beanstream.profiles().createProfile(card, billing);
+			createdProfile = gateway.profiles().createProfile(card, billing);
 			Assert.fail("Fail test because the billing address province/state was empty");
 		} catch (BeanstreamApiException ex) {
 			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
@@ -141,7 +141,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 			Address billing = getTestCardValidAddress();
 			Card card = getTestCard();
 			// test create profile
-			ProfileResponse createdProfile = beanstream.profiles()
+			ProfileResponse createdProfile = gateway.profiles()
 					.createProfile(card, billing);
 			profileId = createdProfile.getId();
 			Assert.assertNotNull(
@@ -149,7 +149,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 					profileId);
 
 			// test get profile by id
-			PaymentProfile paymentProfile = beanstream.profiles()
+			PaymentProfile paymentProfile = gateway.profiles()
 					.getProfileById(profileId);
 			Assert.assertEquals(
 					"billing address assinged does not matches with the one sent at creation time",
@@ -162,18 +162,18 @@ public class ProfilesAPITest extends BasePaymentsTest {
 			paymentProfile.setLanguage("fr");
 			paymentProfile.setComments("test updating profile sending billing info only");
 			// update profile
-			beanstream.profiles().updateProfile(paymentProfile);
+			gateway.profiles().updateProfile(paymentProfile);
 
 			// refresh the updated profile
-			paymentProfile = beanstream.profiles().getProfileById(profileId);
+			paymentProfile = gateway.profiles().getProfileById(profileId);
 			
 			Assert.assertEquals("Language was updated to Francais",
 					paymentProfile.getLanguage(), "fr");
 			
 			// delete the payment profile
-			beanstream.profiles().deleteProfileById(profileId);
+			gateway.profiles().deleteProfileById(profileId);
 			try {
-				beanstream.profiles().getProfileById(profileId);
+				gateway.profiles().getProfileById(profileId);
 				Assert.fail("This profile was deleted, therefore should throw an exception");
 			} catch (BeanstreamApiException e) {
 				profileId = null;
@@ -184,7 +184,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 			Assert.fail("unexpected exception occur, test can not continue");
 		} finally {
 			if (profileId != null) {
-				ProfileResponse response = beanstream.profiles()
+				ProfileResponse response = gateway.profiles()
 						.deleteProfileById(profileId);
 			}
 		}
@@ -204,7 +204,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 			// test create profile
 			Token token = new Token("John Doe",tokenResponse.getToken());
 			
-			ProfileResponse createdProfile = beanstream.profiles()
+			ProfileResponse createdProfile = gateway.profiles()
 					.createProfile(token, billing);
 			profileId = createdProfile.getId();
 			Assert.assertNotNull(
@@ -212,7 +212,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 					profileId);
 
 			// test get profile by id
-			PaymentProfile paymentProfile = beanstream.profiles()
+			PaymentProfile paymentProfile = gateway.profiles()
 					.getProfileById(profileId);
 			Assert.assertEquals(
 					"billing address assinged does not matches with the one sent at creation time",
@@ -225,18 +225,18 @@ public class ProfilesAPITest extends BasePaymentsTest {
 			paymentProfile.setLanguage("fr");
 			paymentProfile.setComments("test updating profile sending billing info only");
 			// update profile
-			beanstream.profiles().updateProfile(paymentProfile);
+			gateway.profiles().updateProfile(paymentProfile);
 
 			// refresh the updated profile
-			paymentProfile = beanstream.profiles().getProfileById(profileId);
+			paymentProfile = gateway.profiles().getProfileById(profileId);
 			
 			Assert.assertEquals("Language was updated to Francais",
 					paymentProfile.getLanguage(), "fr");
 			
 			// delete the payment profile
-			beanstream.profiles().deleteProfileById(profileId);
+			gateway.profiles().deleteProfileById(profileId);
 			try {
-				beanstream.profiles().getProfileById(profileId);
+				gateway.profiles().getProfileById(profileId);
 				Assert.fail("This profile was deleted, therefore should throw an exception");
 			} catch (BeanstreamApiException e) {
 				profileId = null;
@@ -247,7 +247,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 			Assert.fail("unexpected exception occur, test can not continue");
 		} finally {
 			if (profileId != null) {
-				ProfileResponse response = beanstream.profiles()
+				ProfileResponse response = gateway.profiles()
 						.deleteProfileById(profileId);
 			}
 		}
@@ -261,7 +261,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 			Address billing = getTestBillingAddress();
 			Card card = getTestCard();
 			// test create profile
-			ProfileResponse createdProfile = beanstream.profiles()
+			ProfileResponse createdProfile = gateway.profiles()
 					.createProfile(card, billing);
 			profileId = createdProfile.getId();
 			Assert.assertNotNull(
@@ -269,13 +269,13 @@ public class ProfilesAPITest extends BasePaymentsTest {
 					profileId);
 
 			// test getCards
-			List<Card> profileCards = beanstream.profiles().getCards(profileId);
+			List<Card> profileCards = gateway.profiles().getCards(profileId);
 			Assert.assertFalse("this profile should have one credit card",
 					profileCards.isEmpty());
 			Card card1 = profileCards.get(0);
 
 			// test getCard
-			Card freshCard = beanstream.profiles().getCard(profileId,
+			Card freshCard = gateway.profiles().getCard(profileId,
 					card1.getId());
 			Assert.assertNotNull(
 					"Test failed because it should return a valid card",
@@ -289,7 +289,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 			newCard.setExpiryYear("19");
 			
 			
-			ProfileResponse newCardResp = beanstream.profiles().addCard(profileId, newCard);
+			ProfileResponse newCardResp = gateway.profiles().addCard(profileId, newCard);
 			
 			
 			// update the card expires date
@@ -298,11 +298,11 @@ public class ProfilesAPITest extends BasePaymentsTest {
                         freshCard.setName("Bob Two");
 			
 			
-			ProfileResponse profileResponse = beanstream.profiles().updateCard(profileId, freshCard);
+			ProfileResponse profileResponse = gateway.profiles().updateCard(profileId, freshCard);
 			//2659 Douglas Street	V8T 4M3
 	
 //			Address newCardAddr = getAddress("Pedro Garcia", "VICTORIA", "BC", "CA", "2659 Douglas Street", "V8T4M3", "TEST@BEANSTREAM.COM", "12501234567");
-			freshCard = beanstream.profiles().getCard(profileId,
+			freshCard = gateway.profiles().getCard(profileId,
 					freshCard.getId());
 			Assert.assertEquals("the Expiry Month was updated but the change is not reflected", "01",freshCard.getExpiryMonth());
 			Assert.assertEquals("the Expiry Year was updated but the change is not reflected", "19",freshCard.getExpiryYear());
@@ -313,7 +313,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 					+ ex.getMessage());
 		} finally {
 			if (profileId != null) {
-				ProfileResponse response = beanstream.profiles()
+				ProfileResponse response = gateway.profiles()
 						.deleteProfileById(profileId);
 			}
 		}
