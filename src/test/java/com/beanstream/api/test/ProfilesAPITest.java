@@ -14,7 +14,7 @@ import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.responses.LegatoTokenResponse;
 import com.beanstream.responses.ProfileResponse;
 
-public class ProfilesAPITest extends BaseBeanstreamTest {
+public class ProfilesAPITest extends BasePaymentsTest {
 
 	@Test
 	public void invalidCardCreateProfile() {

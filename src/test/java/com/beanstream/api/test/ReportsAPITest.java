@@ -43,7 +43,7 @@ import org.junit.Test;
  *
  * @author bowens
  */
-public class ReportsAPITest extends BaseBeanstreamTest {
+public class ReportsAPITest extends BasePaymentsTest {
     
     @Test
     public void testGetAllTransactionRecordsBetweenDates() {

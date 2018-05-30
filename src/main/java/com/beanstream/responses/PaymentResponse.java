@@ -40,6 +40,8 @@ public class PaymentResponse {
 
     public String message;
 
+    public double amount;
+
     @SerializedName("auth_code")
     public String authCode;
 
