@@ -17,9 +17,9 @@ import com.beanstream.requests.LegatoTokenRequest;
 import com.beanstream.responses.LegatoTokenResponse;
 import com.google.gson.Gson;
 
-public abstract class BaseBeanstreamTest {
+public abstract class BasePaymentsTest {
 	protected AtomicInteger sequence = new AtomicInteger(1);
-	Gateway beanstream = new Gateway("v1", 300200578,
+	Gateway gateway = new Gateway("v1", 300200578,
 			"4BaD82D9197b4cc4b70a221911eE9f70", // payments API passcode
 			"D97D3BE1EE964A6193D17A571D9FBC80", // profiles API passcode
 			"4e6Ff318bee64EA391609de89aD4CF5d");// reporting API passcode
@@ -76,6 +76,10 @@ public abstract class BaseBeanstreamTest {
 		addr.setPhoneNumber(phoneNumber);
 		return addr;
 
+	}
+
+	protected CardPaymentRequest getCreditCardPaymentRequest(String orderId, double amount) {
+		return getCreditCardPaymentRequest(orderId, String.format("%.2f", amount));
 	}
 
 	protected CardPaymentRequest getCreditCardPaymentRequest(String orderId, String amount) {

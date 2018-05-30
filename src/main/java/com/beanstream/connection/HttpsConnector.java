@@ -86,10 +86,7 @@ public class HttpsConnector {
     public void setApiPasscode(String apiPasscode) {
         this.apiPasscode = apiPasscode;
     }
-    
-    // this should be refactored to to use java naming conventions (start
-    // lowerCase for methods and properties, and Capital for class, Enum,
-    // Contructors etc.)
+
     public String ProcessTransaction(HttpMethod httpMethod, String url,
 			Object data) throws BeanstreamApiException {
     
@@ -97,12 +94,6 @@ public class HttpsConnector {
             
             Gson gson = getGsonBuilder().create();
             String json = data != null ? gson.toJson(data) : null;
-            
-            // this is a temporary println while SDK is in development
-            /*if (data != null) {
-                Gson gsonpp = getGsonBuilder().setPrettyPrinting().create();
-                System.out.println("Request data.....................\n"+gsonpp.toJson(data));
-            }*/
             
             ResponseHandler<BeanstreamResponse> responseHandler = new ResponseHandler<BeanstreamResponse>() {
                 @Override

@@ -23,7 +23,7 @@
 package com.beanstream.api;
 
 import com.beanstream.Configuration;
-import com.beanstream.connection.BeanstreamUrls;
+import com.beanstream.connection.PaymentsUrls;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
 import com.beanstream.data.Records;
@@ -80,15 +80,15 @@ public class ReportingAPI {
     
     /**
      * Get a single transaction
-     * @param paymentId
-     * @return
-     * @throws BeanstreamApiException 
+     * @param paymentId Transaction ID of payment
+     * @return Transaction
+     * @throws BeanstreamApiException when not successful
      */
     public Transaction getTransaction(String paymentId) throws BeanstreamApiException {
         
         assertNotEmpty(paymentId, "invalid paymentId");
         
-        String url = BeanstreamUrls.getPaymentUrl(config.getPlatform(), config.getVersion(), paymentId);
+        String url = PaymentsUrls.getPaymentUrl(config.getPlatform(), config.getVersion(), paymentId);
         connector.setApiPasscode(config.getPaymentsApiPasscode());
         
         // get the transaction using the REST API
@@ -122,7 +122,7 @@ public class ReportingAPI {
         if (searchCriteria == null)
             searchCriteria = new Criteria[]{};
         
-        String url = BeanstreamUrls.getReportsUrl(config.getPlatform(), config.getVersion());
+        String url = PaymentsUrls.getReportsUrl(config.getPlatform(), config.getVersion());
 
         final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_STRING);
         SearchQuery query = new SearchQuery(dateFormat.format(startDate), dateFormat.format(endDate), startRow, endRow, searchCriteria);

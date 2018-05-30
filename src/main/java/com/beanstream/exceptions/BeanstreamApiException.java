@@ -39,8 +39,8 @@ package com.beanstream.exceptions;
 ///       This is usually a problem with how your account is configured. Sometimes it could be duplicate order number errors or something
 ///       similar. These errors need to be worked out by the developer before the software moves to production.
 ///   3	- Input data problem
-///       The requests are inproperly formatted or the data is wrong. Invalid card number errors (code 52) can also appear here.
-///       Mopst of these errors need to be worked out by the developer before the software moves to production.
+///       The requests are improperly formatted or the data is wrong. Invalid card number errors (code 52) can also appear here.
+///       Most of these errors need to be worked out by the developer before the software moves to production.
 ///   4	- Transaction failed due to technical problem
 ///       There was a problem on the Beanstream or bank servers that is out of your control. These will respond with an http status code
 ///       in the 500+ range. Card holders should wait a minute and try the transaction again.
@@ -140,7 +140,7 @@ public class BeanstreamApiException extends Exception {
     
     /**
      * This message should be displayed to the card holder.
-     * Overwritten in some sublcass exceptions.
+     * Overwritten in some subclass exceptions.
      * @return a simple string message that can be displayed to the card holder.
      */
     public String getUserFacingMessage() {

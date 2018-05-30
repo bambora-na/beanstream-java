@@ -29,8 +29,8 @@ import java.text.MessageFormat;
  * 
  * @author bowens
  */
-public class BeanstreamUrls {
-	public static final String BaseUrl = "https://{0}.beanstream.com/api";
+public class PaymentsUrls {
+	public static final String BaseUrl = "https://{0}.na.bambora.com";
 	public static final String BasePaymentsUrl = BaseUrl + "/{1}/payments";
 	public static final String GetPaymentUrl = BasePaymentsUrl + "/{2}";
 	public static final String BaseProfilesUrl = BaseUrl + "/{1}/profiles";
@@ -48,27 +48,27 @@ public class BeanstreamUrls {
 	
 
         public static String getReportsUrl(String platform, String version) {
-		return MessageFormat.format(BeanstreamUrls.ReportsUrl, platform, version);
+		return MessageFormat.format(PaymentsUrls.ReportsUrl, platform, version);
 	}
         
 	public static String getProfilesUrl(String platform, String version) {
-		return MessageFormat.format(BeanstreamUrls.BaseProfilesUrl, platform, version);
+		return MessageFormat.format(PaymentsUrls.BaseProfilesUrl, platform, version);
 	}
 	
 	public static String getProfileCardUrl(String platform, String version, String profileId, String cardId) {
-		return MessageFormat.format(BeanstreamUrls.BaseProfilesUrl +"/{2}/cards/{3}", platform, version, profileId, cardId);
+		return MessageFormat.format(PaymentsUrls.BaseProfilesUrl +"/{2}/cards/{3}", platform, version, profileId, cardId);
 	}
 	
 	public static String getProfileCardsUrl(String platform, String version, String profileId) {
-		return MessageFormat.format(BeanstreamUrls.BaseProfilesUrl +"/{2}/cards", platform, version, profileId);
+		return MessageFormat.format(PaymentsUrls.BaseProfilesUrl +"/{2}/cards", platform, version, profileId);
 	}
 	
 	public static String getProfilesUrl(String platform, String version, String profileId) {
-		return MessageFormat.format(BeanstreamUrls.BaseProfilesUrl +"/{2}", platform, version, profileId);
+		return MessageFormat.format(PaymentsUrls.BaseProfilesUrl +"/{2}", platform, version, profileId);
 	}
 
 	public static String getPaymentUrl(String platform, String version) {
-		return MessageFormat.format(BeanstreamUrls.BasePaymentsUrl, platform,
+		return MessageFormat.format(PaymentsUrls.BasePaymentsUrl, platform,
 				version);
 	}
 
@@ -80,25 +80,25 @@ public class BeanstreamUrls {
 
 	public static String getVoidPaymentUrl(String platform, String version,
 			String paymentId) {
-		return MessageFormat.format(BeanstreamUrls.VoidsUrl, platform, version,
+		return MessageFormat.format(PaymentsUrls.VoidsUrl, platform, version,
 				paymentId);
 	}
 
 	public static String getReturnUrl(String platform, String version,
 			String paymentId) {
-		return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform,
+		return MessageFormat.format(PaymentsUrls.ReturnsUrl, platform,
 				version, paymentId);
 	}
 
 	public static String getUnreferencedReturnUrl(String platform,
 			String version) {
-		return MessageFormat.format(BeanstreamUrls.ReturnsUrl, platform,
+		return MessageFormat.format(PaymentsUrls.ReturnsUrl, platform,
 				version, "0");
 	}
 
 	public static String getPaymentUrl(String platform, String version,
 			String paymentId) {
-		return MessageFormat.format(BeanstreamUrls.GetPaymentUrl, platform,
+		return MessageFormat.format(PaymentsUrls.GetPaymentUrl, platform,
 				version, paymentId);
 	}
 }
