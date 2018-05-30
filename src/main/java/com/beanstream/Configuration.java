@@ -37,7 +37,7 @@ public class Configuration {
     private String profilesApiPasscode;
     private String reportingApiPasscode;
     private String version = "v1";
-    private String platform = "www";
+    private String platform = "api";
 
     private HttpClient customHttpClient;
     

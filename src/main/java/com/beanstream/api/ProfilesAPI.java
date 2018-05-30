@@ -26,7 +26,7 @@ import java.util.List;
 
 import com.beanstream.Configuration;
 import com.beanstream.Gateway;
-import com.beanstream.connection.BeanstreamUrls;
+import com.beanstream.connection.PaymentsUrls;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
 import com.beanstream.domain.Address;
@@ -188,7 +188,7 @@ public class ProfilesAPI {
 				language, comments);
 		ProfilesUtils.validateProfileReq(req);
 
-		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
+		String url = PaymentsUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion());
 
 		String response = connector.ProcessTransaction(HttpMethod.post, url,
@@ -211,7 +211,7 @@ public class ProfilesAPI {
 	public PaymentProfile getProfileById(String profileId)
 			throws BeanstreamApiException {
 		ProfilesUtils.validateProfileId(profileId);
-		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
+		String url = PaymentsUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion(), profileId);
 
 		String response = connector.ProcessTransaction(HttpMethod.get, url,
@@ -231,7 +231,7 @@ public class ProfilesAPI {
 			throws BeanstreamApiException {
 
 		ProfilesUtils.validateProfileId(profileId);
-		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
+		String url = PaymentsUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion(), profileId);
 
 		String response = connector.ProcessTransaction(HttpMethod.delete, url,
@@ -255,7 +255,7 @@ public class ProfilesAPI {
 
 		ProfilesUtils.validateBillingAddr(profile.getBilling());
 
-		String url = BeanstreamUrls.getProfilesUrl(config.getPlatform(),
+		String url = PaymentsUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion(), profile.getId());
 
 		JsonObject req = new JsonObject();
@@ -282,7 +282,7 @@ public class ProfilesAPI {
 	 */
 	public List<Card> getCards(String profileId) throws BeanstreamApiException {
 		ProfilesUtils.validateProfileId(profileId);
-		String url = BeanstreamUrls.getProfileCardsUrl(config.getPlatform(),
+		String url = PaymentsUrls.getProfileCardsUrl(config.getPlatform(),
 				config.getVersion(), profileId);
 
 		String response = connector.ProcessTransaction(HttpMethod.get, url,
@@ -307,7 +307,7 @@ public class ProfilesAPI {
 
 		ProfilesUtils.validateProfileId(profileId);
 		Gateway.assertNotEmpty(cardId, "card id is empty");
-		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
+		String url = PaymentsUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
 
 		String response = connector.ProcessTransaction(HttpMethod.get, url,
@@ -343,7 +343,7 @@ public class ProfilesAPI {
 		Gateway.assertNotNull(card, "card is is null");
 		String cardId = card.getId();
 		Gateway.assertNotEmpty(cardId, "card Id is empty");
-		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
+		String url = PaymentsUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
                 
                 if (card.getNumber().contains("X") || card.getNumber().contains("x"))
@@ -375,7 +375,7 @@ public class ProfilesAPI {
 	public ProfileResponse addCard(String profileId, Card card)
 			throws BeanstreamApiException {
 		ProfilesUtils.validateProfileId(profileId);
-		String url = BeanstreamUrls.getProfileCardsUrl(config.getPlatform(),
+		String url = PaymentsUrls.getProfileCardsUrl(config.getPlatform(),
 				config.getVersion(), profileId);
 
 		ProfilesUtils.validateCard(card);
@@ -415,7 +415,7 @@ public class ProfilesAPI {
 			throws BeanstreamApiException {
 		ProfilesUtils.validateProfileId(profileId);
 		Gateway.assertNotEmpty(cardId, "card it to remove is empty");
-		String url = BeanstreamUrls.getProfileCardUrl(config.getPlatform(),
+		String url = PaymentsUrls.getProfileCardUrl(config.getPlatform(),
 				config.getVersion(), profileId, cardId);
 
 		String response = connector.ProcessTransaction(HttpMethod.delete, url,

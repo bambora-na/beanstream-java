@@ -24,7 +24,7 @@ package com.beanstream.api;
 
 import com.beanstream.Configuration;
 import com.beanstream.Gateway;
-import com.beanstream.connection.BeanstreamUrls;
+import com.beanstream.connection.PaymentsUrls;
 import com.beanstream.connection.HttpMethod;
 import com.beanstream.connection.HttpsConnector;
 import com.beanstream.exceptions.BeanstreamApiException;
@@ -44,7 +44,7 @@ import org.apache.http.HttpStatus;
 
 
 
-import static com.beanstream.connection.BeanstreamUrls.*;
+import static com.beanstream.connection.PaymentsUrls.*;
 import com.beanstream.requests.PaymentRequest;
 import com.beanstream.requests.ProfilePaymentRequest;
 
@@ -92,7 +92,7 @@ public class PaymentsAPI {
         paymentRequest.getCard().setComplete(true); // false for pre-auth
 
         // build the URL
-        String url = BeanstreamUrls.getPaymentUrl(config.getPlatform(), config.getVersion());
+        String url = PaymentsUrls.getPaymentUrl(config.getPlatform(), config.getVersion());
 
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url,
@@ -117,7 +117,7 @@ public class PaymentsAPI {
         paymentRequest.getToken().setComplete(true); // true to make the payment
 
         // build the URL
-        String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
+        String url = PaymentsUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
 
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
@@ -140,7 +140,7 @@ public class PaymentsAPI {
         paymentRequest.getProfile().setComplete(true); // true to make the payment
 
         // build the URL
-        String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
+        String url = PaymentsUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
 
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
@@ -161,7 +161,7 @@ public class PaymentsAPI {
     public PaymentResponse makePayment(CashPaymentRequest paymentRequest) throws BeanstreamApiException {
 
         // build the URL
-        String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
+        String url = PaymentsUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
 
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
@@ -182,7 +182,7 @@ public class PaymentsAPI {
     public PaymentResponse makePayment(ChequePaymentRequest paymentRequest) throws BeanstreamApiException {
 
         // build the URL
-        String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
+        String url = PaymentsUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
 
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
