@@ -89,7 +89,7 @@ To void a payment you will need a valid paymentId and the amount, and a Beanstre
 
 
 As with makePayment using your configured Beanstream API instance (Gateway object instance) call the voidPayment method of the PaymentAPI.
-If  the voidPayment is success you won't have any exception, if no you need to handle the exception.
+If the voidPayment is successful you will not have any exceptions, else you will need to handle the exception.
 
 
 ```java
