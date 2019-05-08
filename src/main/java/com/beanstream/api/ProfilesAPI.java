@@ -61,6 +61,8 @@ public class ProfilesAPI {
 	private Configuration config;
 	private HttpsConnector connector;
 	private final Gson gson = new Gson();
+	private final boolean validateBillingAddress = 
+			Boolean.valueOf(System.getProperty("bamboraSDK.profiles.validateBillingAddress", "true"));  
 
 	public ProfilesAPI(Configuration config) {
 		this.config = config;
@@ -186,7 +188,7 @@ public class ProfilesAPI {
 
 		ProfileRequest req = new ProfileRequest(card, token, billing, custom,
 				language, comments);
-		ProfilesUtils.validateProfileReq(req);
+		ProfilesUtils.validateProfileReq(req, validateBillingAddress);
 
 		String url = PaymentsUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion());
@@ -253,8 +255,10 @@ public class ProfilesAPI {
 		Gateway.assertNotNull(profile, "profile to update is null");
 		ProfilesUtils.validateProfileId(profile.getId());
 
-		ProfilesUtils.validateBillingAddr(profile.getBilling());
-
+		if (validateBillingAddress){
+			ProfilesUtils.validateBillingAddr(profile.getBilling());
+		}
+		
 		String url = PaymentsUrls.getProfilesUrl(config.getPlatform(),
 				config.getVersion(), profile.getId());
 
