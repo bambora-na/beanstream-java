@@ -135,7 +135,7 @@ public class ProfilesAPITest extends BasePaymentsTest {
 	}
 
 	@Test
-	public void testProfileCreationWhenDisabledAddressValidation() {
+	public void testProfileCreationWhenDisabledAddressValidation() throws BeanstreamApiException {
 
 		System.setProperty("bamboraSDK.profiles.validateBillingAddress", "false");
 		
@@ -148,8 +148,6 @@ public class ProfilesAPITest extends BasePaymentsTest {
 			Assert.assertNotNull(createdProfile.getId());
 			Assert.assertNotNull(createdProfile.getCode());
 
-		} catch (BeanstreamApiException ex) {
-			Assert.assertTrue("", ex.getHttpStatusCode() == 400);
 		}finally {
 			System.clearProperty("bamboraSDK.profiles.validateBillingAddress");
 		}
