@@ -88,13 +88,8 @@ public class HttpsConnector {
     }
 
     public String ProcessTransaction(HttpMethod httpMethod, String url,
-			Object data) throws BeanstreamApiException {
-    
+			String json) throws BeanstreamApiException {
         try {
-            
-            Gson gson = getGsonBuilder().create();
-            String json = data != null ? gson.toJson(data) : null;
-            
             ResponseHandler<BeanstreamResponse> responseHandler = new ResponseHandler<BeanstreamResponse>() {
                 @Override
                 public BeanstreamResponse handleResponse(final HttpResponse http)
@@ -142,7 +137,15 @@ public class HttpsConnector {
         } catch (IOException ex) {
             throw handleException(ex, null);
         } 
-
+    }
+    
+    public String ProcessTransaction(HttpMethod httpMethod, String url,
+			Object data) throws BeanstreamApiException {
+    
+        Gson gson = getGsonBuilder().create();
+        String json = data != null ? gson.toJson(data) : null;
+        
+        return this.ProcessTransaction(httpMethod, url, json);
     }
 
     private BeanstreamResponse process(HttpUriRequest http,

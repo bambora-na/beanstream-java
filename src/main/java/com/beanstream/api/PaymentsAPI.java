@@ -222,11 +222,10 @@ public class PaymentsAPI {
         voidRequest.addProperty(AMOUNT_PARAM, String.valueOf(amount));
 
         String response = connector.ProcessTransaction(HttpMethod.post, url,
-                voidRequest);
+                voidRequest.toString());
 
         // parse the output and return a PaymentResponse
         return gson.fromJson(response, PaymentResponse.class);
-
     }
 
     /**
