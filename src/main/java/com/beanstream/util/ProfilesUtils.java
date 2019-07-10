@@ -68,7 +68,7 @@ public class ProfilesUtils {
 	 * a BeanstreamApiException with a bad request status, if any required
 	 * property is missing
 	 */
-	public static void validateProfileReq(ProfileRequest profileRequest)
+	public static void validateProfileReq(ProfileRequest profileRequest, boolean validateBillingAddress)
 			throws BeanstreamApiException {
 		Gateway.assertNotNull(profileRequest, "profile request object is null");
 		Card card = profileRequest.getCard();
@@ -88,6 +88,8 @@ public class ProfilesUtils {
 			validateToken(token);
 		}
 
-		validateBillingAddr(billing);
+		if (validateBillingAddress){
+			validateBillingAddr(billing);	
+		}
 	}
 }
