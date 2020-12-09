@@ -46,8 +46,11 @@ package com.beanstream.exceptions;
 ///       in the 500+ range. Card holders should wait a minute and try the transaction again.
 ///
 /// </summary>
-import com.beanstream.responses.BeanstreamResponse;
 import org.apache.http.HttpStatus;
+
+import com.beanstream.Gateway;
+import com.beanstream.responses.BeanstreamResponse;
+import com.beanstream.responses.Detail;
 
 /**
  *
@@ -88,8 +91,13 @@ public class BeanstreamApiException extends Exception {
         int code = response.getCode();
         int category = response.getCategory();
         String message = response.getMessage();
-        String details = response.getDetails();
-        message = message + ", details: " + details;
+        Detail[] details = response.getDetails();
+        if (details!=null && details.length>0) {
+        	message += ", details: ";
+        	for (Detail detail: details) {
+        		message += "\n" + detail.getField() + ": " + detail.getMessage();
+        	}
+        }
 
         switch (httpStatusCode) {
             case HttpStatus.SC_MOVED_TEMPORARILY: { // 302

@@ -8,7 +8,7 @@ public class BeanstreamResponseBuilder {
     private int category = -1;
     private String message = "";
     private String reference = "";
-    private String details = "";
+    private Detail[] details = new Detail[0];
     private int httpStatusCode = -1;
     private String responseBody = "";
     private MediaType mediaType = null;
@@ -43,7 +43,7 @@ public class BeanstreamResponseBuilder {
         return this;
     }
 
-    public BeanstreamResponseBuilder withDetails(String details) {
+    public BeanstreamResponseBuilder withDetails(Detail[] details) {
         this.details = details;
         return this;
     }

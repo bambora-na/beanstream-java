@@ -1,13 +1,18 @@
 package com.beanstream.responses;
 
-import com.beanstream.exceptions.BeanstreamApiException;
-import com.google.common.net.MediaType;
-import com.google.gson.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
+import com.beanstream.exceptions.BeanstreamApiException;
+import com.google.common.net.MediaType;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class BeanstreamResponse {
 
@@ -15,14 +20,12 @@ public class BeanstreamResponse {
     private final int category;
     private final String message;
     private final String reference;
-    private final String details;
+    private final Detail[] details;
     private final int httpStatusCode;
     private final String responseBody;
     private final MediaType mediaType;
 
-    private static final Gson gson = new Gson();
-
-    BeanstreamResponse(int code, int category, String message, String reference, String details, int httpStatusCode,
+    BeanstreamResponse(int code, int category, String message, String reference, Detail[] details, int httpStatusCode,
                        String responseBody, MediaType mediaType) {
         this.code = code;
         this.category = category;
@@ -116,8 +119,27 @@ public class BeanstreamResponse {
         }
         
         element = json.get("details");
-        if (element != null && !element.isJsonNull()) {
-            builder.withDetails(element.toString());
+        if (element != null && element.isJsonArray()) {
+        	List<Detail> details = new ArrayList<>();
+        	for (JsonElement elem: element.getAsJsonArray()) {
+        		if (elem != null && elem.isJsonObject()) {
+        			JsonObject obj = elem.getAsJsonObject();
+        			String field = null;
+        			String message = null;
+        			element = obj.get( "field" );
+        			if (element != null && !element.isJsonNull()) {
+        				field = element.getAsString();
+        			}
+        			element = obj.get( "message" );
+        			if (element != null && !element.isJsonNull()) {
+        				message = element.getAsString();
+        			}
+        			if (field!=null && message!=null) {
+        				details.add( new Detail(field, message) );
+        			}
+        		}
+        	}
+       		builder.withDetails(details.toArray(new Detail[details.size()]));
         }
 
         builder.withHttpStatusCode(httpStatusCode);
@@ -140,7 +162,7 @@ public class BeanstreamResponse {
         return reference;
     }
 
-    public String getDetails() {
+    public Detail[] getDetails() {
         return details;
     }
 
