@@ -2,6 +2,10 @@
 import org.gradle.api.XmlProvider
 import org.gradle.api.artifacts.maven.MavenDeployment
 
+plugins {
+  id 'biz.aQute.bnd.builder'
+}
+
 // NetBeans will automatically add "run" and "debug" tasks relying on the
 // "mainClass" property. You may however define the property prior executing
 // tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
@@ -13,11 +17,11 @@ if (!hasProperty('mainClass')) {
     ext.mainClass = 'com.beanstream.api.test.SampleTransactions'
 }
 
-
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 //apply plugin: 'osgi'
+
 
 sourceCompatibility = '1.7'
 group = "com.beanstream.api"
