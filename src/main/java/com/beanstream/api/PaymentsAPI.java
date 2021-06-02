@@ -64,6 +64,7 @@ public class PaymentsAPI {
 
     private static final String AMOUNT_PARAM = "amount";
     private static final String MERCHANT_ID_PARAM = "merchant_id";
+    private static ThreadLocal<StringBuffer> communicationLog = new ThreadLocal<>();
     private Configuration config;
     private HttpsConnector connector;
     private final Gson gson = new Gson();
@@ -73,6 +74,36 @@ public class PaymentsAPI {
         connector = new HttpsConnector(config.getMerchantId(),
                 config.getPaymentsApiPasscode());
         connector.setCustomHttpClient(config.getCustomHttpClient());
+    }
+
+    public static String getLog() {
+    	StringBuffer sb = communicationLog.get();
+    	if (sb!=null) {
+    		return sb.toString();
+    	}
+    	return null;
+    }
+
+    private static StringBuffer getLogInternal() {
+    	StringBuffer sb = communicationLog.get();
+    	if (sb==null) {
+    		sb = new StringBuffer();
+    		communicationLog.set( sb );
+    	}
+    	return sb;
+    }
+
+    public static void addLog(String str) {
+    	if (str!=null && str.length()>0) {
+    		StringBuffer sb = getLogInternal();
+    		if (sb.length()>0)
+    			sb.append( "\n\n" );
+    		sb.append( str );
+    	}
+    }
+    
+    public static void clearLog() {
+    	communicationLog.remove();
     }
     
     public void setConfig(Configuration config) {
@@ -95,16 +126,23 @@ public class PaymentsAPI {
      */
     public PaymentResponse makePayment(CardPaymentRequest paymentRequest)
             throws BeanstreamApiException {
-        paymentRequest.setMerchantId("" + config.getMerchantId());
+    	clearLog();
+
+    	paymentRequest.setMerchantId("" + config.getMerchantId());
         paymentRequest.getCard().setComplete(true); // false for pre-auth
 
         // build the URL
         String url = BeanstreamUrls.getPaymentUrl(config.getPlatform(), config.getVersion());
+        
+        addLog(url);
+        addLog(gson.toJson( paymentRequest ));
 
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url,
                 paymentRequest);
 
+        addLog(response);
+        
         // parse the output and return a PaymentResponse
         return gson.fromJson(response, PaymentResponse.class);
     }
@@ -120,15 +158,22 @@ public class PaymentsAPI {
      * or any other error
      */
     public PaymentResponse makePayment(TokenPaymentRequest paymentRequest) throws BeanstreamApiException {
-        paymentRequest.setMerchantId("" + config.getMerchantId());
+    	clearLog();
+
+    	paymentRequest.setMerchantId("" + config.getMerchantId());
         paymentRequest.getToken().setComplete(true); // true to make the payment
 
         // build the URL
         String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
 
+        addLog(url);
+        addLog(gson.toJson( paymentRequest ));
+
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
 
+        addLog(response);
+        
         // parse the output and return a PaymentResponse
         return gson.fromJson(response, PaymentResponse.class);
     }
@@ -143,15 +188,22 @@ public class PaymentsAPI {
      * or any other error
      */
     public PaymentResponse makePayment(ProfilePaymentRequest paymentRequest) throws BeanstreamApiException {
-        paymentRequest.setMerchantId("" + config.getMerchantId());
+    	clearLog();
+
+    	paymentRequest.setMerchantId("" + config.getMerchantId());
         paymentRequest.getProfile().setComplete(true); // true to make the payment
 
         // build the URL
         String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
 
+        addLog(url);
+        addLog(gson.toJson( paymentRequest ));
+
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
 
+        addLog(response);
+        
         // parse the output and return a PaymentResponse
         return gson.fromJson(response, PaymentResponse.class);
     }
@@ -166,13 +218,19 @@ public class PaymentsAPI {
      * or any other error @see
      */
     public InteracPaymentResponse interacPayment(InteracPaymentRequest paymentRequest) throws BeanstreamApiException {
+    	clearLog();
 
         // build the URL
         String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
 
+        addLog(url);
+        addLog(gson.toJson( paymentRequest ));
+
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
 
+        addLog(response);
+        
         // parse the output and return a InteracPaymentResponse
         InteracPaymentResponse res = gson.fromJson(response, InteracPaymentResponse.class);
         try {
@@ -193,13 +251,19 @@ public class PaymentsAPI {
      * or any other error @see
      */
     public PaymentResponse interacPaymentCompletion(String merchantData, InteracPaymentRequest paymentRequest) throws BeanstreamApiException {
+    	clearLog();
 
         // build the URL
         String url = BeanstreamUrls.getPaymentContinuationsUrl( config.getPlatform(), config.getVersion(), merchantData);
 
+        addLog(url);
+        addLog(gson.toJson( paymentRequest ));
+
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
 
+        addLog(response);
+        
         // parse the output and return a PaymentResponse
         return gson.fromJson(response, PaymentResponse.class);
     }
@@ -214,13 +278,19 @@ public class PaymentsAPI {
      * or any other error @see
      */
     public PaymentResponse makePayment(CashPaymentRequest paymentRequest) throws BeanstreamApiException {
+    	clearLog();
 
         // build the URL
         String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
 
+        addLog(url);
+        addLog(gson.toJson( paymentRequest ));
+
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
 
+        addLog(response);
+        
         // parse the output and return a PaymentResponse
         return gson.fromJson(response, PaymentResponse.class);
     }
@@ -235,13 +305,19 @@ public class PaymentsAPI {
      * or any other error @see
      */
     public PaymentResponse makePayment(ChequePaymentRequest paymentRequest) throws BeanstreamApiException {
+    	clearLog();
 
         // build the URL
         String url = BeanstreamUrls.getPaymentUrl( config.getPlatform(), config.getVersion());
 
+        addLog(url);
+        addLog(gson.toJson( paymentRequest ));
+
         // process the transaction using the REST API
         String response = connector.ProcessTransaction(HttpMethod.post, url, paymentRequest);
 
+        addLog(response);
+        
         // parse the output and return a PaymentResponse
         return gson.fromJson(response, PaymentResponse.class);
     }
@@ -266,6 +342,7 @@ public class PaymentsAPI {
      */
     public PaymentResponse voidPayment(String paymentId, double amount)
             throws BeanstreamApiException {
+    	clearLog();
 
     	Gateway.assertNotEmpty(paymentId, "invalid paymentId");
         String url = getVoidPaymentUrl(config.getPlatform(),
@@ -276,9 +353,14 @@ public class PaymentsAPI {
                 String.valueOf(config.getMerchantId()));
         voidRequest.addProperty(AMOUNT_PARAM, String.valueOf(amount));
 
+        addLog(url);
+        addLog(gson.toJson( voidRequest ));
+
         String response = connector.ProcessTransaction(HttpMethod.post, url,
                 voidRequest);
 
+        addLog(response);
+        
         // parse the output and return a PaymentResponse
         return gson.fromJson(response, PaymentResponse.class);
 
@@ -301,6 +383,7 @@ public class PaymentsAPI {
      */
     public PaymentResponse preAuth(CardPaymentRequest paymentRequest)
             throws BeanstreamApiException {
+    	clearLog();
 
         if (paymentRequest == null || paymentRequest.getCard() == null) {
             // TODO - do we need to supply category and code ids here?
@@ -313,8 +396,14 @@ public class PaymentsAPI {
         String preAuthUrl = getPaymentUrl(config.getPlatform(),
                 config.getVersion());
 
+        addLog(preAuthUrl);
+        addLog(gson.toJson( paymentRequest ));
+
         String response = connector.ProcessTransaction(HttpMethod.post,
                 preAuthUrl, paymentRequest);
+
+        addLog(response);
+        
         return gson.fromJson(response, PaymentResponse.class);
     }
     
@@ -335,6 +424,7 @@ public class PaymentsAPI {
      */
     public PaymentResponse preAuth(ProfilePaymentRequest paymentRequest)
             throws BeanstreamApiException {
+    	clearLog();
 
         if (paymentRequest == null || paymentRequest.getProfile() == null) {
             // TODO - do we need to supply category and code ids here?
@@ -347,8 +437,14 @@ public class PaymentsAPI {
         String preAuthUrl = getPaymentUrl(config.getPlatform(),
                 config.getVersion());
 
+        addLog(preAuthUrl);
+        addLog(gson.toJson( paymentRequest ));
+
         String response = connector.ProcessTransaction(HttpMethod.post,
                 preAuthUrl, paymentRequest);
+
+        addLog(response);
+        
         return gson.fromJson(response, PaymentResponse.class);
     }
     
@@ -369,6 +465,7 @@ public class PaymentsAPI {
      */
     public PaymentResponse preAuth(TokenPaymentRequest paymentRequest)
             throws BeanstreamApiException {
+    	clearLog();
 
         if (paymentRequest == null || paymentRequest.getToken() == null) {
             BeanstreamResponse response = BeanstreamResponse.fromMessage("invalid payment request");
@@ -379,7 +476,13 @@ public class PaymentsAPI {
 
         String preAuthUrl = getPaymentUrl(config.getPlatform(), config.getVersion());
 
+        addLog(preAuthUrl);
+        addLog(gson.toJson( paymentRequest ));
+
         String response = connector.ProcessTransaction(HttpMethod.post, preAuthUrl, paymentRequest);
+
+        addLog(response);
+        
         return gson.fromJson(response, PaymentResponse.class);
     }
 
@@ -393,6 +496,7 @@ public class PaymentsAPI {
      * @throws BeanstreamApiException
      */
     public PaymentResponse preAuthCompletion(String paymentId, double amount) throws BeanstreamApiException {
+    	clearLog();
 
     	Gateway.assertNotEmpty(paymentId, "Invalid Payment Id");
 
@@ -404,9 +508,14 @@ public class PaymentsAPI {
                 String.valueOf(config.getMerchantId()));
         authorizeRequest.addProperty(AMOUNT_PARAM, String.valueOf(amount));
         
+        addLog(authorizePaymentUrl);
+        addLog(gson.toJson( authorizeRequest ));
+
         String response = connector.ProcessTransaction(HttpMethod.post,
                 authorizePaymentUrl, authorizeRequest);
 
+        addLog(response);
+        
         return gson.fromJson(response, PaymentResponse.class);
 
     }
@@ -420,12 +529,19 @@ public class PaymentsAPI {
      * @throws BeanstreamApiException if the transaction was declined 
      */
     public PaymentResponse preAuthCompletion(String paymentId, PaymentRequest request) throws BeanstreamApiException {
+    	clearLog();
 
     	Gateway.assertNotEmpty(paymentId, "Invalid Payment Id");
         String authorizePaymentUrl = getPreAuthCompletionsUrl(
                 config.getPlatform(), config.getVersion(), paymentId);
         
+        addLog(authorizePaymentUrl);
+        addLog(gson.toJson( request ));
+
         String response = connector.ProcessTransaction(HttpMethod.post, authorizePaymentUrl, request);
+
+        addLog(response);
+        
         return gson.fromJson(response, PaymentResponse.class);
     }
     
@@ -438,6 +554,7 @@ public class PaymentsAPI {
      * @throws BeanstreamApiException
      */
     public PaymentResponse returnPayment(String paymentId, double amount) throws BeanstreamApiException {
+    	clearLog();
 
     	Gateway.assertNotEmpty(paymentId, "Invalid Payment Id");
 
@@ -447,8 +564,13 @@ public class PaymentsAPI {
         returnRequest.setMerchantId( String.valueOf(config.getMerchantId()) );
         returnRequest.setAmount( amount );
         
+        addLog(returnPaymentUrl);
+        addLog(gson.toJson( returnRequest ));
+
         String response = connector.ProcessTransaction(HttpMethod.post, returnPaymentUrl, returnRequest);
 
+        addLog(response);
+        
         return gson.fromJson(response, PaymentResponse.class);
 
     }
@@ -463,14 +585,20 @@ public class PaymentsAPI {
      * @throws BeanstreamApiException
      */
     public PaymentResponse unreferencedReturn(UnreferencedCardReturnRequest returnRequest) throws BeanstreamApiException {
+    	clearLog();
 
         String unreferencedReturnUrl = getUnreferencedReturnUrl(
                 config.getPlatform(), config.getVersion());
 
         returnRequest.setMerchantId( String.valueOf(config.getMerchantId()) );
 
+        addLog(unreferencedReturnUrl);
+        addLog(gson.toJson( returnRequest ));
+
         String response = connector.ProcessTransaction(HttpMethod.post, unreferencedReturnUrl, returnRequest);
 
+        addLog(response);
+        
         return gson.fromJson(response, PaymentResponse.class);
 
     }
@@ -485,14 +613,20 @@ public class PaymentsAPI {
      * @throws BeanstreamApiException
      */
     public PaymentResponse unreferencedReturn(UnreferencedSwipeReturnRequest returnRequest) throws BeanstreamApiException {
+    	clearLog();
 
         String unreferencedReturnUrl = getUnreferencedReturnUrl(
                 config.getPlatform(), config.getVersion());
 
         returnRequest.setMerchantId( String.valueOf(config.getMerchantId()) );
 
+        addLog(unreferencedReturnUrl);
+        addLog(gson.toJson( returnRequest ));
+
         String response = connector.ProcessTransaction(HttpMethod.post, unreferencedReturnUrl, returnRequest);
 
+        addLog(response);
+        
         return gson.fromJson(response, PaymentResponse.class);
 
     }
