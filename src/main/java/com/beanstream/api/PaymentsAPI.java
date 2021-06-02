@@ -79,7 +79,11 @@ public class PaymentsAPI {
     public static String getLog() {
     	StringBuffer sb = communicationLog.get();
     	if (sb!=null) {
-    		return sb.toString();
+    		try {
+    			return sb.toString();
+    		} finally {
+    			clearLog();
+    		}
     	}
     	return null;
     }
