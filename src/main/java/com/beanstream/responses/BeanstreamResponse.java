@@ -92,7 +92,8 @@ public class BeanstreamResponse {
 
         JsonParser parser = new JsonParser();
         JsonObject json = parser.parse(jsonPayload).getAsJsonObject();
-        BeanstreamResponseBuilder builder = new BeanstreamResponseBuilder();
+        BeanstreamResponseBuilder builder = new BeanstreamResponseBuilder()
+        		.withResponseBody( jsonPayload );
 
         builder.setMediaType(responseType);
         

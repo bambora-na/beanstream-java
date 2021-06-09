@@ -44,6 +44,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 
+import com.beanstream.api.PaymentsAPI;
 import com.beanstream.exceptions.BeanstreamApiException;
 import com.beanstream.responses.BeanstreamResponse;
 import com.google.gson.Gson;
@@ -210,6 +211,7 @@ public class HttpsConnector {
         } else {
             message = "Connection error";
         }
+		PaymentsAPI.addLog( message );
         return new BeanstreamApiException(ex, message);
     }
     
@@ -220,6 +222,8 @@ public class HttpsConnector {
     private BeanstreamApiException mappedException(int status, BeanstreamResponse bsRes) {
         
         if (bsRes != null) {
+        	if (bsRes.getResponseBody()!=null)
+        		PaymentsAPI.addLog( bsRes.getResponseBody() );
             return BeanstreamApiException.getMappedException(status, bsRes);
         }
 			
